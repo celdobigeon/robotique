@@ -91,9 +91,27 @@ h3{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:16px}
   background:var(--dark);border-radius:50%;width:24px;height:24px;flex:none;
   display:flex;align-items:center;justify-content:center;margin-top:3px}
 .mrow .fld{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-.mrow select{font:inherit;font-size:13.5px;width:100%;background:var(--surface);color:var(--ink);
-  border:1px solid var(--line);border-radius:7px;padding:6px 8px}
-.mrow select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+/* --- glisser-déposer du repérage --- */
+.banque{display:flex;flex-wrap:wrap;gap:7px;padding:11px;margin:0 0 13px;min-height:56px;
+  border:1px dashed var(--line);border-radius:10px;background:var(--surface-2);
+  align-content:flex-start}
+.banque.over{border-color:var(--accent);background:var(--surface)}
+.banque .vide{margin:2px 4px;font-size:13px;color:var(--muted);font-style:italic}
+.etq{font:inherit;font-size:13px;line-height:1.3;text-align:left;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:6px 13px;cursor:grab;touch-action:manipulation}
+.etq:hover{border-color:var(--accent)}
+.etq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.etq.pris{border-color:var(--accent);background:var(--surface-2);cursor:grabbing}
+.etq.vole{opacity:.4}
+.slot{font:inherit;font-size:13.5px;line-height:1.35;width:100%;min-height:34px;text-align:left;
+  color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:7px;
+  padding:6px 9px;cursor:pointer;touch-action:manipulation}
+.slot.plein{color:var(--ink);border-style:solid;cursor:grab}
+.slot.over{border-color:var(--accent);background:var(--surface-2);color:var(--ink)}
+.slot:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.mrow.viser .slot{border-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--muted);margin:-4px 0 11px}
 .mrow .why{font-size:12.5px;line-height:1.4;color:var(--muted)}
 .mrow.ok{border-color:var(--green);background:var(--okbg)}
 .mrow.ok .no{background:var(--green)}
@@ -401,6 +419,10 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
     </div>
     <div class="card">
       <h3>Associez chaque repère</h3>
+      <p class="hint">Glissez chaque étiquette sur le numéro qu'elle désigne. Au doigt ou au
+        clavier : sélectionnez une étiquette, puis le repère. Une étiquette déjà posée se
+        reprend en la sélectionnant.</p>
+      <div class="banque" id="banque" aria-label="Étiquettes à placer"></div>
       <div class="match" id="match"></div>
       <div class="btns">
         <button type="button" class="act primary" id="m-check">Vérifier</button>
@@ -474,37 +496,152 @@ function renderSpecs() {
   });
 }
 
-/* ---------------- 1. appariement ---------------- */
+/* ---------------- 1. appariement par glisser-déposer ---------------- */
+/* PLACE[i] = nom de l'étiquette posée sur le repère i, ou null.
+   PRIS = étiquette saisie au clic, au doigt ou au clavier, en attente d'une cible.
+   Le glisser-déposer natif sert la souris ; la sélection en deux temps sert le tactile
+   et le clavier, où le glisser n'existe pas. */
+let ORDRE = [];
+let PLACE = [];
+let PRIS = null;
+
+const banque = document.getElementById('banque');
+const bocal = document.getElementById('match');
+
 function renderMatch() {
-  const box = document.getElementById('match');
   const rep = D.rep[ROBOT];
-  const choix = shuffled(rep.map(r => r.nom));
-  box.textContent = '';
+  PLACE = rep.map(() => null);
+  ORDRE = shuffled(rep.map(r => r.nom));
+  PRIS = null;
+  dessine();
+  document.getElementById('m-score').hidden = true;
+}
+
+function dessine() {
+  const rep = D.rep[ROBOT];
+  banque.textContent = '';
+  bocal.textContent = '';
+  const restantes = ORDRE.filter(n => PLACE.indexOf(n) < 0);
+  if (restantes.length) {
+    restantes.forEach(n => {
+      const b = el('button', 'etq' + (n === PRIS ? ' pris' : ''), n);
+      b.type = 'button'; b.draggable = true; b.dataset.nom = n;
+      b.setAttribute('aria-pressed', String(n === PRIS));
+      banque.append(b);
+    });
+  } else {
+    banque.append(el('p', 'vide', 'Toutes les étiquettes sont placées.'));
+  }
   rep.forEach((r, i) => {
-    const row = el('div', 'mrow'); row.dataset.i = i;
+    const row = el('div', 'mrow' + (PRIS ? ' viser' : '')); row.dataset.i = i;
     row.append(el('span', 'no', String(i + 1)));
     const fld = el('div', 'fld');
-    const sel = el('select');
-    sel.id = ROBOT + '-rep' + i;
-    sel.setAttribute('aria-label', 'Dispositif désigné par le repère ' + (i + 1));
-    const vide = el('option', null, '— choisir —'); vide.value = ''; sel.append(vide);
-    choix.forEach(n => { const o = el('option', null, n); o.value = n; sel.append(o); });
+    const pose = PLACE[i];
+    const s = el('button', 'slot' + (pose ? ' plein' : ''), pose || 'déposer ici');
+    s.type = 'button'; s.dataset.i = String(i); s.draggable = !!pose;
+    s.setAttribute('aria-label', pose
+      ? 'Repère ' + (i + 1) + ' : ' + pose + '. Activer pour reprendre l\u2019étiquette.'
+      : 'Repère ' + (i + 1) + ', vide. Activer pour y poser l\u2019étiquette sélectionnée.');
     const why = el('p', 'why'); why.hidden = true;
-    fld.append(sel, why); row.append(fld); box.append(row);
+    fld.append(s, why); row.append(fld); bocal.append(row);
   });
-  document.getElementById('m-score').hidden = true;
 }
 function matchRows() { return Array.from(document.querySelectorAll('#match .mrow')); }
 
+function poser(i, nom) {
+  const ailleurs = PLACE.indexOf(nom);
+  if (ailleurs >= 0) PLACE[ailleurs] = null;   /* l'étiquette ne peut être qu'à un endroit */
+  PLACE[i] = nom;                              /* l'occupant précédent repart en banque */
+  PRIS = null;
+  dessine();
+}
+function reprendre(i) {
+  PRIS = PLACE[i]; PLACE[i] = null;
+  dessine();
+}
+
+/* --- sélection en deux temps : clic, doigt, clavier --- */
+banque.addEventListener('click', e => {
+  const b = e.target.closest('.etq');
+  if (!b) return;
+  PRIS = (PRIS === b.dataset.nom) ? null : b.dataset.nom;
+  dessine();
+});
+bocal.addEventListener('click', e => {
+  const s = e.target.closest('.slot');
+  if (!s) return;
+  const i = Number(s.dataset.i);
+  if (PRIS) poser(i, PRIS);
+  else if (PLACE[i]) reprendre(i);
+});
+
+/* --- glisser-déposer natif : souris et pavé tactile --- */
+function nomTraine(e) {
+  const b = e.target.closest('.etq');
+  if (b) return b.dataset.nom;
+  const s = e.target.closest('.slot.plein');
+  return s ? PLACE[Number(s.dataset.i)] : null;
+}
+[banque, bocal].forEach(zone => {
+  zone.addEventListener('dragstart', e => {
+    const nom = nomTraine(e);
+    if (!nom) { e.preventDefault(); return; }
+    PRIS = nom;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', nom);
+    const src = e.target.closest('.etq');
+    if (src) src.classList.add('vole');
+  });
+  zone.addEventListener('dragend', () => {
+    document.querySelectorAll('.vole').forEach(n => n.classList.remove('vole'));
+    document.querySelectorAll('.over').forEach(n => n.classList.remove('over'));
+  });
+});
+bocal.addEventListener('dragover', e => {
+  const s = e.target.closest('.slot');
+  if (!s || !PRIS) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  s.classList.add('over');
+});
+bocal.addEventListener('dragleave', e => {
+  const s = e.target.closest('.slot');
+  if (s) s.classList.remove('over');
+});
+bocal.addEventListener('drop', e => {
+  const s = e.target.closest('.slot');
+  if (!s) return;
+  e.preventDefault();
+  const nom = e.dataTransfer.getData('text/plain') || PRIS;
+  if (nom) poser(Number(s.dataset.i), nom);
+});
+banque.addEventListener('dragover', e => {
+  if (!PRIS) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  banque.classList.add('over');
+});
+banque.addEventListener('dragleave', () => banque.classList.remove('over'));
+banque.addEventListener('drop', e => {
+  e.preventDefault();
+  banque.classList.remove('over');
+  const nom = e.dataTransfer.getData('text/plain') || PRIS;
+  const ailleurs = PLACE.indexOf(nom);
+  if (ailleurs >= 0) PLACE[ailleurs] = null;   /* retour en banque */
+  PRIS = null;
+  dessine();
+});
+
+/* --- vérification --- */
 document.getElementById('m-check').addEventListener('click', () => {
   const rep = D.rep[ROBOT]; let bons = 0;
   matchRows().forEach((row, i) => {
     const why = row.querySelector('.why');
-    const juste = row.querySelector('select').value === rep[i].nom;
+    const juste = PLACE[i] === rep[i].nom;
     row.classList.toggle('ok', juste); row.classList.toggle('ko', !juste);
     if (juste) bons++;
     why.hidden = false;
-    why.textContent = juste ? rep[i].role : 'À revoir — ce repère désigne autre chose.';
+    why.textContent = juste ? rep[i].role
+      : PLACE[i] ? 'À revoir — ce repère désigne autre chose.'
+                 : 'Rien n\u2019a été posé sur ce repère.';
   });
   const s = document.getElementById('m-score'); s.hidden = false;
   s.textContent = bons + ' / ' + rep.length + ' repères identifiés';
@@ -513,8 +650,10 @@ document.getElementById('m-check').addEventListener('click', () => {
 document.getElementById('m-reset').addEventListener('click', renderMatch);
 document.getElementById('m-show').addEventListener('click', () => {
   const rep = D.rep[ROBOT];
+  PLACE = rep.map(r => r.nom);
+  PRIS = null;
+  dessine();
   matchRows().forEach((row, i) => {
-    row.querySelector('select').value = rep[i].nom;
     row.classList.add('ok'); row.classList.remove('ko');
     const why = row.querySelector('.why'); why.hidden = false; why.textContent = rep[i].role;
   });
