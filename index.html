@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Robotique industrielle — cours et travaux pratiques</title>
+<meta name="description" content="Ressources de cours et de travaux pratiques en robotique industrielle : sécurité des cellules robotisées, démonstrations 3D interactives, fiches de TP.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%BE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+/* --- bras animé de la page d'accueil --- */
+.arm-upper{transform-box:view-box;transform-origin:150px 262px;
+  animation:swingUpper 11s cubic-bezier(.45,0,.55,1) infinite alternate}
+.arm-fore{transform-box:view-box;transform-origin:238px 150px;
+  animation:swingFore 7s cubic-bezier(.45,0,.55,1) infinite alternate}
+.arm-tool{transform-box:view-box;transform-origin:352px 176px;
+  animation:swingTool 5s ease-in-out infinite alternate}
+@keyframes swingUpper{from{transform:rotate(-9deg)}to{transform:rotate(11deg)}}
+@keyframes swingFore{from{transform:rotate(12deg)}to{transform:rotate(-13deg)}}
+@keyframes swingTool{from{transform:rotate(-8deg)}to{transform:rotate(9deg)}}
+.tcp-halo{animation:pulseHalo 2.6s ease-in-out infinite}
+@keyframes pulseHalo{0%,100%{opacity:.15;r:9}50%{opacity:.45;r:15}}
+.reach{stroke-dasharray:7 7;animation:reachFlow 14s linear infinite}
+@keyframes reachFlow{to{stroke-dashoffset:-140}}
+.cta{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.cta a{text-decoration:none;font-family:Archivo,sans-serif;font-weight:600;font-size:14.5px;
+  padding:10px 17px;border-radius:9px;border:1px solid var(--line);background:var(--surface);
+  color:var(--ink);box-shadow:var(--shadow)}
+.cta a.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.cta a:hover{border-color:var(--muted)}
+.cta a.primary:hover{filter:brightness(1.06);border-color:var(--accent)}
+.cta a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="in">
+    <a class="mark" href="index.html">
+      <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3"
+           stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/>
+        <path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/>
+      </svg>
+      Robotique industrielle
+    </a>
+    <nav>
+      <a href="#cours">Cours</a>
+      <a href="#tp">Travaux pratiques</a>
+    </nav>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">IUT — Université de Bordeaux</p>
+      <h1>Robotique industrielle</h1>
+      <p class="lede">Les ressources du module : les supports de cours à lire ou à manipuler,
+        et les fiches de travaux pratiques poste par poste. Tout fonctionne directement dans le
+        navigateur, sans rien installer.</p>
+      <div class="cta">
+        <a class="primary" href="#cours">Voir les cours</a>
+        <a href="#tp">Travaux pratiques</a>
+      </div>
+    </div>
+
+    <div class="hero-art">
+      <svg viewBox="0 0 480 380" role="img"
+           aria-label="Dessin animé d’un bras robotisé six axes balayant son enveloppe de travail.">
+        <defs>
+          <pattern id="grille" width="26" height="26" patternUnits="userSpaceOnUse">
+            <path d="M26 0H0V26" fill="none" stroke="currentColor" stroke-width="1" opacity=".07"/>
+          </pattern>
+          <linearGradient id="fond" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="var(--surface)"/>
+            <stop offset="1" stop-color="var(--surface-2)"/>
+          </linearGradient>
+        </defs>
+
+        <rect x="8" y="8" width="464" height="364" rx="16" fill="url(#fond)"/>
+        <rect x="8" y="8" width="464" height="364" rx="16" fill="url(#grille)" color="var(--muted)"/>
+        <rect x="8" y="8" width="464" height="364" rx="16" fill="none"
+              stroke="var(--line)" stroke-width="1.5"/>
+
+        <!-- enveloppe de travail -->
+        <path d="M150,42 A220,220 0 0 1 370,262" fill="none"
+              stroke="var(--blue)" stroke-width="9" opacity=".07"/>
+        <path class="reach" d="M150,42 A220,220 0 0 1 370,262" fill="none"
+              stroke="var(--blue)" stroke-width="1.6" opacity=".55"/>
+        <text x="300" y="92" font-size="12" fill="var(--blue)" opacity=".75"
+              font-family="IBM Plex Mono, monospace">enveloppe</text>
+
+        <!-- sol -->
+        <line x1="40" y1="330" x2="440" y2="330" stroke="var(--line)" stroke-width="2"/>
+        <ellipse cx="150" cy="331" rx="62" ry="6" fill="var(--muted)" opacity=".18"/>
+
+        <!-- socle et tourelle -->
+        <path d="M112,330 L124,296 L176,296 L188,330 Z" fill="var(--ink)" opacity=".82"/>
+        <rect x="126" y="262" width="48" height="36" rx="8" fill="var(--accent)"/>
+
+        <!-- bras articulé -->
+        <g class="arm-upper">
+          <line x1="150" y1="262" x2="238" y2="150" stroke="var(--accent)" stroke-width="17"
+                stroke-linecap="round"/>
+          <line x1="150" y1="262" x2="238" y2="150" stroke="var(--ink)" stroke-width="4"
+                stroke-linecap="round" opacity=".18"/>
+          <g class="arm-fore">
+            <line x1="238" y1="150" x2="352" y2="176" stroke="var(--accent)" stroke-width="14"
+                  stroke-linecap="round"/>
+            <line x1="238" y1="150" x2="352" y2="176" stroke="var(--ink)" stroke-width="3.4"
+                  stroke-linecap="round" opacity=".18"/>
+            <circle cx="238" cy="150" r="11" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>
+            <g class="arm-tool">
+              <line x1="352" y1="176" x2="392" y2="166" stroke="var(--ink)" stroke-width="9"
+                    stroke-linecap="round" opacity=".8"/>
+              <circle cx="352" cy="176" r="9" fill="var(--surface)" stroke="var(--ink)" stroke-width="3"/>
+              <circle class="tcp-halo" cx="396" cy="165" r="9" fill="var(--green)"/>
+              <circle cx="396" cy="165" r="5" fill="var(--green)"/>
+            </g>
+          </g>
+          <circle cx="150" cy="262" r="13" fill="var(--surface)" stroke="var(--ink)" stroke-width="3.4"/>
+        </g>
+      </svg>
+    </div>
+  </header>
+
+  <section id="cours">
+    <div class="sec-hd">
+      <h2>Cours</h2>
+      <span class="n" data-compte="cours"></span>
+    </div>
+    <div data-liste="cours" data-base="cours/"></div>
+  </section>
+
+  <section id="tp">
+    <div class="sec-hd">
+      <h2>Travaux pratiques</h2>
+      <span class="n" data-compte="tp"></span>
+    </div>
+    <div data-liste="tp" data-base="tp/"></div>
+  </section>
+
+  <footer>
+    <span>Céline Dobigeon — IUT, Université de Bordeaux</span>
+    <span>Valeurs et schémas à usage pédagogique : se référer aux documents constructeur et à
+      l’analyse de risques de la cellule.</span>
+  </footer>
+</div>
+
+<script src="assets/catalogue.js"></script>
+<script src="assets/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,3780 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Espace de travail homme / machine — Robotique industrielle</title>
+<meta name="description" content="Huit démonstrations 3D interactives sur la sécurité d’une cellule robotisée : enveloppe de travail, butées virtuelles, zone de travail limitée, zones de sécurité, sélecteur de mode, arrêt d’urgence, robotique collaborative, effecteur.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Espace de travail homme / machine">
+<meta property="og:description" content="Huit démonstrations 3D interactives sur la sécurité d’une cellule robotisée : enveloppe de travail, butées virtuelles, zone de travail limitée, zones de sécurité, sélecteur de mode, arrêt d’urgence, robotique collaborative, effecteur.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A6%BE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
+  --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
+  --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
+  --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+    --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+    --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+  --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+  --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:30px 44px;
+  display:flex;flex-direction:column;gap:22px}
+
+/* ---------- en-tête ---------- */
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,38px);line-height:1.1;
+  letter-spacing:-.02em;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:66ch;margin:10px 0 0}
+
+/* ---------- onglets : une progression, donc numérotés ---------- */
+.rail{display:flex;gap:8px;flex-wrap:wrap}
+.tab{flex:1 1 210px;display:flex;gap:11px;align-items:flex-start;text-align:left;
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:11px 13px;
+  color:var(--ink);font:inherit;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.tab:hover{border-color:var(--muted)}
+.tab.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.tab .num{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;
+  color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-top:2px}
+.tab.on .num{color:#fff;background:var(--accent);border-color:var(--accent)}
+.tab b{display:block;font-family:Archivo,sans-serif;font-weight:600;font-size:15px}
+.tab span{display:block;color:var(--muted);font-size:13px;line-height:1.35}
+.tab:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- scène ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 316px;gap:18px;align-items:start}
+@media (max-width:920px){.stage{grid-template-columns:minmax(0,1fr)}}
+.viewport{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  overflow:hidden;box-shadow:var(--shadow)}
+.frame{position:relative;aspect-ratio:16/9;max-width:100%}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.badge{position:absolute;right:14px;bottom:14px;padding:8px 14px;border-radius:7px;
+  font-family:Archivo,sans-serif;font-weight:600;font-size:14px;color:#fff;background:var(--muted)}
+.badge[data-state="ok"]{background:var(--green)}
+.badge[data-state="warn"]{background:var(--amber)}
+.badge[data-state="stop"]{background:var(--red)}
+.flash{position:absolute;left:50%;top:14px;transform:translateX(-50%);background:var(--red);color:#fff;
+  padding:7px 14px;border-radius:7px;font-family:Archivo,sans-serif;font-weight:600;font-size:14px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;padding:11px 15px 13px;
+  border-top:1px solid var(--line);font-size:13.5px;color:var(--muted)}
+.legend b{color:var(--ink);font-weight:600}
+.legend i{display:inline-block;width:22px;height:9px;border-radius:2px;margin-right:7px;
+  vertical-align:baseline}
+
+/* ---------- panneau de commande ---------- */
+.panel{display:flex;flex-direction:column;gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:14px 15px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:11px}
+.card h3{margin:0;font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:500;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.ctl{display:flex;flex-direction:column;gap:5px}
+.ctl label{display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-size:13.5px;color:var(--muted)}
+.ctl label .val{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink);
+  font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+input[type=range]:disabled{opacity:.4}
+.check{display:flex;align-items:center;gap:9px;font-size:14px;cursor:pointer}
+.check input{accent-color:var(--accent);width:16px;height:16px;margin:0}
+.btns{display:flex;flex-direction:column;gap:7px}
+.btns button{font:inherit;font-size:13.5px;text-align:left;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--ink);cursor:pointer}
+.btns button:hover:not(:disabled){border-color:var(--muted)}
+.btns button:disabled{opacity:.42;cursor:default}
+.btns button.danger:not(:disabled){background:var(--red);border-color:var(--red);color:#fff;
+  font-weight:600}
+.btns button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hint{margin:0;font-size:13px;color:var(--muted);line-height:1.45}
+.rows{display:flex;flex-direction:column;gap:2px}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:13.5px;
+  font-variant-numeric:tabular-nums;padding:2px 0}
+.row span:first-child{color:var(--muted)}
+.row span:last-child{font-family:"IBM Plex Mono",monospace}
+.row.hit span{color:var(--red);font-weight:600}
+.row.hit span:first-child{color:var(--muted);font-weight:500}
+.transport{display:flex;gap:7px;padding:10px 15px;border-top:1px solid var(--line);
+  align-items:center}
+.transport button{font:inherit;font-size:13px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:7px;padding:6px 12px;color:var(--ink);cursor:pointer}
+.transport button:hover{border-color:var(--muted)}
+.transport button.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);
+  font-weight:600}
+.transport button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.transport .spd{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:12.5px;
+  color:var(--muted)}
+.transport .spd input{width:110px}
+.transport .spd span{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink);
+  font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.abar{margin-top:20px}
+.abar .hd{display:flex;align-items:baseline;gap:8px;font-size:13px;color:var(--muted)}
+.abar .hd .nm{font-family:Archivo,sans-serif;font-weight:600;font-size:13.5px;color:var(--ink);
+  white-space:nowrap}
+.abar .hd .rg{margin-left:auto;text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.abar .hd .ok{color:var(--green);font-weight:600}
+.abar .hd .ko{color:var(--red);font-weight:600}
+.abar .hd .off{color:var(--muted)}
+.abar .bar{position:relative;height:26px;margin-top:16px}
+.abar .track{position:absolute;left:8px;right:8px;top:9px;height:10px;border-radius:5px;
+  background:#f6dcde;border:1px solid #e6c3c6}
+.abar .allow{position:absolute;top:-1px;bottom:-1px;background:#bde5cf;border:1px solid var(--green);
+  border-radius:5px}
+.abar .cur{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink);
+  transform:translateX(-50%);border-radius:1px}
+.abar .cur .cv{position:absolute;left:50%;bottom:calc(100% + 4px);transform:translateX(-50%);
+  background:var(--ink);color:var(--surface);border-radius:4px;padding:1px 6px;font-size:11.5px;
+  font-weight:700;font-variant-numeric:tabular-nums}
+.abar.lim .cur,.abar.lim .cur .cv{background:var(--red)}
+.abar .ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);
+  font-variant-numeric:tabular-nums;margin-top:3px}
+.abar input[type=range]{position:absolute;left:0;top:5px;width:100%;height:18px;margin:0;
+  background:none;pointer-events:none;-webkit-appearance:none;appearance:none}
+.abar input[type=range]::-webkit-slider-runnable-track{background:none;height:18px}
+.abar input[type=range]::-moz-range-track{background:none;height:18px}
+.abar input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:auto;
+  width:16px;height:16px;border-radius:50%;background:var(--surface);border:2px solid var(--green);
+  cursor:ew-resize;box-shadow:0 1px 3px rgba(16,22,28,.25)}
+.abar input[type=range]::-moz-range-thumb{pointer-events:auto;width:16px;height:16px;
+  border-radius:50%;background:var(--surface);border:2px solid var(--green);cursor:ew-resize;
+  box-shadow:0 1px 3px rgba(16,22,28,.25)}
+.abar input[type=range]:disabled::-webkit-slider-thumb{border-color:var(--line);opacity:.5;cursor:default}
+.abar input[type=range]:disabled::-moz-range-thumb{border-color:var(--line);opacity:.5;cursor:default}
+.strip{display:flex;gap:10px;padding:11px 15px 13px;border-top:1px solid var(--line)}
+.strip .cell{flex:1;border:1px solid var(--line);border-radius:8px;padding:7px 10px}
+.strip .cell.lim{border-color:var(--red);box-shadow:0 0 0 2px rgba(210,35,42,.14)}
+.strip .top{display:flex;align-items:baseline;gap:8px}
+.strip .nm{font-family:Archivo,sans-serif;font-weight:600;font-size:13.5px}
+.strip .vv{margin-left:auto;font-family:Archivo,sans-serif;font-weight:700;font-size:19px;
+  font-variant-numeric:tabular-nums}
+.strip .cell.lim .vv{color:var(--red)}
+.strip .bot{display:flex;gap:12px;font-size:12px;margin-top:2px}
+.strip .ok{color:var(--green)}
+.strip .ko{color:var(--red)}
+.strip .off{color:var(--muted)}
+@media (max-width:620px){.strip{flex-direction:column}}
+/* --- phrase vivante sous le diagramme de charge --- */
+.phrase{margin:0;font-size:14px;line-height:1.45;border-left:3px solid var(--accent);
+  padding:9px 12px;background:var(--surface-2);border-radius:0 8px 8px 0}
+.phrase b{font-family:Archivo,sans-serif;font-weight:600;font-variant-numeric:tabular-nums}
+
+/* --- diagramme de charge --- */
+.diag{display:block;width:100%;height:auto;color:var(--ink)}
+.diag text{font-family:"IBM Plex Sans",sans-serif;fill:var(--muted)}
+.diag .ax{stroke:var(--line);stroke-width:1;fill:none}
+.diag .cv{fill:none;stroke:var(--blue);stroke-width:1.4;opacity:.75}
+.diag .cv.sel{stroke:var(--accent);stroke-width:2.2;opacity:1}
+.diag .fillok{fill:var(--green);opacity:.10}
+
+/* --- listes clé / valeur (panneau latéral) --- */
+.kv{display:flex;flex-direction:column;gap:10px}
+.kv .r{display:grid;grid-template-columns:1fr;gap:1px}
+.kv .k{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;color:var(--accent)}
+.kv .v{font-size:13.5px;line-height:1.45;color:var(--muted)}
+.kv .v b{font-weight:600;color:var(--ink)}
+
+/* --- panneau de vitesse (vue sélecteur de mode) --- */
+.hudstack{position:absolute;right:14px;bottom:14px;display:flex;flex-direction:column;
+  align-items:stretch;gap:8px;max-width:calc(100% - 28px)}
+.hudstack .badge{position:static;text-align:center}
+.spdpan{background:var(--surface);border:1px solid var(--line);
+  border-radius:10px;padding:9px 13px 11px;box-shadow:var(--shadow);min-width:196px}
+.spdpan .ttl{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted)}
+.spdpan .big{font-family:Archivo,sans-serif;font-weight:700;font-size:25px;letter-spacing:-.02em;
+  line-height:1.2;font-variant-numeric:tabular-nums}
+.spdpan .big em{font-style:normal;font-size:13px;font-weight:500;color:var(--muted)}
+.spdpan .trk{position:relative;height:9px;border-radius:5px;background:var(--surface-2);margin-top:6px}
+.spdpan .trk i{display:block;height:100%;border-radius:5px;background:var(--green);
+  transition:width .25s ease,background .25s ease}
+.spdpan .trk b{position:absolute;top:-4px;bottom:-4px;left:16.7%;width:2px;background:var(--red)}
+.spdpan .cap{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);
+  margin-top:4px;font-variant-numeric:tabular-nums}
+.spdpan .cmt{font-size:11.5px;margin-top:5px;max-width:21ch;color:var(--muted)}
+.spdpan[data-state="warn"] .trk i{background:var(--amber)}
+.spdpan[data-state="stop"] .trk i{background:var(--red)}
+@media (max-width:620px){.spdpan{display:none}}
+
+/* --- gâchette à trois positions --- */
+.swfig{display:block;width:100%;height:auto;color:var(--ink);margin:2px 0 6px}
+#m-lever{transition:transform .2s ease}
+#m-sw[data-pos="0"] #m-lever{transform:translateY(-20px)}
+#m-sw[data-pos="1"] #m-lever{transform:translateY(0)}
+#m-sw[data-pos="2"] #m-lever{transform:translateY(20px)}
+#m-sw[data-pos="0"] #m-lamp,#m-sw[data-pos="2"] #m-lamp{fill:var(--red)}
+#m-sw[data-pos="1"] #m-lamp{fill:var(--green)}
+#m-sw.off{opacity:.55}
+.swbtn{display:flex;gap:6px;flex-wrap:wrap}
+.swbtn button{flex:1 1 86px;font:inherit;font-size:12.5px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--ink);cursor:pointer}
+.swbtn button.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent);font-weight:600}
+.swbtn button:disabled{opacity:.45;cursor:default}
+.swbtn button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){#m-lever{transition:none}}
+
+.chip{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;text-align:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:5px 9px;
+  font-size:12px;line-height:1.35;box-shadow:var(--shadow);pointer-events:none}
+.chip .hd{font-family:Archivo,sans-serif;font-weight:600;font-size:13px}
+.chip .hd em{font-style:normal;font-variant-numeric:tabular-nums;margin-left:6px}
+.chip .ok{color:var(--green)}
+.chip .ko{color:var(--red)}
+.chip.lim{border-color:var(--red);box-shadow:0 0 0 2px rgba(210,35,42,.16)}
+.big{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.big .n{font-family:Archivo,sans-serif;font-weight:700;font-size:26px;letter-spacing:-.02em}
+.big .n.cut{color:var(--green)}
+.note{border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px;color:var(--ink)}
+.note b{font-family:Archivo,sans-serif}
+.warn{border-left:3px solid var(--red);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px}
+.warn b{color:var(--red)}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- fil d'Ariane ajouté pour l'intégration au site --- */
+.crumb{border-bottom:1px solid var(--line);background:var(--surface);font-size:14px}
+.crumb .in{max-width:1180px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;
+  gap:9px;color:var(--muted);flex-wrap:wrap}
+.crumb a{text-decoration:none;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.crumb a:hover{color:var(--ink)}
+.crumb a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.crumb svg{display:block;width:18px;height:18px;color:var(--accent)}
+.crumb .sep{opacity:.45}
+.crumb b{color:var(--ink);font-weight:600}
+</style>
+
+</head>
+<body>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Cours</a><span class="sep">/</span><b>Espace de travail homme / machine</b></div></div>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Robotique industrielle — sécurité</p>
+    <h1>Espace de travail homme / machine</h1>
+    <p class="lede">Huit démonstrations qui se construisent l’une sur l’autre : le volume que le
+      robot peut atteindre, les deux façons de le restreindre, le partage de l’espace avec
+      l’opérateur, le rôle de la clé de mode, ce qu’un arrêt d’urgence déclenche vraiment, les
+      quatre modes de la robotique collaborative où la clôture disparaît, et enfin l’effecteur,
+      qui conditionne tout le reste. Robot 6 axes générique, portée 1,60 m au poignet. Tous les
+      réglages sont manipulables pendant la démonstration.</p>
+  </header>
+
+  <nav class="rail" role="tablist" aria-label="Démonstrations">
+    <button class="tab on" role="tab" aria-selected="true" data-view="enveloppe">
+      <span class="num">1</span><span><b>Enveloppe de travail</b>
+      <span>Le volume constructeur</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="butees">
+      <span class="num">2</span><span><b>Butées virtuelles</b>
+      <span>Restreindre l’espace par logiciel</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="zoneoutil">
+      <span class="num">3</span><span><b>Zone de travail limitée</b>
+      <span>Un volume autorisé, et la zone outil surveillée</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="zones">
+      <span class="num">4</span><span><b>Zones de sécurité</b>
+      <span>Vitesse normale, réduite, arrêt</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="modes">
+      <span class="num">5</span><span><b>Sélecteur de mode</b>
+      <span>La clé, la porte et la vitesse</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="urgence">
+      <span class="num">6</span><span><b>Arrêt d’urgence</b>
+      <span>Ce qu’un appui déclenche</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="collab">
+      <span class="num">7</span><span><b>Robotique collaborative</b>
+      <span>Partager l’espace sans clôture</span></span></button>
+    <button class="tab" role="tab" aria-selected="false" data-view="effecteur">
+      <span class="num">8</span><span><b>L’effecteur</b>
+      <span>Charge utile et diagramme de charge</span></span></button>
+  </nav>
+
+  <div class="stage">
+    <div class="viewport">
+      <div class="frame pane" data-view="enveloppe"><canvas id="cv-enveloppe"></canvas></div>
+      <div class="frame pane" data-view="butees" hidden>
+        <canvas id="cv-butees"></canvas>
+        <div id="b-chips"></div>
+      </div>
+      <div class="frame pane" data-view="zoneoutil" hidden>
+        <canvas id="cv-zoneoutil"></canvas>
+        <div id="o-chips"></div>
+        <div class="badge" id="o-badge" data-state="ok">Dans la zone</div>
+      </div>
+      <div class="frame pane" data-view="zones" hidden>
+        <canvas id="cv-zones"></canvas>
+        <div class="badge" id="z-badge">Vitesse normale</div>
+      </div>
+      <div class="frame pane" data-view="modes" hidden>
+        <canvas id="cv-modes"></canvas>
+        <div class="hudstack">
+          <div class="spdpan" id="m-spdpan" data-state="ok">
+            <div class="ttl">Vitesse au point outil</div>
+            <div class="big"><span id="m-spv">1 500</span> <em>mm/s</em></div>
+            <div class="trk"><i id="m-spb" style="width:100%"></i><b></b></div>
+            <div class="cap"><span>0</span><span>1 500 mm/s</span></div>
+            <div class="cmt" id="m-spnote">Vitesse de production</div>
+          </div>
+          <div class="badge" id="m-badge" data-state="ok">Vitesse normale</div>
+        </div>
+      </div>
+      <div class="frame pane" data-view="urgence" hidden>
+        <canvas id="cv-urgence"></canvas>
+        <div class="badge" id="u-badge" data-state="ok">En production</div>
+      </div>
+      <div class="frame pane" data-view="collab" hidden>
+        <canvas id="cv-collab"></canvas>
+        <div class="hudstack">
+          <div class="spdpan" id="c-pan" data-state="ok">
+            <div class="ttl">Vitesse au point outil</div>
+            <div class="big"><span id="c-spv">0</span> <em>mm/s</em></div>
+            <div class="trk"><i id="c-spb" style="width:0%"></i><b style="left:25%"></b></div>
+            <div class="cap"><span>0</span><span>1 000 mm/s</span></div>
+            <div class="cmt" id="c-cmt">—</div>
+          </div>
+          <div class="badge" id="c-badge" data-state="ok">—</div>
+        </div>
+      </div>
+      <div class="frame pane" data-view="effecteur" hidden>
+        <canvas id="cv-effecteur"></canvas>
+        <div id="f-chips"></div>
+        <div class="badge" id="f-badge" data-state="ok">Charge admissible</div>
+      </div>
+
+      <div class="transport" id="transport">
+        <button type="button" id="tp-play" class="on">▶ Lecture</button>
+        <button type="button" id="tp-pause">❚❚ Pause</button>
+        <button type="button" id="tp-stop">■ Stop</button>
+        <label class="spd">Vitesse <input type="range" id="tp-speed" min="20" max="200" step="10" value="100"><span id="tp-spv">×1,0</span></label>
+      </div>
+      <div class="legend pane" data-view="enveloppe">
+        <span><i style="background:var(--blue)"></i><b>Enveloppe constructeur</b> — au centre du poignet</span>
+        <span><i style="background:var(--accent)"></i><b>Espace maximal</b> — outil et pièce compris</span>
+        <span><i style="background:var(--red)"></i>Trajectoire du poignet</span>
+      </div>
+      <div class="legend pane" data-view="modes" hidden>
+        <span>La clé de l’armoire conditionne la vitesse autorisée et ce qui se passe quand la
+          porte s’ouvre ; en manuel, la gâchette du pendant commande la puissance des moteurs.</span>
+      </div>
+      <div class="legend pane" data-view="zoneoutil" hidden>
+        <span><i style="background:var(--green)"></i><b>Volume autorisé</b> déclaré dans le contrôleur</span>
+        <span><i style="background:var(--accent)"></i><b>Volume de l’outil</b> surveillé</span>
+        <span>Ici le point piloté est la <b>pointe de l’outil</b>, pas le poignet</span>
+      </div>
+      <div class="legend pane" data-view="urgence" hidden>
+        <span>Le bouton coup-de-poing est à gauche. Suivez les quatre étapes : appuyer,
+          déverrouiller, réarmer, relancer.</span>
+      </div>
+      <div class="legend pane" data-view="collab" hidden>
+        <span><i style="background:var(--green)"></i><b>Espace de collaboration</b> — partagé
+          en permanence, sans clôture</span>
+        <span><i style="background:var(--red)"></i><b>Distance de séparation</b> — recalculée
+          en continu (mode 3)</span>
+        <span>Les quatre modes de collaboration&nbsp;: un même poste en enchaîne souvent
+          plusieurs selon les phases.</span>
+      </div>
+      <div class="legend pane" data-view="effecteur" hidden>
+        <span><i style="background:var(--blue)"></i><b>Bride</b> — interface mécanique ISO 9409‑1</span>
+        <span><i style="background:var(--accent)"></i><b>Centre de gravité</b> de l’outil et de la pièce</span>
+        <span><i style="background:var(--green)"></i>Point outil (TCP)</span>
+        <span><i style="background:#8d99a6"></i>Charge utile — préhenseur et pièce</span>
+      </div>
+      <div class="legend pane" data-view="zones" hidden>
+        <span><i style="background:var(--green)"></i>Détection — vitesse normale</span>
+        <span><i style="background:var(--amber)"></i>Ralentissement — ≤ 250 mm/s</span>
+        <span><i style="background:var(--red)"></i>Arrêt de sécurité</span>
+      </div>
+    </div>
+
+    <aside class="panel">
+      <!-- ============ 1. ENVELOPPE ============ -->
+      <div class="pane" data-view="enveloppe" style="display:contents">
+        <div class="card">
+          <h3>Mouvement</h3>
+          <label class="check"><input type="checkbox" id="e-auto" checked> Balayage automatique</label>
+          <div class="ctl"><label for="e-s1">Axe 1 <span class="val" id="e-q1">+0°</span></label>
+            <input type="range" id="e-s1" min="-180" max="180" step="1" value="35"></div>
+          <div class="ctl"><label for="e-s2">Axe 2 <span class="val" id="e-q2">+0°</span></label>
+            <input type="range" id="e-s2" min="-90" max="110" step="1" value="40"></div>
+          <div class="ctl"><label for="e-s3">Axe 3 <span class="val" id="e-q3">+0°</span></label>
+            <input type="range" id="e-s3" min="-150" max="60" step="1" value="-70"></div>
+          <label class="check"><input type="checkbox" id="e-env" checked> Enveloppe au poignet</label>
+          <label class="check"><input type="checkbox" id="e-envtool" checked> Contour avec l’outil</label>
+          <label class="check"><input type="checkbox" id="e-trail" checked> Trace du poignet</label>
+        </div>
+        <div class="card">
+          <h3>Enveloppe</h3>
+          <div class="rows">
+            <div class="row"><span>Portée au poignet</span><span id="e-reach">—</span></div>
+            <div class="row"><span>Avec l’outil (230 mm)</span><span id="e-reacht">—</span></div>
+            <div class="row"><span>Volume balayé</span><span id="e-vol">—</span></div>
+          </div>
+        </div>
+        <p class="note"><b>À retenir :</b> la portée catalogue se mesure au centre du poignet.
+          L’outil et la pièce s’y ajoutent — c’est cette somme, l’espace maximal, qu’il faut
+          protéger, et elle ne dépend jamais du programme.</p>
+      </div>
+
+      <!-- ============ 2. BUTÉES ============ -->
+      <div class="pane" data-view="butees" hidden style="display:contents">
+        <div class="card">
+          <h3>Plages d’axes</h3>
+          <div class="abar" id="b-bar1">
+            <div class="hd"><span class="nm">Axe 1</span><span class="rg" id="b-rg1"></span></div>
+            <div class="bar">
+              <div class="track">
+                <div class="allow" id="b-allow1"></div>
+                <div class="cur" id="b-cur1"><span class="cv" id="b-cv1"></span></div>
+              </div>
+              <input type="range" id="b-min1" min="-180" max="180" step="5" value="-55">
+              <input type="range" id="b-max1" min="-180" max="180" step="5" value="55">
+            </div>
+            <div class="ends"><span>-180°</span><span>180°</span></div>
+            <label class="check" style="margin-top:8px"><input type="checkbox" id="b-on1" checked>
+              Butée active sur cet axe</label>
+          </div>
+          <div class="abar" id="b-bar2">
+            <div class="hd"><span class="nm">Axe 2</span><span class="rg" id="b-rg2"></span></div>
+            <div class="bar">
+              <div class="track">
+                <div class="allow" id="b-allow2"></div>
+                <div class="cur" id="b-cur2"><span class="cv" id="b-cv2"></span></div>
+              </div>
+              <input type="range" id="b-min2" min="-90" max="110" step="5" value="-10">
+              <input type="range" id="b-max2" min="-90" max="110" step="5" value="75">
+            </div>
+            <div class="ends"><span>-90°</span><span>110°</span></div>
+            <label class="check" style="margin-top:8px"><input type="checkbox" id="b-on2" checked>
+              Butée active sur cet axe</label>
+          </div>
+          <div class="abar" id="b-bar3">
+            <div class="hd"><span class="nm">Axe 3</span><span class="rg" id="b-rg3"></span></div>
+            <div class="bar">
+              <div class="track">
+                <div class="allow" id="b-allow3"></div>
+                <div class="cur" id="b-cur3"><span class="cv" id="b-cv3"></span></div>
+              </div>
+              <input type="range" id="b-min3" min="-150" max="60" step="5" value="-120">
+              <input type="range" id="b-max3" min="-150" max="60" step="5" value="-15">
+            </div>
+            <div class="ends"><span>-150°</span><span>60°</span></div>
+            <label class="check" style="margin-top:8px"><input type="checkbox" id="b-on3" checked>
+              Butée active sur cet axe</label>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Volume à protéger</h3>
+          <div class="rows">
+            <div class="row"><span>Constructeur</span><span id="b-vfull">—</span></div>
+            <div class="row"><span>Après butées</span><span id="b-vsoft">—</span></div>
+          </div>
+          <div class="big"><span>Réduction</span><span class="n cut" id="b-red">—</span></div>
+        </div>
+        <p class="note"><b>À retenir :</b> la piste rouge est l’amplitude constructeur, le segment
+          vert ce que les butées laissent, et le repère noir la position réelle de l’axe. Déplacez
+          les poignées vertes pour resserrer une plage.</p>
+      </div>
+
+      <!-- ============ 3. ZONE OUTIL ============ -->
+      <div class="pane" data-view="zoneoutil" hidden style="display:contents">
+        <div class="card">
+          <h3>Surveillance</h3>
+          <label class="check"><input type="checkbox" id="o-tool"> Surveiller le volume de l’outil</label>
+          <div class="rows">
+            <div class="row"><span>Objet surveillé</span><span id="o-obj">—</span></div>
+            <div class="row"><span>Marge conservée</span><span id="o-marge">—</span></div>
+            <div class="row"><span>Distance à la paroi</span><span id="o-dist">—</span></div>
+            <div class="row" id="o-row"><span>État</span><span id="o-etat">—</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Volume autorisé</h3>
+          <div class="ctl"><label for="o-sx">Largeur <span class="val" id="o-lx">2 300 mm</span></label>
+            <input type="range" id="o-sx" min="60" max="330" step="5" value="230"></div>
+          <div class="ctl"><label for="o-sy">Hauteur <span class="val" id="o-ly">1 620 mm</span></label>
+            <input type="range" id="o-sy" min="50" max="260" step="5" value="162"></div>
+          <div class="ctl"><label for="o-sz">Profondeur <span class="val" id="o-lz">1 900 mm</span></label>
+            <input type="range" id="o-sz" min="60" max="330" step="5" value="190"></div>
+          <div class="rows">
+            <div class="row"><span>Volume déclaré</span><span id="o-vol">—</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Mouvement</h3>
+          <label class="check"><input type="checkbox" id="o-auto" checked> Trajectoire automatique</label>
+          <div class="ctl"><label for="o-dir">Orientation</label>
+            <input type="range" id="o-dir" min="-120" max="120" step="1" value="0" disabled></div>
+          <div class="ctl"><label for="o-ext">Avance vers la cible</label>
+            <input type="range" id="o-ext" min="0" max="100" step="1" value="60" disabled></div>
+        </div>
+        <p class="note"><b>À retenir :</b> surveiller le point outil ne suffit pas — le corps de
+          l’outil dépasse. En déclarant le volume de l’outil, le robot s’arrête une marge plus tôt.</p>
+      </div>
+
+      <!-- ============ 5. SÉLECTEUR DE MODE ============ -->
+      <div class="pane" data-view="modes" hidden style="display:contents">
+        <div class="card">
+          <h3>Armoire de commande</h3>
+          <label class="check"><input type="checkbox" id="m-cle"> Clé sur MANUEL</label>
+          <label class="check"><input type="checkbox" id="m-porte-c"> Porte de l’enceinte ouverte</label>
+          <label class="check"><input type="checkbox" id="m-dedans" disabled> Opérateur dans l’enceinte</label>
+          <p class="hint" id="m-hint"></p>
+        </div>
+        <div class="card" id="m-sw" data-pos="1">
+          <h3>Gâchette de validation</h3>
+          <svg class="swfig" viewBox="0 0 300 116" role="img"
+               aria-label="Gâchette de validation à trois positions : relâchée, moteurs hors puissance ; position intermédiaire, moteurs sous puissance ; enfoncée à fond, moteurs hors puissance.">
+            <rect x="10" y="14" width="86" height="88" rx="10" fill="var(--surface-2)"/>
+            <rect x="10" y="14" width="86" height="88" rx="10" fill="none"
+                  stroke="currentColor" stroke-width="1.4"/>
+            <line x1="53" y1="34" x2="53" y2="82" stroke="currentColor" stroke-width="1"
+                  stroke-dasharray="3 4" fill="none"/>
+            <circle cx="53" cy="38" r="2.6" fill="var(--muted)"/>
+            <circle cx="53" cy="58" r="2.6" fill="var(--muted)"/>
+            <circle cx="53" cy="78" r="2.6" fill="var(--muted)"/>
+            <rect id="m-lever" x="26" y="48" width="54" height="20" rx="5" fill="var(--accent)"/>
+            <text x="108" y="42" font-size="11.5" fill="currentColor">1 — relâchée</text>
+            <text x="108" y="62" font-size="11.5" fill="currentColor">2 — intermédiaire</text>
+            <text x="108" y="82" font-size="11.5" fill="currentColor">3 — à fond</text>
+            <circle id="m-lamp" cx="252" cy="50" r="13" fill="var(--green)"/>
+            <circle cx="252" cy="50" r="13" fill="none" stroke="currentColor" stroke-width="1.1" opacity=".4"/>
+            <text x="252" y="80" font-size="10.5" text-anchor="middle" fill="var(--muted)">puissance</text>
+            <text x="252" y="93" font-size="10.5" text-anchor="middle" fill="var(--muted)">moteurs</text>
+          </svg>
+          <div class="swbtn" role="group" aria-label="Position de la gâchette">
+            <button type="button" data-p="0">1 — Relâchée</button>
+            <button type="button" data-p="1" class="on">2 — Intermédiaire</button>
+            <button type="button" data-p="2">3 — À fond</button>
+          </div>
+          <p class="hint" id="m-swcap"></p>
+        </div>
+        <div class="card kv">
+          <h3>Les modes de marche</h3>
+          <div class="r"><span class="k">AUTO</span><span class="v">Production : <b>personne dans
+            la cellule</b>, protecteurs actifs, pleine vitesse.</span></div>
+          <div class="r"><span class="k">MANUEL</span><span class="v">Vitesse réduite, <b>250 mm/s
+            au plus</b> au point outil. Commande depuis le boîtier d’apprentissage uniquement.</span></div>
+          <div class="r"><span class="k">SÉLECTEUR</span><span class="v">Verrouillable par clé :
+            changer de mode est un acte volontaire et tracé.</span></div>
+          <div class="r"><span class="k">ET</span><span class="v">En manuel, il faut la gâchette
+            <b>et</b> l’ordre de marche maintenu. L’une sans l’autre ne fait rien bouger.</span></div>
+        </div>
+        <div class="card">
+          <h3>État de la cellule</h3>
+          <div class="rows">
+            <div class="row"><span>Mode</span><span id="m-mode">—</span></div>
+            <div class="row" id="m-rporte"><span>Porte</span><span id="m-porte">—</span></div>
+            <div class="row" id="m-rgac"><span>Gâchette</span><span id="m-gacv">—</span></div>
+            <div class="row" id="m-rvit"><span>Vitesse du robot</span><span id="m-vit">—</span></div>
+          </div>
+        </div>
+        <p class="note"><b>À retenir :</b> la clé n’ouvre pas seulement un mode — elle décide de ce
+          que devient le robot quand quelqu’un ouvre la porte. Et en manuel, rien ne bouge sans la
+          gâchette du pendant.</p>
+      </div>
+
+      <!-- ============ 6. ARRÊT D’URGENCE ============ -->
+      <div class="pane" data-view="urgence" hidden style="display:contents">
+        <div class="card">
+          <h3>Séquence</h3>
+          <div class="btns">
+            <button type="button" id="u-press" class="danger">Appuyer sur l’arrêt d’urgence</button>
+            <button type="button" id="u-unlock">1 — Déverrouiller le bouton</button>
+            <button type="button" id="u-arm">2 — Réarmer</button>
+            <button type="button" id="u-go">3 — Relancer le programme</button>
+          </div>
+          <p class="hint" id="u-hint"></p>
+        </div>
+        <div class="card">
+          <h3>État de la cellule</h3>
+          <div class="rows">
+            <div class="row" id="u-rmot"><span>Puissance moteurs</span><span id="u-mot">—</span></div>
+            <div class="row" id="u-rfre"><span>Freins</span><span id="u-fre">—</span></div>
+            <div class="row" id="u-rpro"><span>Programme</span><span id="u-pro">—</span></div>
+            <div class="row"><span>Pince</span><span id="u-pin">—</span></div>
+          </div>
+        </div>
+        <p class="note"><b>À retenir :</b> l’appui fige les mouvements, il ne met pas la cellule en
+          état sûr — la pièce reste serrée. Et rien ne repart tout seul.</p>
+      </div>
+
+      <!-- ============ 4. ZONES ============ -->
+      <div class="pane" data-view="zones" hidden style="display:contents">
+        <div class="card">
+          <h3>Opérateur</h3>
+          <label class="check"><input type="checkbox" id="z-auto" checked> Déplacement automatique</label>
+          <div class="ctl"><label for="z-d">Distance au robot <span class="val" id="z-dist">—</span></label>
+            <input type="range" id="z-d" min="100" max="600" step="5" value="260" disabled></div>
+          <div class="rows">
+            <div class="row"><span>Zone détectée</span><span id="z-zone">—</span></div>
+            <div class="row"><span>Vitesse du robot</span><span id="z-speed">—</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Rayons des zones</h3>
+          <div class="ctl"><label for="z-r1">Arrêt <span class="val" id="z-l1">1 950 mm</span></label>
+            <input type="range" id="z-r1" min="80" max="350" step="5" value="195"></div>
+          <div class="ctl"><label for="z-r2">Ralentissement <span class="val" id="z-l2">3 100 mm</span></label>
+            <input type="range" id="z-r2" min="100" max="500" step="5" value="310"></div>
+          <div class="ctl"><label for="z-r3">Détection <span class="val" id="z-l3">4 400 mm</span></label>
+            <input type="range" id="z-r3" min="150" max="600" step="5" value="440"></div>
+          <div class="rows">
+            <div class="row"><span>Portée du robot</span><span id="z-reach">—</span></div>
+          </div>
+        </div>
+        <p class="warn" id="z-warn" hidden><b>Zone d’arrêt trop petite :</b> l’opérateur peut
+          entrer dans l’enveloppe du robot avant que l’arrêt ne soit déclenché.</p>
+        <p class="note"><b>À retenir :</b> le dimensionnement des zones dépend de la vitesse
+          d’approche de l’opérateur et du temps d’arrêt du robot, pas seulement de sa portée.</p>
+      </div>
+
+      <!-- ============ 7. COLLABORATIF ============ -->
+      <div class="pane" data-view="collab" hidden style="display:contents">
+        <div class="card">
+          <h3>Mode de collaboration</h3>
+          <div class="swbtn" id="c-modes" role="group" aria-label="Mode de collaboration">
+            <button type="button" data-m="0" class="on">1 — Arrêt contrôlé</button>
+            <button type="button" data-m="1">2 — Guidage manuel</button>
+            <button type="button" data-m="2">3 — Vitesse et distance</button>
+            <button type="button" data-m="3">4 — Puissance et force</button>
+          </div>
+          <p class="hint" id="c-mhint"></p>
+        </div>
+        <div class="card">
+          <h3>Opérateur et consigne</h3>
+          <label class="check"><input type="checkbox" id="c-auto" checked>
+            Approche automatique</label>
+          <div class="ctl"><label for="c-d">Distance au robot
+            <span class="val" id="c-dv">—</span></label>
+            <input type="range" id="c-d" min="40" max="520" step="5" value="260" disabled></div>
+          <div class="ctl"><label for="c-v">Vitesse programmée
+            <span class="val" id="c-vv">—</span></label>
+            <input type="range" id="c-v" min="50" max="1000" step="10" value="600"></div>
+        </div>
+        <div class="card">
+          <h3>Partie du corps exposée</h3>
+          <div class="swbtn" id="c-body" role="group" aria-label="Partie du corps exposée">
+            <button type="button" data-f="140" class="on">Main</button>
+            <button type="button" data-f="160">Avant-bras</button>
+            <button type="button" data-f="220">Cuisse</button>
+          </div>
+          <div class="rows">
+            <div class="row"><span>Seuil en coincement</span><span id="c-fqs">—</span></div>
+            <div class="row"><span>Seuil en contact transitoire</span><span id="c-ftr">—</span></div>
+            <div class="row" id="c-rf"><span>Effort estimé au contact</span><span id="c-f">—</span></div>
+          </div>
+          <p class="hint">Ordres de grandeur pédagogiques. Les seuils réels se relèvent dans
+            l’ISO/TS 15066 et se vérifient par mesure sur l’application. Tête et visage&nbsp;:
+            contact non admis.</p>
+        </div>
+        <div class="card">
+          <h3>État</h3>
+          <div class="rows">
+            <div class="row"><span>Distance opérateur</span><span id="c-dist">—</span></div>
+            <div class="row" id="c-rs"><span>Distance de séparation</span><span id="c-S">—</span></div>
+            <div class="row"><span>Vitesse effective</span><span id="c-veff">—</span></div>
+            <div class="row" id="c-rva"><span>Vitesse admissible (mode 4)</span>
+              <span id="c-va">—</span></div>
+          </div>
+        </div>
+        <p class="warn" id="c-warn" hidden><b>Vitesse incompatible avec le seuil :</b> à cette
+          vitesse programmée, l’effort au contact dépasse ce que la partie du corps exposée peut
+          encaisser. Soit on descend à la vitesse admissible, soit ce n’est plus une application
+          collaborative et il faut un autre moyen de protection.</p>
+        <p class="note"><b>À retenir :</b> aucun de ces quatre modes n’est une propriété du
+          robot. Ce sont des façons d’organiser le partage de l’espace, et chacun impose ses
+          moyens — détection de présence pour les modes 1 et 3, dispositif de guidage avec
+          validation pour le 2, maîtrise et mesure des efforts pour le 4.</p>
+      </div>
+
+      <!-- ============ 8. EFFECTEUR ============ -->
+      <div class="pane" data-view="effecteur" hidden style="display:contents">
+        <div class="card">
+          <h3>Charge utile</h3>
+          <p class="hint">L’ensemble <b>préhenseur + pièce</b> porté par la bride. C’est lui qui
+            compte, pas la pièce seule.</p>
+          <label class="check"><input type="checkbox" id="f-auto" checked>
+            Démonstration : la charge maximale à chaque distance</label>
+          <p class="hint" id="f-ahint"></p>
+          <div class="ctl"><label for="f-m">Masse <span class="val" id="f-mv">100 kg</span></label>
+            <input type="range" id="f-m" min="20" max="170" step="1" value="100"></div>
+          <div class="ctl"><label for="f-z">Centre de gravité — Z <span class="val" id="f-zv">300 mm</span></label>
+            <input type="range" id="f-z" min="0" max="900" step="10" value="300"></div>
+          <div class="ctl"><label for="f-l">Centre de gravité — déport L <span class="val" id="f-lv">120 mm</span></label>
+            <input type="range" id="f-l" min="0" max="600" step="10" value="120"></div>
+          <div class="rows">
+            <div class="row"><span>Distance au centre de bride</span><span id="f-d">—</span></div>
+            <div class="row"><span>Moment sur la bride</span><span id="f-mom">—</span></div>
+            <div class="row"><span>Inertie / axe de bride</span><span id="f-inert">—</span></div>
+            <div class="row"><span>Masse admissible ici</span><span id="f-max">—</span></div>
+            <div class="row" id="f-rverdict"><span>Diagramme de charge</span><span id="f-verdict">—</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Diagramme de charge</h3>
+          <svg class="diag" id="f-diag" viewBox="0 0 286 208" role="img"
+               aria-label="Diagramme de charge : en abscisse le déport L du centre de gravité, en ordonnée sa distance Z à la bride. Une courbe par masse, de 60 à 155 kg ; le point de fonctionnement doit rester sous la courbe de sa masse.">
+            <g id="f-curves"></g>
+            <g id="f-axes"></g>
+            <g id="f-pt"></g>
+          </svg>
+          <p class="phrase" id="f-phrase">—</p>
+          <p class="hint">Courbes relevées sur la documentation <b>ABB IRB 6620‑150/2,2</b>.
+            Chaque constructeur publie le sien, et il se lit toujours pareil : le point
+            (L, Z) du centre de gravité doit rester <b>sous la courbe</b> de la masse portée.
+            Plus le centre de gravité s’éloigne de la bride, moins on peut porter.</p>
+        </div>
+
+        <div class="card">
+          <h3>Déclarer la charge au contrôleur</h3>
+          <svg class="diag" viewBox="0 0 286 196" role="img"
+               aria-label="Schéma de déclaration de la charge utile : le repère de la bride, les distances Lx, Ly et Lz jusqu'au centre de gravité, la masse, et les moments d'inertie Ix, Iy, Iz autour des axes du repère de charge.">
+            <defs>
+              <marker id="arF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--blue)"/>
+              </marker>
+              <marker id="arG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+              </marker>
+            </defs>
+            <!-- bride -->
+            <ellipse cx="74" cy="28" rx="30" ry="11" fill="var(--blue)" opacity=".2"/>
+            <ellipse cx="74" cy="28" rx="30" ry="11" fill="none" stroke="var(--blue)" stroke-width="1.4"/>
+            <text x="74" y="16" font-size="9.5" text-anchor="middle" fill="var(--blue)">bride — repère outil</text>
+            <g stroke="var(--blue)" stroke-width="1.3" fill="none">
+              <line x1="74" y1="28" x2="74" y2="58" marker-end="url(#arF)"/>
+              <line x1="74" y1="28" x2="112" y2="40" marker-end="url(#arF)"/>
+              <line x1="74" y1="28" x2="44" y2="44" marker-end="url(#arF)"/>
+            </g>
+            <text x="80" y="58" font-size="9" fill="var(--blue)">ZF</text>
+            <text x="114" y="42" font-size="9" fill="var(--blue)">YF</text>
+            <text x="34" y="48" font-size="9" fill="var(--blue)">XF</text>
+            <!-- volume de la charge utile, déplacé et redimensionné par le script -->
+            <g id="dc-body" transform="translate(172,124) scale(1)">
+              <path d="M-46,-22 L34,-38 L80,-14 L0,4 Z" fill="var(--muted)" opacity=".10"/>
+              <path d="M-46,-22 L34,-38 L80,-14 L0,4 Z M-46,-22 L-46,16 L0,40 L0,4 M0,40 L80,22 L80,-14"
+                    fill="none" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 3"/>
+            </g>
+            <!-- cotes jusqu'au centre de gravité -->
+            <g stroke="var(--muted)" stroke-width="1.2" fill="none">
+              <line id="dc-lz" x1="74" y1="28" x2="74" y2="124" marker-end="url(#arG)"/>
+              <line id="dc-lxy" x1="74" y1="124" x2="164" y2="124" marker-end="url(#arG)"/>
+            </g>
+            <text id="dc-tlz" x="62" y="82" font-size="9.5" text-anchor="end" fill="var(--muted)"
+                  stroke="var(--surface)" stroke-width="3.2" paint-order="stroke">Lz</text>
+            <text id="dc-tlxy" x="118" y="140" font-size="9.5" text-anchor="middle" fill="var(--muted)"
+                  stroke="var(--surface)" stroke-width="3.2" paint-order="stroke">Lx, Ly</text>
+            <!-- masse et centre de gravité -->
+            <circle id="dc-ring" cx="172" cy="124" r="15" fill="none" stroke="var(--accent)"
+                    stroke-width="1.2" opacity=".6"/>
+            <circle id="dc-ball" cx="172" cy="124" r="9" fill="var(--accent)"/>
+            <text id="dc-tm" x="192" y="112" font-size="9.5" font-weight="600"
+                  fill="var(--accent)" stroke="var(--surface)" stroke-width="3.2"
+                  paint-order="stroke">masse + cog</text>
+            <!-- axes d'inertie -->
+            <g id="dc-inert" stroke="var(--green)" stroke-width="1.3" fill="none"
+               transform="translate(0,0)">
+              <path d="M155,142 a18,8 0 1,0 34,-5" marker-end="url(#arF)" stroke="var(--green)"/>
+              <path d="M196,131 a8,18 0 1,0 -5,-34" marker-end="url(#arF)" stroke="var(--green)"/>
+            </g>
+            <text x="143" y="184" font-size="9.5" text-anchor="middle" fill="var(--green)">Ix, Iy, Iz — axes d’inertie</text>
+          </svg>
+          <p class="hint">Le contrôleur a besoin de ces valeurs pour calculer son modèle
+            dynamique. Une charge <b>mal déclarée</b> et c’est la trajectoire, les vibrations,
+            l’usure des réducteurs — et la <b>distance d’arrêt</b> qui changent. Or c’est sur
+            cette distance d’arrêt que sont dimensionnées les zones de sécurité.</p>
+        </div>
+
+        <div class="card kv">
+          <h3>Ce qui caractérise un effecteur</h3>
+          <div class="r"><span class="k">MASSE</span><span class="v">Préhenseur <b>et</b> pièce :
+            c’est l’ensemble qui entre dans le diagramme de charge.</span></div>
+          <div class="r"><span class="k">COG</span><span class="v">Centre de gravité : distance Z
+            à la bride et déport L. C’est lui qui décide, bien plus que la masse seule.</span></div>
+          <div class="r"><span class="k">AOM</span><span class="v">Axes d’inertie de la charge et
+            moments associés : ils limitent les accélérations, donc le temps de cycle.</span></div>
+          <div class="r"><span class="k">INTERFACE</span><span class="v">Bride normalisée
+            <b>ISO 9409‑1</b> : diamètre, entraxe, centrage, détrompeur.</span></div>
+          <div class="r"><span class="k">TCP</span><span class="v">Repère outil et point outil, à
+            déclarer aussi — c’est le point piloté, et celui que surveillent les zones.</span></div>
+          <div class="r"><span class="k">ÉNERGIES</span><span class="v">Air, électricité, signaux —
+            et le comportement à la coupure : la pièce doit <b>rester tenue</b>.</span></div>
+        </div>
+
+        <div class="card">
+          <h3>En application collaborative</h3>
+          <label class="check"><input type="checkbox" id="f-safe"> Effecteur conçu pour le contact</label>
+          <label class="check"><input type="checkbox" id="f-carter"> Outil cartérisé</label>
+          <p class="hint" id="f-chint"></p>
+        </div>
+
+        <p class="note"><b>À retenir :</b> l’effecteur n’est pas un accessoire. Il change l’espace
+          maximal, la charge admissible, la distance d’arrêt et le point piloté — et il décide à
+          lui seul si une application peut être collaborative.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer>Valeurs indicatives d’un robot 6 axes industriel. Les plages d’axes, les rayons de
+    zones et les temps d’arrêt réels sont à relever dans la documentation du constructeur et dans
+    l’analyse de risques de la cellule. Pour la démonstration 7, les seuils d’effort et la
+    distance de séparation sont des ordres de grandeur pédagogiques&nbsp;: les valeurs applicables
+    se relèvent dans l’ISO/TS 15066 et se vérifient par mesure sur l’application. Pour la
+    démonstration 8, le diagramme de charge est celui de l’ABB IRB 6620‑150/2,2, relevé sur la
+    documentation du constructeur&nbsp;; le robot y est représenté à cette échelle.</footer>
+</div>
+
+<script src="../../assets/vendor/three.min.js"></script>
+<script>
+// ============================================================
+//  Sécurité robotique — scènes 3D pédagogiques
+//  Robot 6 axes générique type ABB IRB (portée ~1,65 m)
+// ============================================================
+
+const LIMITS = {
+  // valeurs constructeur (indicatives, 6 axes industriel ~1,65 m)
+  q1: { min: -180, max: 180 },
+  q2: { min: -90, max: 110 },   // angle du bras depuis la verticale (+ = vers l'avant)
+  q3: { min: -150, max: 60 },   // angle du coude (0 = avant-bras aligné sur le bras)
+};
+
+// butées virtuelles (logicielles) — plages réduites
+const SOFT = {
+  q1: { min: -55, max: 55 },
+  q2: { min: -10, max: 75 },
+  q3: { min: -120, max: -15 },
+};
+
+// L3 : coude -> centre du poignet (c'est là que se définit l'enveloppe constructeur)
+// TOOL : longueur de l'outil au-delà du poignet
+const GEO = { a1: 0.15, baseH: 0.18, turretH: 0.27, L2: 0.70, L3: 0.75, TOOL: 0.23 };
+const TOOL_EXT = 0.23;
+const SHOULDER_Y = GEO.baseH + GEO.turretH; // 0.45
+
+const COL = {
+  orange: 0xf07c00,
+  orangeDark: 0xc96500,
+  grey: 0x3b4149,
+  lightGrey: 0xb9c0c8,
+  steel: 0x8b949e,
+  env: 0x2f7bd4,
+  soft: 0x17a05e,
+};
+
+const d2r = (d) => (d * Math.PI) / 180;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const smooth = (t) => t * t * (3 - 2 * t);
+// rampe 0->1->0
+const pulse = (t, a, b, fade = 0.08) => {
+  if (t < a || t > b) return 0;
+  return Math.min(1, Math.min((t - a) / fade, (b - t) / fade));
+};
+
+// ------------------------------------------------------------
+//  Cinématique directe (plan du bras) -> (r, y)
+// ------------------------------------------------------------
+function fk(q2deg, q3deg, ext = 0) {
+  const q2 = d2r(q2deg), q3 = d2r(q3deg);
+  const L = GEO.L3 + ext;
+  const r = GEO.a1 + GEO.L2 * Math.sin(q2) + L * Math.sin(q2 + q3);
+  const y = SHOULDER_Y + GEO.L2 * Math.cos(q2) + L * Math.cos(q2 + q3);
+  return { r, y };
+}
+
+// ------------------------------------------------------------
+//  Profil de l'enveloppe : balayage polaire autour de l'axe 1
+// ------------------------------------------------------------
+function envelopeProfile(lim, nBins = 132, ext = 0) {
+  const C = { r: 0, y: SHOULDER_Y };
+  const rmax = new Array(nBins).fill(-1);
+  const rmin = new Array(nBins).fill(1e9);
+  const PHI0 = -Math.PI / 2, PHI1 = Math.PI / 2;
+  const N = 150;
+  for (let i = 0; i <= N; i++) {
+    const q2 = lerp(lim.q2.min, lim.q2.max, i / N);
+    for (let j = 0; j <= N; j++) {
+      const q3 = lerp(lim.q3.min, lim.q3.max, j / N);
+      const p = fk(q2, q3, ext);
+      if (p.y < 0.02) continue;
+      const rr = Math.abs(p.r);
+      const dx = rr - C.r, dy = p.y - C.y;
+      const rad = Math.hypot(dx, dy);
+      let phi = Math.atan2(dy, dx);
+      phi = clamp(phi, PHI0, PHI1);
+      const b = clamp(Math.floor(((phi - PHI0) / (PHI1 - PHI0)) * nBins), 0, nBins - 1);
+      if (rad > rmax[b]) rmax[b] = rad;
+      if (rad < rmin[b]) rmin[b] = rad;
+    }
+  }
+  const outer = [], inner = [];
+  for (let b = 0; b < nBins; b++) {
+    if (rmax[b] < 0) continue;
+    const phi = PHI0 + ((b + 0.5) / nBins) * (PHI1 - PHI0);
+    const co = Math.cos(phi), si = Math.sin(phi);
+    outer.push([C.r + rmax[b] * co, Math.max(0, C.y + rmax[b] * si)]);
+    inner.push([C.r + rmin[b] * co, Math.max(0, C.y + rmin[b] * si)]);
+  }
+  inner.reverse();
+  const pts = outer.concat(inner);
+  // lissage léger
+  const sm = pts.map((p, i) => {
+    const a = pts[(i - 1 + pts.length) % pts.length], b = pts[(i + 1) % pts.length];
+    return [(a[0] + 2 * p[0] + b[0]) / 4, (a[1] + 2 * p[1] + b[1]) / 4];
+  });
+  return sm.map((p) => [Math.max(0.001, p[0]), Math.max(0, p[1])]);
+}
+
+// ------------------------------------------------------------
+//  Maillage de l'enveloppe (révolution partielle + capots)
+// ------------------------------------------------------------
+function buildEnvelope(THREE, lim, color, opacity, ext = 0) {
+  const prof = envelopeProfile(lim, 132, ext);
+  const v2 = prof.map((p) => new THREE.Vector2(p[0], p[1]));
+  const span = Math.min(360, lim.q1.max - lim.q1.min);
+  const phiLen = d2r(span);
+  const phiStart = d2r(lim.q1.min) + Math.PI / 2; // +X pour q1=0
+  const g = new THREE.LatheGeometry(v2, Math.max(24, Math.round(span / 3)), phiStart, phiLen);
+  const mat = new THREE.MeshStandardMaterial({
+    color, transparent: true, opacity, side: THREE.DoubleSide,
+    depthWrite: false, roughness: 0.9, metalness: 0,
+  });
+  const grp = new THREE.Group();
+  grp.add(new THREE.Mesh(g, mat));
+
+  // capots latéraux si révolution partielle
+  if (span < 359) {
+    const shape = new THREE.Shape();
+    v2.forEach((p, i) => (i ? shape.lineTo(p.x, p.y) : shape.moveTo(p.x, p.y)));
+    shape.closePath();
+    const sg = new THREE.ShapeGeometry(shape);
+    for (const ang of [phiStart, phiStart + phiLen]) {
+      const m = new THREE.Mesh(sg, mat);
+      m.rotation.y = -ang + Math.PI / 2;
+      // le shape est dans le plan XY -> on l'oriente sur le méridien
+      m.rotation.set(0, 0, 0);
+      m.applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI / 2 - ang));
+      grp.add(m);
+    }
+  }
+
+  // ligne de profil (silhouette) sur 2 méridiens
+  const lp = prof.map((p) => new THREE.Vector3(p[0], p[1], 0));
+  lp.push(lp[0].clone());
+  const lg = new THREE.BufferGeometry().setFromPoints(lp);
+  const lm = new THREE.LineBasicMaterial({ color, transparent: true, opacity: Math.min(1, opacity * 3.4) });
+  const meridians = span < 359 ? [phiStart, phiStart + phiLen] : [Math.PI / 2, -Math.PI / 2];
+  for (const ang of meridians) {
+    const l = new THREE.Line(lg, lm);
+    l.applyMatrix4(new THREE.Matrix4().makeRotationY(Math.PI / 2 - ang));
+    grp.add(l);
+  }
+  grp.userData.materials = [mat, lm];
+  grp.userData.baseOpacity = opacity;
+  return grp;
+}
+
+// ------------------------------------------------------------
+//  Robot
+// ------------------------------------------------------------
+function box(THREE, w, h, d, color, ry = 0.02) {
+  const g = new THREE.BoxGeometry(w, h, d);
+  const m = new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: 0.15 });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.castShadow = true;
+  return mesh;
+}
+
+function buildRobot(THREE) {
+  const root = new THREE.Group();
+  const matOrange = new THREE.MeshStandardMaterial({ color: COL.orange, roughness: 0.5, metalness: 0.2 });
+  const matGrey = new THREE.MeshStandardMaterial({ color: COL.grey, roughness: 0.6, metalness: 0.3 });
+  const matSteel = new THREE.MeshStandardMaterial({ color: COL.steel, roughness: 0.4, metalness: 0.6 });
+
+  // socle
+  const base = new THREE.Mesh(new THREE.CylinderGeometry(0.30, 0.34, GEO.baseH, 36), matGrey);
+  base.position.y = GEO.baseH / 2; base.castShadow = true; base.receiveShadow = true;
+  root.add(base);
+
+  // axe 1
+  const turret = new THREE.Group();
+  turret.position.y = GEO.baseH;
+  root.add(turret);
+  const tBody = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.27, GEO.turretH, 32), matOrange);
+  tBody.position.y = GEO.turretH / 2; tBody.castShadow = true;
+  turret.add(tBody);
+  const yoke = box(THREE, 0.36, 0.16, 0.30, COL.orange);
+  yoke.material = matOrange;
+  yoke.position.set(GEO.a1 * 0.55, GEO.turretH - 0.02, 0);
+  turret.add(yoke);
+
+  // axe 2
+  const upper = new THREE.Group();
+  upper.position.set(GEO.a1, GEO.turretH, 0);
+  turret.add(upper);
+  const shoulderPin = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.34, 28), matGrey);
+  shoulderPin.rotation.x = Math.PI / 2; shoulderPin.castShadow = true;
+  upper.add(shoulderPin);
+  const arm = box(THREE, 0.155, GEO.L2, 0.20, COL.orange);
+  arm.material = matOrange;
+  arm.position.y = GEO.L2 / 2;
+  upper.add(arm);
+  const armRib = box(THREE, 0.05, GEO.L2 * 0.8, 0.245, COL.orangeDark);
+  armRib.material = new THREE.MeshStandardMaterial({ color: COL.orangeDark, roughness: 0.6 });
+  armRib.position.y = GEO.L2 / 2;
+  upper.add(armRib);
+
+  // axe 3
+  const fore = new THREE.Group();
+  fore.position.y = GEO.L2;
+  upper.add(fore);
+  const elbowPin = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.28, 28), matGrey);
+  elbowPin.rotation.x = Math.PI / 2; elbowPin.castShadow = true;
+  fore.add(elbowPin);
+  const fa = box(THREE, 0.135, GEO.L3 - 0.03, 0.165, COL.orange);
+  fa.material = matOrange;
+  fa.position.y = (GEO.L3 - 0.03) / 2;
+  fore.add(fa);
+
+  // poignet (axe 5) + outil
+  const wrist = new THREE.Group();
+  wrist.position.y = GEO.L3;          // centre du poignet
+  fore.add(wrist);
+  const w1 = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.16, 24), matSteel);
+  w1.rotation.x = Math.PI / 2; w1.castShadow = true;
+  wrist.add(w1);
+  const w2 = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.065, 0.13, 24), matGrey);
+  w2.position.y = 0.09; w2.castShadow = true;
+  wrist.add(w2);
+  const tool = new THREE.Mesh(new THREE.ConeGeometry(0.052, 0.13, 22), matSteel);
+  tool.position.y = GEO.TOOL - 0.04; tool.rotation.x = Math.PI; tool.castShadow = true;
+  wrist.add(tool);
+  const tcp = new THREE.Object3D();
+  tcp.position.y = GEO.TOOL;          // pointe de l'outil
+  wrist.add(tcp);
+
+  root.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+
+  return {
+    root, turret, upper, fore, wrist, tcp,
+    setPose(q1, q2, q3, q5 = 0) {
+      turret.rotation.y = -d2r(q1);
+      upper.rotation.z = -d2r(q2);
+      fore.rotation.z = -d2r(q3);
+      wrist.rotation.z = -d2r(q5);
+    },
+  };
+}
+
+// ------------------------------------------------------------
+//  Opérateur
+// ------------------------------------------------------------
+function buildOperator(THREE) {
+  const g = new THREE.Group();
+  const skin = new THREE.MeshStandardMaterial({ color: 0xe8b48c, roughness: 0.8 });
+  const shirt = new THREE.MeshStandardMaterial({ color: 0x1f4e9c, roughness: 0.85 });
+  const pants = new THREE.MeshStandardMaterial({ color: 0x2f3742, roughness: 0.9 });
+  const helmet = new THREE.MeshStandardMaterial({ color: 0xf2c200, roughness: 0.55 });
+
+  const torso = new THREE.Mesh(new THREE.CapsuleGeometry(0.15, 0.34, 6, 16), shirt);
+  torso.position.y = 1.12; g.add(torso);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.115, 20, 16), skin);
+  head.position.y = 1.47; g.add(head);
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(0.13, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), helmet);
+  cap.position.y = 1.5; g.add(cap);
+  const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.02, 20), helmet);
+  brim.position.y = 1.5; g.add(brim);
+
+  const mkLimb = (mat, len, rad) => {
+    const m = new THREE.Mesh(new THREE.CapsuleGeometry(rad, len, 5, 12), mat);
+    const pivot = new THREE.Group();
+    m.position.y = -len / 2 - rad;
+    pivot.add(m);
+    return pivot;
+  };
+  const armL = mkLimb(shirt, 0.34, 0.052); armL.position.set(0.19, 1.3, 0); g.add(armL);
+  const armR = mkLimb(shirt, 0.34, 0.052); armR.position.set(-0.19, 1.3, 0); g.add(armR);
+  const legL = mkLimb(pants, 0.46, 0.068); legL.position.set(0.09, 0.9, 0); g.add(legL);
+  const legR = mkLimb(pants, 0.46, 0.068); legR.position.set(-0.09, 0.9, 0); g.add(legR);
+
+  g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+
+  return {
+    root: g,
+    setWalk(phase, amount = 1) {
+      const s = Math.sin(phase) * 0.6 * amount;
+      legL.rotation.x = s; legR.rotation.x = -s;
+      armL.rotation.x = -s * 0.8; armR.rotation.x = s * 0.8;
+    },
+  };
+}
+
+// ------------------------------------------------------------
+//  Décor
+// ------------------------------------------------------------
+function buildFloor(THREE, scene) {
+  const g = new THREE.PlaneGeometry(40, 40);
+  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0 });
+  const floor = new THREE.Mesh(g, m);
+  floor.rotation.x = -Math.PI / 2;
+  floor.position.y = -0.002;
+  floor.receiveShadow = true;
+  scene.add(floor);
+  const grid = new THREE.GridHelper(40, 40, 0xc6cfd8, 0xdbe2e8);
+  grid.position.y = 0.001;
+  scene.add(grid);
+  return floor;
+}
+
+// disque / anneau au sol
+function ring(THREE, rIn, rOut, color, opacity) {
+  const g = new THREE.RingGeometry(rIn, rOut, 96);
+  const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = 0.004;
+  mesh.userData.mat = m;
+  return mesh;
+}
+
+// secteur angulaire au sol (butée axe 1)
+function sector(THREE, radius, a0, a1, color, opacity, y = 0.006) {
+  const shape = new THREE.Shape();
+  shape.moveTo(0, 0);
+  const n = 60;
+  for (let i = 0; i <= n; i++) {
+    const a = lerp(a0, a1, i / n);
+    shape.lineTo(Math.cos(a) * radius, Math.sin(a) * radius);
+  }
+  shape.lineTo(0, 0);
+  const g = new THREE.ShapeGeometry(shape);
+  const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false });
+  const mesh = new THREE.Mesh(g, m);
+  mesh.rotation.x = -Math.PI / 2;
+  mesh.position.y = y;
+  mesh.userData.mat = m;
+  return mesh;
+}
+
+function limitPlate(THREE, angleDeg, radius, color) {
+  const grp = new THREE.Group();
+  const a = d2r(angleDeg);
+  const g = new THREE.PlaneGeometry(0.02, 1.9);
+  const m = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85, side: THREE.DoubleSide });
+  const post = new THREE.Mesh(g, m);
+  post.position.set(Math.cos(a) * radius, 0.95, Math.sin(a) * radius);
+  post.lookAt(0, 0.95, 0);
+  grp.add(post);
+  const hg = new THREE.PlaneGeometry(0.9, 1.9);
+  const hm = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.16, side: THREE.DoubleSide, depthWrite: false });
+  const hatch = new THREE.Mesh(hg, hm);
+  hatch.position.set(Math.cos(a) * (radius - 0.45), 0.95, Math.sin(a) * (radius - 0.45));
+  hatch.lookAt(0, 0.95, 0);
+  hatch.rotateY(Math.PI / 2);
+  grp.add(hatch);
+  grp.userData.mats = [m, hm];
+  return grp;
+}
+
+// ------------------------------------------------------------
+//  Création d'une scène
+// ------------------------------------------------------------
+function createScene(THREE, canvas, which) {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, preserveDrawingBuffer: true });
+  renderer.setClearColor(0xffffff, 1);
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xffffff);
+  scene.fog = new THREE.Fog(0xffffff, 13, 27);
+
+  const camera = new THREE.PerspectiveCamera(34, 16 / 9, 0.1, 100);
+
+  const hemi = new THREE.HemisphereLight(0xffffff, 0xeef2f6, 1.45);
+  scene.add(hemi);
+  const dir = new THREE.DirectionalLight(0xffffff, 1.55);
+  dir.position.set(3.2, 5.4, 3.6);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(1536, 1536);
+  const d = 4.2;
+  dir.shadow.camera.left = -d; dir.shadow.camera.right = d;
+  dir.shadow.camera.top = d; dir.shadow.camera.bottom = -d;
+  dir.shadow.camera.near = 0.5; dir.shadow.camera.far = 16;
+  dir.shadow.bias = -0.0015;
+  scene.add(dir);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.42);
+  fill.position.set(-4, 3, -2);
+  scene.add(fill);
+
+  buildFloor(THREE, scene);
+
+  const robot = buildRobot(THREE);
+  scene.add(robot.root);
+
+  const S = { THREE, renderer, scene, camera, robot, which, hud: {} };
+
+  if (which === 'enveloppe') setupEnveloppe(S);
+  if (which === 'butees') setupButees(S);
+  if (which === 'zones') setupZones(S);
+  if (which === 'zoneoutil') setupZoneOutil(S);
+  if (which === 'urgence') setupUrgence(S);
+  if (which === 'modes') setupModes(S);
+
+  S.resize = (w, h) => {
+    renderer.setPixelRatio(Math.min(2, (typeof window !== 'undefined' && window.devicePixelRatio) || 1));
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  };
+  S.render = () => renderer.render(scene, camera);
+  return S;
+}
+
+// ============================================================
+//  SCÈNE 1 — Enveloppe de travail constructeur
+// ============================================================
+function setupEnveloppe(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(4.0, 2.45, 4.25);
+  S.target = new THREE.Vector3(0, 0.92, 0);
+  S.camera.lookAt(S.target);
+
+  S.env = buildEnvelope(THREE, LIMITS, COL.env, 0.085);
+  scene.add(S.env);
+
+  // contour de l'espace maximal : l'outil (et la pièce) s'ajoutent à l'enveloppe
+  S.envTool = buildEnvelope(THREE, LIMITS, 0xd96a00, 0.03, TOOL_EXT);
+  scene.add(S.envTool);
+
+  // trace du centre du poignet
+  const maxPts = 900;
+  const pos = new Float32Array(maxPts * 3);
+  const tg = new THREE.BufferGeometry();
+  tg.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  tg.setDrawRange(0, 0);
+  const tm = new THREE.LineBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.9 });
+  S.trail = new THREE.Line(tg, tm);
+  scene.add(S.trail);
+
+  // repère du centre du poignet : c'est lui qui définit l'enveloppe
+  S.wristDot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 18, 14),
+    new THREE.MeshBasicMaterial({ color: 0x2f7bd4, depthTest: false, depthWrite: false }));
+  S.wristDot.renderOrder = 10;
+  scene.add(S.wristDot);
+
+  // cote de portée max
+  const rmax = Math.max(...envelopeProfile(LIMITS).map((p) => p[0]));
+  S.rmax = rmax;
+  const dim = new THREE.Group();
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x5a636d });
+  const pts = [new THREE.Vector3(0, 0.02, 0), new THREE.Vector3(rmax, 0.02, 0)];
+  dim.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
+  const circ = [];
+  for (let i = 0; i <= 96; i++) {
+    const a = (i / 96) * Math.PI * 2;
+    circ.push(new THREE.Vector3(Math.cos(a) * rmax, 0.02, Math.sin(a) * rmax));
+  }
+  dim.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(circ),
+    new THREE.LineDashedMaterial({ color: 0x5a636d, dashSize: 0.09, gapSize: 0.07 })));
+  dim.children[1].computeLineDistances();
+  scene.add(dim);
+  S.dim = dim;
+  dim.visible = false;
+
+  S.update = (t) => {
+    S.env.userData.materials[0].opacity = 0.085;
+    S.env.userData.materials[1].opacity = 0.62;
+    S.envTool.userData.materials[0].opacity = 0.018;
+    S.envTool.userData.materials[1].opacity = 0.5;
+    S.dim.visible = true;
+
+    const pose = envPose(t);
+    S.robot.setPose(pose.q1, pose.q2, pose.q3, pose.q5);
+
+    // recalcul de la trace
+    const arr = S.trail.geometry.attributes.position.array;
+    let n = 0;
+    const WIN = 0.45;
+    for (let k = 0; k < maxPts && n < maxPts; k++) {
+      const tt = t - WIN + WIN * (k / (maxPts - 1));
+      const p = envPose(tt);
+      const f = fk(p.q2, p.q3);
+      const a = d2r(p.q1);
+      arr[n * 3] = Math.cos(a) * f.r;
+      arr[n * 3 + 1] = f.y;
+      arr[n * 3 + 2] = Math.sin(a) * f.r;
+      n++;
+    }
+    S.trail.geometry.setDrawRange(0, n);
+    S.trail.geometry.attributes.position.needsUpdate = true;
+    S.trail.geometry.computeBoundingSphere();
+
+    const fw = fk(pose.q2, pose.q3);
+    const aw = d2r(pose.q1);
+    S.wristDot.position.set(Math.cos(aw) * fw.r, fw.y, Math.sin(aw) * fw.r);
+
+    S.hud = { q1: pose.q1, q2: pose.q2, q3: pose.q3 };
+  };
+}
+
+function envPose(t) {
+  // trajectoire continue et bouclée
+  const a = t * Math.PI * 2;
+  const q1 = 165 * Math.sin(a);
+  const q2 = lerp(-18, 62, 0.5 + 0.5 * Math.sin(a * 2 - 1.1));
+  const q3 = lerp(-135, -18, 0.5 + 0.5 * Math.sin(a * 3 + 0.6));
+  const q5 = 25 * Math.sin(a * 2);
+  return { q1, q2, q3, q5 };
+}
+
+// ============================================================
+//  Jauges angulaires posées sur les axes
+//  Chaque axe porte : la plage autorisée (vert), la part interdite
+//  (rouge) et une aiguille à la position courante.
+// ============================================================
+function buildAxisGauges(THREE, robot) {
+  const GA = { allowed: 0x17a05e, forbidden: 0xd2232a, needle: 0x1c2126 };
+
+  function mkSector(color, opacity) {
+    const m = new THREE.MeshBasicMaterial({
+      color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false });
+    const mesh = new THREE.Mesh(new THREE.RingGeometry(0.1, 0.2, 8, 1, 0, 0.1), m);
+    mesh.renderOrder = 4;
+    return mesh;
+  }
+
+  function mkAxis(rIn, rOut) {
+    const g = new THREE.Group();
+    const allowed = mkSector(GA.allowed, 0.5);
+    const fb1 = mkSector(GA.forbidden, 0.46);
+    const fb2 = mkSector(GA.forbidden, 0.46);
+    const needle = new THREE.Mesh(
+      new THREE.PlaneGeometry(rOut - rIn + 0.07, 0.024),
+      new THREE.MeshBasicMaterial({ color: GA.needle, depthWrite: false, depthTest: false }));
+    needle.renderOrder = 6;
+    g.add(allowed, fb1, fb2, needle);
+    return { g, allowed, fb1, fb2, needle, rIn, rOut, last: null };
+  }
+
+  // axe 1 : disque au sol, sous le robot
+  const a1 = mkAxis(0.46, 0.64);
+  a1.g.rotation.x = -Math.PI / 2;
+  a1.g.position.y = 0.012;
+  robot.root.add(a1.g);
+  // axe 2 : arc vertical à l'épaule, solidaire de la tourelle
+  const a2 = mkAxis(0.30, 0.42);
+  a2.g.position.set(0.15, 0.27, 0);
+  robot.turret.add(a2.g);
+  // axe 3 : arc vertical au coude, solidaire du bras
+  const a3 = mkAxis(0.25, 0.35);
+  a3.g.position.set(0, 0.70, 0);
+  robot.upper.add(a3.g);
+
+  // conversion angle machine -> angle de RingGeometry
+  const convBase = (q) => -d2r(q);                 // disque au sol
+  const convArm = (q) => Math.PI / 2 - d2r(q);     // arc dans le plan du bras
+
+  function setSector(mesh, ax, conv, from, to) {
+    const a = conv(from), b = conv(to);
+    const start = Math.min(a, b), len = Math.abs(b - a);
+    if (len < 0.004) { mesh.visible = false; return; }
+    mesh.visible = true;
+    mesh.geometry.dispose();
+    mesh.geometry = new THREE.RingGeometry(ax.rIn, ax.rOut, Math.max(6, Math.round(len * 40)),
+      1, start, len);
+  }
+
+  function apply(ax, conv, constr, allowed, q) {
+    const key = [constr.min, constr.max, allowed.min, allowed.max].join(',');
+    if (ax.last !== key) {
+      ax.last = key;
+      setSector(ax.allowed, ax, conv, allowed.min, allowed.max);
+      setSector(ax.fb1, ax, conv, constr.min, allowed.min);
+      setSector(ax.fb2, ax, conv, allowed.max, constr.max);
+    }
+    const th = conv(q);
+    ax.needle.position.set(Math.cos(th) * (ax.rIn + ax.rOut) / 2,
+                           Math.sin(th) * (ax.rIn + ax.rOut) / 2, 0.004);
+    ax.needle.rotation.z = th;
+  }
+
+  return {
+    axes: [a1, a2, a3],
+    update(constrs, alloweds, pose) {
+      apply(a1, convBase, constrs[0], alloweds[0], pose.q1);
+      apply(a2, convArm, constrs[1], alloweds[1], pose.q2);
+      apply(a3, convArm, constrs[2], alloweds[2], pose.q3);
+    },
+    setVisible(v) { [a1, a2, a3].forEach((a) => (a.g.visible = v)); },
+  };
+}
+
+// position à l'écran (0..1) des trois axes, pour poser les étiquettes
+function projectJoints(THREE, S) {
+  S.scene.updateMatrixWorld(true);
+  const v = new THREE.Vector3();
+  const out = [];
+  const pts = [
+    S.robot.root, S.robot.upper, S.robot.fore,
+  ];
+  for (const o of pts) {
+    o.getWorldPosition(v);
+    v.project(S.camera);
+    out.push({ x: (v.x + 1) / 2, y: (1 - v.y) / 2 });
+  }
+  return out;
+}
+
+// ============================================================
+//  SCÈNE 2 — Butées virtuelles, activées axe par axe
+// ============================================================
+function setupButees(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(4.55, 3.25, 4.95);
+  S.target = new THREE.Vector3(0, 0.42, 0);
+  S.camera.lookAt(S.target);
+
+  S.env = buildEnvelope(THREE, LIMITS, COL.env, 0.07);
+  scene.add(S.env);
+
+  // enveloppe autorisée, reconstruite quand les plages changent sensiblement
+  let envSoft = null, builtKey = null;
+  function rebuild(lim) {
+    const key = [lim.q1.min, lim.q1.max, lim.q2.min, lim.q2.max, lim.q3.min, lim.q3.max]
+      .map((v) => Math.round(v / 1.5)).join(',');
+    if (key === builtKey) return;
+    builtKey = key;
+    if (envSoft) scene.remove(envSoft);
+    envSoft = buildEnvelope(THREE, lim, COL.soft, 0.12);
+    scene.add(envSoft);
+    S.envSoft = envSoft;
+  }
+
+  S.gauges = buildAxisGauges(THREE, S.robot);
+
+  const AX = ['q1', 'q2', 'q3'];
+  const vFull = sweptVolume(LIMITS);
+
+  S.update = (tRaw) => {
+    // la boucle démarre sur le résultat (trois butées actives), puis rouvre tout
+    // et réactive les butées une par une
+    const t = (tRaw + 0.80) % 1;
+    const down = 1 - smooth(clamp((t - 0.02) / 0.07, 0, 1));
+    const act = [0.25, 0.50, 0.75].map((s) =>
+      t < 0.12 ? down : smooth(clamp((t - s) / 0.05, 0, 1)));
+    const lim = { };
+    AX.forEach((k, i) => {
+      lim[k] = {
+        min: lerp(LIMITS[k].min, SOFT[k].min, act[i]),
+        max: lerp(LIMITS[k].max, SOFT[k].max, act[i]),
+      };
+    });
+    rebuild(lim);
+
+    // le mouvement occupe l'espace articulaire restant
+    const u = (f, ph) => 0.5 - 0.5 * Math.cos(tRaw * Math.PI * 2 * f + ph);
+    const pose = {
+      q1: lerp(lim.q1.min, lim.q1.max, u(1.25, 0)),
+      q2: lerp(lim.q2.min, lim.q2.max, u(1.75, 1.1)),
+      q3: lerp(lim.q3.min, lim.q3.max, u(2.25, 0.4)),
+      q5: 12 * Math.sin(tRaw * Math.PI * 3),
+    };
+    S.robot.setPose(pose.q1, pose.q2, pose.q3, pose.q5);
+    S.gauges.update(AX.map((k) => LIMITS[k]), AX.map((k) => lim[k]), pose);
+
+    const vSoft = sweptVolume(lim);
+    const jp = projectJoints(THREE, S);
+    const axes = AX.map((k, i) => {
+      const span = lim[k].max - lim[k].min;
+      const full = LIMITS[k].max - LIMITS[k].min;
+      const q = pose[k];
+      return {
+        n: i + 1,
+        q,
+        min: lim[k].min,
+        max: lim[k].max,
+        cmin: LIMITS[k].min,
+        cmax: LIMITS[k].max,
+        forbidden: full - span,
+        on: act[i] > 0.02,
+        atLimit: Math.min(Math.abs(q - lim[k].min), Math.abs(lim[k].max - q)) < 2.2 && act[i] > 0.5,
+        x: jp[i].x,
+        y: jp[i].y,
+      };
+    });
+
+    S.env.userData.materials[0].opacity = 0.05;
+    S.env.userData.materials[1].opacity = 0.3;
+    if (envSoft) {
+      const anyOn = act.some((a) => a > 0.02);
+      envSoft.userData.materials[0].opacity = anyOn ? 0.12 : 0.0;
+      envSoft.userData.materials[1].opacity = anyOn ? 0.8 : 0.0;
+    }
+
+    const step = act[2] > 0.5 ? 3 : act[1] > 0.5 ? 2 : act[0] > 0.5 ? 1 : 0;
+    S.hud = { axes, step, vFull, vSoft, reduction: Math.round((1 - vSoft / vFull) * 100) };
+  };
+}
+
+// volume balayé, théorème de Guldin appliqué au profil méridien
+function sweptVolume(lim) {
+  const prof = envelopeProfile(lim);
+  let A = 0, cx = 0;
+  for (let i = 0; i < prof.length; i++) {
+    const [x1, y1] = prof[i];
+    const [x2, y2] = prof[(i + 1) % prof.length];
+    const cr = x1 * y2 - x2 * y1;
+    A += cr; cx += (x1 + x2) * cr;
+  }
+  A = A / 2;
+  if (Math.abs(A) < 1e-9) return 0;
+  cx = cx / (6 * A);
+  const span = Math.min(360, lim.q1.max - lim.q1.min) / 360;
+  return Math.abs(2 * Math.PI * cx * A) * span;
+}
+
+// ============================================================
+//  SCÈNE 3 — Zones de sécurité / opérateur
+// ============================================================
+const ZONES = { stop: 1.95, reduced: 3.1, normal: 4.4 };
+
+function setupZones(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(5.9, 5.2, 7.6);
+  S.target = new THREE.Vector3(0.1, 0.45, 0.25);
+  S.camera.lookAt(S.target);
+
+  S.zNormal = ring(THREE, ZONES.reduced, ZONES.normal, 0x17a05e, 0.17);
+  S.zReduced = ring(THREE, ZONES.stop, ZONES.reduced, 0xf0a202, 0.22);
+  S.zStop = ring(THREE, 0.0, ZONES.stop, 0xd2232a, 0.26);
+  [S.zStop, S.zReduced, S.zNormal].forEach((z) => scene.add(z));
+
+  // contours
+  [[ZONES.stop, 0xd2232a], [ZONES.reduced, 0xf0a202], [ZONES.normal, 0x17a05e]].forEach(([r, c]) => {
+    const pts = [];
+    for (let i = 0; i <= 120; i++) { const a = (i / 120) * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, 0.012, Math.sin(a) * r)); }
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: c })));
+  });
+
+  // scanner laser
+  const sc = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.2, 18),
+    new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
+  sc.position.set(0.62, 0.1, 0.62); sc.castShadow = true;
+  scene.add(sc);
+  S.scanner = sc;
+
+  S.operator = buildOperator(THREE);
+  scene.add(S.operator.root);
+
+  // ligne de distance robot <-> opérateur
+  const dgeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+  S.distLine = new THREE.Line(dgeo, new THREE.LineDashedMaterial({
+    color: 0x3b4149, dashSize: 0.12, gapSize: 0.09, transparent: true, opacity: 0.75 }));
+  scene.add(S.distLine);
+
+  S.update = (t) => {
+    // distance de l'opérateur : entre / s'arrête / repart
+    const OFF = 0.33;
+    const cyc = 0.5 - 0.5 * Math.cos((t + OFF) * Math.PI * 2); // 0 -> 1 -> 0
+    const dist = lerp(5.6, 1.35, cyc);
+    const ang = d2r(28);
+    const px = Math.cos(ang) * dist, pz = Math.sin(ang) * dist;
+    S.operator.root.position.set(px, 0, pz);
+    S.operator.root.rotation.y = Math.atan2(-px, -pz) + Math.PI;
+
+    const dp = S.distLine.geometry.attributes.position;
+    dp.setXYZ(0, 0, 0.035, 0);
+    dp.setXYZ(1, px, 0.035, pz);
+    dp.needsUpdate = true;
+    S.distLine.computeLineDistances();
+    S.distLine.geometry.computeBoundingSphere();
+
+    const moving = Math.abs(Math.sin((t + OFF) * Math.PI * 2)) > 0.04;
+    S.operator.setWalk(t * Math.PI * 2 * 14, moving ? 1 : 0.15);
+
+    let state, speedPct;
+    if (dist > ZONES.normal) { state = 'libre'; speedPct = 100; }
+    else if (dist > ZONES.reduced) { state = 'normale'; speedPct = 100; }
+    else if (dist > ZONES.stop) { state = 'reduite'; speedPct = 18; }
+    else { state = 'stop'; speedPct = 0; }
+
+    // phase du robot intégrée (vitesse variable) — recalculée depuis 0
+    let ph = 0, N = 260;
+    for (let i = 0; i < N; i++) {
+      const tt = (i / N) * t;
+      const c = 0.5 - 0.5 * Math.cos((tt + OFF) * Math.PI * 2);
+      const dd = lerp(5.6, 1.35, c);
+      const sp = dd > ZONES.reduced ? 1 : dd > ZONES.stop ? 0.18 : 0;
+      ph += sp * (t / N);
+    }
+    const a = ph * Math.PI * 2 * 1.6;
+    S.robot.setPose(115 * Math.sin(a * 0.7), lerp(5, 60, 0.5 + 0.5 * Math.sin(a * 1.5)),
+      lerp(-120, -25, 0.5 + 0.5 * Math.sin(a * 2.1)), 18 * Math.sin(a));
+
+    // mise en avant de la zone active
+    S.zNormal.userData.mat.opacity = state === 'normale' ? 0.30 : 0.14;
+    S.zReduced.userData.mat.opacity = state === 'reduite' ? 0.42 : 0.16;
+    S.zStop.userData.mat.opacity = state === 'stop' ? 0.46 : 0.22;
+
+    S.hud = { state, speedPct, dist };
+  };
+}
+
+
+// ============================================================
+//  SCÈNE 4 — Zone de travail limitée + surveillance de la zone outil
+// ============================================================
+const BOX = { cx: 0.12, cy: 0.88, cz: 0, sx: 2.30, sy: 1.62, sz: 1.90 };
+const TOOL_R = 0.15;
+
+// ---- cinématique inverse dans le plan du bras -----------------------------
+// (r, y) de la POINTE DE L'OUTIL -> angles des axes 2 et 3, coude vers le haut
+function ikArm(r, y) {
+  const L = GEO.L3 + TOOL_EXT;
+  const u = r - GEO.a1, v = y - SHOULDER_Y;
+  const d = clamp(Math.hypot(u, v), Math.abs(L - GEO.L2) + 0.02, L + GEO.L2 - 0.02);
+  const c = clamp((d * d - GEO.L2 * GEO.L2 - L * L) / (2 * GEO.L2 * L), -1, 1);
+  const q3 = -Math.acos(c);
+  const q2 = Math.atan2(u, v) - Math.atan2(L * Math.sin(q3), GEO.L2 + L * Math.cos(q3));
+  return { q2: (q2 * 180) / Math.PI, q3: (q3 * 180) / Math.PI };
+}
+
+// ---- trajectoire de la scène « zone de travail limitée » ------------------
+// Des déplacements linéaires depuis une position de repli vers des cibles
+// situées au-delà des parois : le robot part droit sur la paroi, s'y arrête,
+// marque un temps d'arrêt, revient au repli puis pivote vers la cible suivante.
+const ZO_HOME = { r: 0.70, y: 1.38 };
+const ZO_STROKES = [
+  { az: -25, r: 1.78, y: 0.95, face: 'paroi droite' },
+  { az: -72, r: 1.16, y: 1.10, face: 'paroi du fond' },
+  { az: 35, r: 0.72, y: 1.86, face: 'plafond' },
+  { az: 68, r: 1.20, y: 1.05, face: 'paroi avant' },
+  { az: 168, r: 1.25, y: 1.05, face: 'paroi gauche' },
+];
+
+// u parcourt l'ensemble des courses ; renvoie l'azimut et la consigne d'avance
+function zoCommand(u, strokes) {
+  const n = strokes.length;
+  const g = ((u % 1) + 1) % 1 * n;
+  const k = Math.floor(g) % n;
+  const s = g - Math.floor(g);
+  const st = strokes[k], nx = strokes[(k + 1) % n];
+  let lam;
+  if (s < 0.40) lam = smooth(s / 0.40);            // approche
+  else if (s < 0.62) lam = 1;                      // arrêt sur la paroi
+  else if (s < 0.82) lam = 1 - smooth((s - 0.62) / 0.20); // repli
+  else lam = 0;                                    // pivot vers la cible suivante
+  let az = st.az;
+  if (s >= 0.82) {
+    let dA = nx.az - st.az;
+    while (dA > 180) dA -= 360;
+    while (dA < -180) dA += 360;
+    az += dA * smooth((s - 0.82) / 0.18);
+  }
+  return { az, lam, target: st, moving: s < 0.40 || (s >= 0.62 && s < 0.82) };
+}
+
+// pose (et pointe d'outil) à l'avance lam sur la course visée
+function zoPose(az, lam, target) {
+  const r = ZO_HOME.r + lam * (target.r - ZO_HOME.r);
+  const y = ZO_HOME.y + lam * (target.y - ZO_HOME.y);
+  const j = ikArm(r, y);
+  const f = fk(j.q2, j.q3, TOOL_EXT);
+  const a = d2r(az);
+  return { q1: az, q2: j.q2, q3: j.q3,
+           tcp: { x: Math.cos(a) * f.r, y: f.y, z: Math.sin(a) * f.r } };
+}
+
+function setupZoneOutil(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(4.45, 2.85, 4.55);
+  S.target = new THREE.Vector3(0.1, 0.85, 0);
+  S.camera.lookAt(S.target);
+
+  // volume autorisé
+  const g = new THREE.BoxGeometry(BOX.sx, BOX.sy, BOX.sz);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0x17a05e, transparent: true, opacity: 0.11, side: THREE.DoubleSide,
+    depthWrite: false, roughness: 0.9,
+  });
+  const box = new THREE.Mesh(g, mat);
+  box.position.set(BOX.cx, BOX.cy, BOX.cz);
+  scene.add(box);
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(g),
+    new THREE.LineBasicMaterial({ color: 0x17a05e, transparent: true, opacity: 0.85 }));
+  edges.position.copy(box.position);
+  scene.add(edges);
+  S.box = box; S.edges = edges;
+
+  // repère du point piloté : la POINTE DE L'OUTIL (et non le poignet)
+  const tcpDot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 18, 14),
+    new THREE.MeshBasicMaterial({ color: 0x17a05e, depthTest: false, depthWrite: false }));
+  tcpDot.renderOrder = 12;
+  scene.add(tcpDot);
+  S.tcpDot = tcpDot;
+
+  // volume de l'outil
+  const toolBall = new THREE.Mesh(new THREE.SphereGeometry(TOOL_R, 24, 18),
+    new THREE.MeshStandardMaterial({ color: 0xd96a00, transparent: true, opacity: 0.3,
+      depthWrite: false, roughness: 0.8 }));
+  scene.add(toolBall);
+  const toolWire = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.SphereGeometry(TOOL_R, 12, 8)),
+    new THREE.LineBasicMaterial({ color: 0xd96a00, transparent: true, opacity: 0.5 }));
+  scene.add(toolWire);
+  S.toolBall = toolBall; S.toolWire = toolWire;
+
+  // paroi touchée : surface + contour rouge, pour qu'on voie tout de suite laquelle
+  const hitPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),
+    new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.4,
+      side: THREE.DoubleSide, depthWrite: false }));
+  scene.add(hitPlane);
+  hitPlane.visible = false;
+  S.hitPlane = hitPlane;
+  const hitEdge = new THREE.LineSegments(
+    new THREE.EdgesGeometry(new THREE.PlaneGeometry(1, 1)),
+    new THREE.LineBasicMaterial({ color: 0xd2232a }));
+  scene.add(hitEdge);
+  hitEdge.visible = false;
+  S.hitEdge = hitEdge;
+
+  const inside = (p, m) =>
+    Math.abs(p.x - BOX.cx) <= BOX.sx / 2 - m &&
+    Math.abs(p.y - BOX.cy) <= BOX.sy / 2 - m &&
+    Math.abs(p.z - BOX.cz) <= BOX.sz / 2 - m;
+
+  // les trois mêmes courses dans chaque phase : vers la paroi droite, vers la
+  // paroi du fond, puis vers le plafond
+  const STROKES = [ZO_STROKES[0], ZO_STROKES[1], ZO_STROKES[2]];
+
+  S.update = (t) => {
+    const phase2 = t >= 0.5;                       // surveillance du volume de l'outil
+    const margin = phase2 ? TOOL_R : 0;
+    const u = (t % 0.5) / 0.5;                     // deux cycles identiques
+    const cmd = zoCommand(u, STROKES);
+
+    // plus grande avance admissible sur la course commandée
+    let lamOk = 0;
+    const N = 96;
+    for (let i = 0; i <= N; i++) {
+      const l = (i / N) * cmd.lam;
+      if (inside(zoPose(cmd.az, l, cmd.target).tcp, margin)) lamOk = l; else break;
+    }
+    // affinage, pour que l'outil se pose exactement sur la paroi (pas de tremblement)
+    let lo = lamOk, hi = Math.min(cmd.lam, lamOk + cmd.lam / N);
+    for (let i = 0; i < 14; i++) {
+      const mid = (lo + hi) / 2;
+      if (inside(zoPose(cmd.az, mid, cmd.target).tcp, margin)) lo = mid; else hi = mid;
+    }
+    const lam = lo;
+    const blocked = cmd.lam - lam > 0.004;
+
+    const p = zoPose(cmd.az, lam, cmd.target);
+    S.robot.setPose(p.q1, p.q2, p.q3, 0);
+    const tp = p.tcp;
+    S.tcpDot.position.set(tp.x, tp.y, tp.z);
+    S.toolBall.position.set(tp.x, tp.y, tp.z);
+    S.toolWire.position.set(tp.x, tp.y, tp.z);
+    S.toolBall.visible = phase2;
+    S.toolWire.visible = phase2;
+
+    // paroi la plus proche mise en évidence quand la limite est atteinte
+    S.hitPlane.visible = blocked;
+    S.hitEdge.visible = blocked;
+    S.tcpDot.material.color.setHex(blocked ? 0xd2232a : 0x17a05e);
+    if (blocked) {
+      const d = [
+        { k: 'x', v: BOX.sx / 2 - margin - Math.abs(tp.x - BOX.cx) },
+        { k: 'y', v: BOX.sy / 2 - margin - Math.abs(tp.y - BOX.cy) },
+        { k: 'z', v: BOX.sz / 2 - margin - Math.abs(tp.z - BOX.cz) },
+      ].sort((a, b) => a.v - b.v)[0];
+      const sgn = (k) => Math.sign(tp[k] - BOX['c' + k]) || 1;
+      S.hitPlane.rotation.set(0, 0, 0);
+      if (d.k === 'x') {
+        S.hitPlane.scale.set(BOX.sz, BOX.sy, 1);
+        S.hitPlane.rotation.y = Math.PI / 2;
+        S.hitPlane.position.set(BOX.cx + sgn('x') * BOX.sx / 2, BOX.cy, BOX.cz);
+      } else if (d.k === 'z') {
+        S.hitPlane.scale.set(BOX.sx, BOX.sy, 1);
+        S.hitPlane.position.set(BOX.cx, BOX.cy, BOX.cz + sgn('z') * BOX.sz / 2);
+      } else {
+        S.hitPlane.scale.set(BOX.sx, BOX.sz, 1);
+        S.hitPlane.rotation.x = Math.PI / 2;
+        S.hitPlane.position.set(BOX.cx, BOX.cy + sgn('y') * BOX.sy / 2, BOX.cz);
+      }
+      S.hitEdge.position.copy(S.hitPlane.position);
+      S.hitEdge.rotation.copy(S.hitPlane.rotation);
+      S.hitEdge.scale.copy(S.hitPlane.scale);
+    }
+
+    // distance restante jusqu'à la paroi la plus proche
+    const marge = Math.min(
+      BOX.sx / 2 - margin - Math.abs(tp.x - BOX.cx),
+      BOX.sy / 2 - margin - Math.abs(tp.y - BOX.cy),
+      BOX.sz / 2 - margin - Math.abs(tp.z - BOX.cz));
+
+    S.scene.updateMatrixWorld(true);
+    const pv = new THREE.Vector3(tp.x, tp.y, tp.z).project(S.camera);
+
+    S.hud = { phase2, blocked, margin, marge: Math.max(0, marge),
+              tip: { x: (pv.x + 1) / 2, y: (1 - pv.y) / 2 } };
+  };
+}
+
+// ============================================================
+//  SCÈNE 5 — Ce que provoque un appui sur l'arrêt d'urgence
+// ============================================================
+function setupUrgence(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(4.6, 2.75, 4.7);
+  S.target = new THREE.Vector3(0.15, 0.85, 0);
+  S.camera.lookAt(S.target);
+
+  // pupitre avec bouton coup-de-poing
+  const stand = new THREE.Group();
+  stand.position.set(-1.32, 0, 1.55);
+  scene.add(stand);
+  const post = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.07, 1.02, 16),
+    new THREE.MeshStandardMaterial({ color: 0x8b949e, roughness: 0.5, metalness: 0.4 }));
+  post.position.y = 0.51; post.castShadow = true;
+  stand.add(post);
+  const plate = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.12, 0.34),
+    new THREE.MeshStandardMaterial({ color: 0xf2c200, roughness: 0.6 }));
+  plate.position.y = 1.07; plate.castShadow = true;
+  stand.add(plate);
+  const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.12, 0.09, 26),
+    new THREE.MeshStandardMaterial({ color: 0xd2232a, roughness: 0.45 }));
+  cap.position.y = 1.17; cap.castShadow = true;
+  stand.add(cap);
+  S.cap = cap;
+
+  // halo d'appui
+  const halo = new THREE.Mesh(new THREE.RingGeometry(0.17, 0.27, 32),
+    new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.5,
+      side: THREE.DoubleSide, depthWrite: false }));
+  halo.rotation.x = -Math.PI / 2;
+  halo.position.set(-1.32, 1.185, 1.55);
+  scene.add(halo);
+  S.halo = halo;
+
+  // pièce tenue par la pince (reste serrée : l'énergie pneumatique n'est pas coupée)
+  const part = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.11),
+    new THREE.MeshStandardMaterial({ color: 0x5b6773, roughness: 0.7 }));
+  part.castShadow = true;
+  scene.add(part);
+  S.part = part;
+
+  // phases
+  //  0.00–0.34 arrêt   0.34–0.46 réarmement   0.46–0.80 production   0.80–1.00 appui + arrêt
+  const speedAt = (t) => {
+    if (t < 0.34) return 0;
+    if (t < 0.46) return (t - 0.34) / 0.12 * 0.55;
+    if (t < 0.80) return 1;
+    return 0;
+  };
+
+  S.update = (t) => {
+    let ph = 0;
+    const N = 240;
+    for (let i = 0; i < N; i++) ph += speedAt((i / N) * t) * (t / N);
+    const a = ph * Math.PI * 2 * 1.35;
+    const q1 = 95 * Math.sin(a * 0.8);
+    const q2 = lerp(2, 66, 0.5 + 0.5 * Math.sin(a * 1.6));
+    const q3 = lerp(-124, -22, 0.5 + 0.5 * Math.sin(a * 2.3));
+    S.robot.setPose(q1, q2, q3, 16 * Math.sin(a));
+
+    const f = fk(q2, q3, TOOL_EXT);
+    const ang = d2r(q1);
+    S.part.position.set(Math.cos(ang) * f.r, f.y + 0.02, Math.sin(ang) * f.r);
+    S.part.rotation.y = ang;
+
+    const pressed = t < 0.34 || t >= 0.80;
+    S.cap.position.y = pressed ? 1.125 : 1.17;
+    S.halo.visible = pressed;
+    S.halo.material.opacity = pressed ? 0.28 + 0.22 * Math.abs(Math.sin(t * Math.PI * 14)) : 0;
+
+    let state;
+    if (t < 0.34) state = 'stop';
+    else if (t < 0.46) state = 'reset';
+    else if (t < 0.80) state = 'run';
+    else state = 'press';
+    S.hud = { state, pressed };
+  };
+}
+
+// ============================================================
+//  SCÈNE 6 — Sélecteur de mode à clé sur l'armoire de commande
+// ============================================================
+function setupModes(S) {
+  const { THREE, scene } = S;
+  S.camera.position.set(7.7, 5.75, 8.5);
+  S.target = new THREE.Vector3(0.35, 0.55, 0.65);
+  S.camera.lookAt(S.target);
+
+  const F = 1.75, H = 1.9;                 // demi-côté de l'enceinte, hauteur
+  const DOOR_W = 1.25, DOOR_X = 0.1;       // ouverture en façade
+
+  const panelMat = new THREE.MeshStandardMaterial({
+    color: 0x9fb0c0, transparent: true, opacity: 0.22, side: THREE.DoubleSide,
+    depthWrite: false, roughness: 0.9 });
+  const frameMat = new THREE.LineBasicMaterial({ color: 0x5b6773 });
+
+  function wall(w, x, z, ry) {
+    const g = new THREE.Group();
+    const pg = new THREE.PlaneGeometry(w, H);
+    const m = new THREE.Mesh(pg, panelMat);
+    m.position.y = H / 2;
+    g.add(m);
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(pg), frameMat);
+    e.position.y = H / 2;
+    g.add(e);
+    // barreaux verticaux
+    for (let i = 1; i < Math.round(w / 0.28); i++) {
+      const pts = [new THREE.Vector3(-w / 2 + i * 0.28, 0.02, 0),
+                   new THREE.Vector3(-w / 2 + i * 0.28, H - 0.02, 0)];
+      g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), frameMat));
+    }
+    g.position.set(x, 0, z);
+    g.rotation.y = ry;
+    return g;
+  }
+
+  scene.add(wall(2 * F, 0, -F, 0));                       // arrière
+  scene.add(wall(2 * F, -F, 0, Math.PI / 2));             // gauche
+  scene.add(wall(2 * F, F, 0, Math.PI / 2));              // droite
+  scene.add(wall(F + DOOR_X, (-F + DOOR_X) / 2, F, 0));   // façade, partie gauche
+  scene.add(wall(F - DOOR_X - DOOR_W, (DOOR_X + DOOR_W + F) / 2, F, 0)); // façade, partie droite
+
+  // porte à interverrouillage
+  const doorPivot = new THREE.Group();
+  doorPivot.position.set(DOOR_X, 0, F);
+  scene.add(doorPivot);
+  const doorGrp = wall(DOOR_W, DOOR_W / 2, 0, 0);
+  doorGrp.children[0].material = new THREE.MeshStandardMaterial({
+    color: 0xf2c200, transparent: true, opacity: 0.35, side: THREE.DoubleSide,
+    depthWrite: false, roughness: 0.8 });
+  doorPivot.add(doorGrp);
+  S.doorPivot = doorPivot;
+
+  // armoire de commande
+  const cab = new THREE.Group();
+  cab.position.set(2.78, 0, 1.72);
+  cab.rotation.y = 0.62;
+  scene.add(cab);
+  const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.42, 0.46),
+    new THREE.MeshStandardMaterial({ color: 0xd7dde3, roughness: 0.6, metalness: 0.15 }));
+  body.position.y = 0.71; body.castShadow = true; body.receiveShadow = true;
+  cab.add(body);
+  const facade = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.4),
+    new THREE.MeshStandardMaterial({ color: 0x8b949e, roughness: 0.5 }));
+  facade.position.set(0, 1.03, 0.232);
+  cab.add(facade);
+  // sélecteur à clé
+  const selBase = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.03, 24),
+    new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
+  selBase.rotation.x = Math.PI / 2;
+  selBase.position.set(-0.14, 1.03, 0.25);
+  cab.add(selBase);
+  const keyPivot = new THREE.Group();
+  keyPivot.position.set(-0.14, 1.03, 0.26);
+  cab.add(keyPivot);
+  const key = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.19, 0.014),
+    new THREE.MeshStandardMaterial({ color: 0xe8b44c, roughness: 0.35, metalness: 0.6 }));
+  key.position.y = 0.06;
+  keyPivot.add(key);
+  S.keyPivot = keyPivot;
+  // voyant de mode
+  const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.058, 18, 14),
+    new THREE.MeshBasicMaterial({ color: 0x17a05e }));
+  lamp.position.set(0.15, 1.12, 0.25);
+  cab.add(lamp);
+  S.lamp = lamp;
+  // arrêt d'urgence sur l'armoire
+  const eStop = new THREE.Mesh(new THREE.CylinderGeometry(0.072, 0.066, 0.045, 22),
+    new THREE.MeshStandardMaterial({ color: 0xd2232a, roughness: 0.5 }));
+  eStop.rotation.x = Math.PI / 2;
+  eStop.position.set(0.15, 0.93, 0.25);
+  cab.add(eStop);
+
+  const op = buildOperator(THREE);
+  scene.add(op.root);
+
+  // pendant de commande (boîtier d'apprentissage) tenu devant lui
+  const pend = new THREE.Group();
+  pend.position.set(0.06, 1.0, 0.24);
+  pend.rotation.set(-0.5, 0, 0.15);
+  op.root.add(pend);
+  const pBody = new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.34, 0.05),
+    new THREE.MeshStandardMaterial({ color: 0x3b4149, roughness: 0.55 }));
+  pBody.castShadow = true;
+  pend.add(pBody);
+  const pScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.14),
+    new THREE.MeshStandardMaterial({ color: 0xc7d3dd, roughness: 0.4 }));
+  pScreen.position.set(0, 0.06, 0.027);
+  pend.add(pScreen);
+  const pLamp = new THREE.Mesh(new THREE.SphereGeometry(0.036, 16, 12),
+    new THREE.MeshBasicMaterial({ color: 0x17a05e }));
+  pLamp.position.set(0, -0.09, 0.034);
+  pend.add(pLamp);
+  // gâchette de validation, au dos du boîtier
+  const pTrig = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.11, 0.025),
+    new THREE.MeshStandardMaterial({ color: 0xd96a00, roughness: 0.5 }));
+  pTrig.position.set(-0.125, 0.02, -0.012);
+  pend.add(pTrig);
+  S.pend = pend; S.pLamp = pLamp; S.pTrig = pTrig;
+
+  // choréographie
+  const P_EXT = new THREE.Vector3(1.95, 0, 3.35);
+  const P_DOOR = new THREE.Vector3(0.72, 0, 2.45);
+  const P_IN = new THREE.Vector3(1.02, 0, 1.22);
+  const seg = (a, b, u) => a.clone().lerp(b, smooth(clamp(u, 0, 1)));
+
+  function choreo(t) {
+    let c;
+    if (t < 0.26) c = { p: P_EXT, door: 0, key: 0, trig: 0, walk: t > 0.22 };
+    else if (t < 0.38) {                  // il s'approche et ouvre la porte en AUTO
+      const u = (t - 0.26) / 0.12;
+      c = { p: seg(P_EXT, P_DOOR, u * 1.6), door: smooth(clamp((u - 0.55) / 0.45, 0, 1)),
+            key: 0, trig: 0, walk: u < 0.62 };
+    } else if (t < 0.50) {                // il referme, tourne la clé, prend le pendant
+      const u = (t - 0.38) / 0.12;
+      c = { p: seg(P_DOOR, P_EXT, u * 0.55), door: 1 - smooth(clamp(u / 0.45, 0, 1)),
+            key: smooth(clamp((u - 0.45) / 0.45, 0, 1)),
+            trig: smooth(clamp((u - 0.75) / 0.25, 0, 1)), walk: u < 0.45 };
+    } else if (t < 0.64) {                // il entre, gâchette tenue
+      const u = (t - 0.50) / 0.14;
+      c = { p: seg(P_EXT, P_IN, clamp(u / 0.8, 0, 1)), door: smooth(clamp(u / 0.3, 0, 1)),
+            key: 1, trig: 1, walk: u < 0.8 };
+    } else if (t < 0.76) {                // il relâche la gâchette
+      c = { p: P_IN, door: 1, key: 1, trig: 0, walk: false };
+    } else if (t < 0.86) {                // il la reprend
+      const u = (t - 0.76) / 0.10;
+      c = { p: P_IN, door: 1, key: 1, trig: smooth(clamp((u - 0.25) / 0.35, 0, 1)), walk: false };
+    } else {                              // il ressort, referme, remet la clé
+      const u = (t - 0.86) / 0.14;
+      c = { p: seg(P_IN, P_EXT, clamp(u / 0.6, 0, 1)),
+            door: 1 - smooth(clamp((u - 0.5) / 0.3, 0, 1)),
+            key: 1 - smooth(clamp((u - 0.75) / 0.25, 0, 1)),
+            trig: 1 - smooth(clamp((u - 0.6) / 0.2, 0, 1)), walk: u < 0.6 };
+    }
+    // l'état se déduit de la clé, de la porte, de la gâchette et de la position
+    const manuel = c.key > 0.5;
+    const ouverte = c.door > 0.1;
+    const tenue = c.trig > 0.5;
+    const dedans = Math.abs(c.p.x) < F && Math.abs(c.p.z) < F;
+    c.ouverte = ouverte; c.tenue = tenue; c.manuel = manuel;
+    c.state = !manuel && ouverte ? 'stop'
+            : manuel ? (!tenue ? 'hm' : dedans ? 'reduit' : 'manuel')
+            : 'auto';
+    return c;
+  }
+
+  const speedOf = (st) => (st === 'auto' ? 1 : (st === 'stop' || st === 'hm') ? 0 : 0.22);
+
+  S.update = (t) => {
+    const c = choreo(t);
+    op.root.position.copy(c.p);
+    const look = c.p.clone().sub(new THREE.Vector3(0, 0, 0));
+    op.root.rotation.y = Math.atan2(look.x, look.z);
+    op.setWalk(t * Math.PI * 2 * 13, c.walk ? 1 : 0.12);
+
+    S.doorPivot.rotation.y = -c.door * 1.75;
+    S.keyPivot.rotation.z = -c.key * 1.0;
+    S.lamp.material.color.setHex(c.key > 0.5 ? 0xf0a202 : 0x17a05e);
+    S.pend.visible = c.key > 0.4;
+    S.pLamp.material.color.setHex(c.tenue ? 0x17a05e : 0xd2232a);
+    S.pTrig.position.x = c.tenue ? -0.112 : -0.138;
+    S.pTrig.material.color.setHex(c.tenue ? 0xd96a00 : 0x8b949e);
+
+    // vitesse intégrée depuis le début de la boucle
+    let ph = 0;
+    const N = 220;
+    for (let i = 0; i < N; i++) ph += speedOf(choreo((i / N) * t).state) * (t / N);
+    const a = ph * Math.PI * 2 * 1.5;
+    S.robot.setPose(80 * Math.sin(a * 0.75), lerp(8, 62, 0.5 + 0.5 * Math.sin(a * 1.5)),
+      lerp(-118, -28, 0.5 + 0.5 * Math.sin(a * 2.2)), 14 * Math.sin(a));
+
+    S.hud = { state: c.state, mode: c.manuel ? 'MANUEL' : 'AUTO', door: c.ouverte,
+              manuel: c.manuel, tenue: c.tenue, pct: Math.round(speedOf(c.state) * 100) };
+  };
+}
+
+</script>
+<script>
+/* ============================================================
+   Application interactive — 3 vues pédagogiques
+   Utilise les briques définies plus haut (buildRobot, buildEnvelope, …)
+   ============================================================ */
+(function () {
+  const THREE = window.THREE;
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+  const d2r = (d) => (d * Math.PI) / 180;
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const fmtDeg = (v) => (v >= 0 ? '+' : '−') + Math.abs(Math.round(v)) + '°';
+  const fmtMm = (m) => Math.round(m * 1000).toLocaleString('fr-FR') + ' mm';
+
+  const REACH = Math.max.apply(null, envelopeProfile(LIMITS).map((p) => p[0]));
+
+  const THEMES = {
+    light: { bg: 0xffffff, floor: 0xffffff, g1: 0xc6cfd8, g2: 0xdbe2e8, fog: [13, 27], hemiGround: 0xeef2f6 },
+    dark: { bg: 0x11161c, floor: 0x1a212a, g1: 0x33404e, g2: 0x252f3a, fog: [14, 30], hemiGround: 0x1a212a },
+  };
+  function isDark() {
+    const t = document.documentElement.getAttribute('data-theme');
+    if (t === 'dark') return true;
+    if (t === 'light') return false;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  // ----------------------------------------------------------
+  //  Socle commun d'une vue 3D
+  // ----------------------------------------------------------
+  function makeView(canvas) {
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(34, 16 / 9, 0.1, 100);
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xeef2f6, 1.45);
+    scene.add(hemi);
+    const dir = new THREE.DirectionalLight(0xffffff, 1.55);
+    dir.position.set(3.2, 5.4, 3.6);
+    dir.castShadow = true;
+    dir.shadow.mapSize.set(1536, 1536);
+    const d = 4.4;
+    Object.assign(dir.shadow.camera, { left: -d, right: d, top: d, bottom: -d, near: 0.5, far: 16 });
+    dir.shadow.bias = -0.0015;
+    scene.add(dir);
+    const fill = new THREE.DirectionalLight(0xffffff, 0.42);
+    fill.position.set(-4, 3, -2);
+    scene.add(fill);
+
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, metalness: 0 });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), floorMat);
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -0.002; floor.receiveShadow = true;
+    scene.add(floor);
+    let grid = null;
+
+    const robot = buildRobot(THREE);
+    scene.add(robot.root);
+
+    const V = {
+      renderer, scene, camera, robot, hemi, floorMat, _w: 0, _h: 0,
+      target: new THREE.Vector3(0, 0.9, 0),
+      applyTheme() {
+        const t = THEMES[isDark() ? 'dark' : 'light'];
+        renderer.setClearColor(t.bg, 1);
+        scene.background = new THREE.Color(t.bg);
+        scene.fog = new THREE.Fog(t.bg, t.fog[0], t.fog[1]);
+        floorMat.color.setHex(t.floor);
+        hemi.groundColor.setHex(t.hemiGround);
+        if (grid) scene.remove(grid);
+        grid = new THREE.GridHelper(40, 40, t.g1, t.g2);
+        grid.position.y = 0.001;
+        scene.add(grid);
+      },
+      resize() {
+        const w = canvas.clientWidth, h = canvas.clientHeight;
+        if (!w || !h || (w === V._w && h === V._h)) return;
+        V._w = w; V._h = h;
+        renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+        renderer.setSize(w, h, false);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      },
+      render() { renderer.render(scene, camera); },
+    };
+    V.applyTheme();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 1 — Enveloppe de travail
+  // ==========================================================
+  function viewEnveloppe(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(4.0, 2.45, 4.25);
+    V.target.set(0, 0.92, 0);
+    V.camera.lookAt(V.target);
+
+    const env = buildEnvelope(THREE, LIMITS, 0x2f7bd4, 0.085);
+    V.scene.add(env);
+    const envTool = buildEnvelope(THREE, LIMITS, 0xd96a00, 0.02, TOOL_EXT);
+    envTool.userData.materials[1].opacity = 0.5;
+    V.scene.add(envTool);
+    const wristDot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 18, 14),
+      new THREE.MeshBasicMaterial({ color: 0x2f7bd4, depthTest: false, depthWrite: false }));
+    wristDot.renderOrder = 10;
+    V.scene.add(wristDot);
+
+    const maxPts = 700;
+    const tg = new THREE.BufferGeometry();
+    tg.setAttribute('position', new THREE.BufferAttribute(new Float32Array(maxPts * 3), 3));
+    tg.setDrawRange(0, 0);
+    const trail = new THREE.Line(tg, new THREE.LineBasicMaterial({ color: 0xd2232a }));
+    V.scene.add(trail);
+
+    // cercle de portée au sol
+    const circ = [];
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      circ.push(new THREE.Vector3(Math.cos(a) * REACH, 0.02, Math.sin(a) * REACH));
+    }
+    const ring = new THREE.Line(new THREE.BufferGeometry().setFromPoints(circ),
+      new THREE.LineDashedMaterial({ color: 0x8b949e, dashSize: 0.09, gapSize: 0.07 }));
+    ring.computeLineDistances();
+    V.scene.add(ring);
+
+    const st = { auto: true, t: 0, q1: 35, q2: 40, q3: -70, env: true, envTool: true, trail: true };
+
+    function pose(t) {
+      const a = t * Math.PI * 2;
+      return {
+        q1: 165 * Math.sin(a),
+        q2: lerp(-18, 62, 0.5 + 0.5 * Math.sin(a * 2 - 1.1)),
+        q3: lerp(-135, -18, 0.5 + 0.5 * Math.sin(a * 3 + 0.6)),
+        q5: 25 * Math.sin(a * 2),
+      };
+    }
+
+    V.step = function (dt) {
+      let p;
+      if (st.auto) { st.t = (st.t + dt * 0.085) % 1; p = pose(st.t); }
+      else p = { q1: st.q1, q2: st.q2, q3: st.q3, q5: 0 };
+      V.robot.setPose(p.q1, p.q2, p.q3, p.q5);
+
+      env.visible = st.env;
+      envTool.visible = st.envTool;
+      trail.visible = st.trail && st.auto;
+      if (trail.visible) {
+        const arr = trail.geometry.attributes.position.array;
+        const WIN = 0.45;
+        for (let k = 0; k < maxPts; k++) {
+          const tt = st.t - WIN + WIN * (k / (maxPts - 1));
+          const q = pose(tt);
+          const f = fk(q.q2, q.q3);
+          const a = d2r(q.q1);
+          arr[k * 3] = Math.cos(a) * f.r; arr[k * 3 + 1] = f.y; arr[k * 3 + 2] = Math.sin(a) * f.r;
+        }
+        trail.geometry.setDrawRange(0, maxPts);
+        trail.geometry.attributes.position.needsUpdate = true;
+        trail.geometry.computeBoundingSphere();
+      }
+
+      if (st.auto) {
+        sliders[0].value = Math.round(p.q1);
+        sliders[1].value = Math.round(p.q2);
+        sliders[2].value = Math.round(p.q3);
+      }
+      const f = fk(p.q2, p.q3);
+      const aw = d2r(p.q1);
+      wristDot.position.set(Math.cos(aw) * f.r, f.y, Math.sin(aw) * f.r);
+      out.q1.textContent = fmtDeg(p.q1);
+      out.q2.textContent = fmtDeg(p.q2);
+      out.q3.textContent = fmtDeg(p.q3);
+    };
+
+    const out = { q1: $('#e-q1'), q2: $('#e-q2'), q3: $('#e-q3') };
+    $('#e-vol').textContent = sweptVolume(LIMITS).toFixed(1).replace('.', ',') + ' m³';
+    $('#e-reach').textContent = fmtMm(REACH);
+    $('#e-reacht').textContent = fmtMm(
+      Math.max.apply(null, envelopeProfile(LIMITS, 132, TOOL_EXT).map((p) => p[0])));
+
+    V.reset = function () { st.t = 0; };
+    const sliders = ['#e-s1', '#e-s2', '#e-s3'].map((s) => $(s));
+    function syncManual() {
+      const dis = st.auto;
+      sliders.forEach((s) => { s.disabled = dis; });
+    }
+    $('#e-auto').addEventListener('change', (ev) => { st.auto = ev.target.checked; syncManual(); });
+    $('#e-s1').addEventListener('input', (ev) => { st.q1 = +ev.target.value; });
+    $('#e-s2').addEventListener('input', (ev) => { st.q2 = +ev.target.value; });
+    $('#e-s3').addEventListener('input', (ev) => { st.q3 = +ev.target.value; });
+    $('#e-env').addEventListener('change', (ev) => { st.env = ev.target.checked; });
+    $('#e-envtool').addEventListener('change', (ev) => { st.envTool = ev.target.checked; });
+    $('#e-trail').addEventListener('change', (ev) => { st.trail = ev.target.checked; });
+    syncManual();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 2 — Butées virtuelles, activables axe par axe
+  // ==========================================================
+  function viewButees(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(4.35, 3.05, 4.7);
+    V.target.set(0, 0.84, 0);
+    V.camera.lookAt(V.target);
+
+    const env = buildEnvelope(THREE, LIMITS, 0x2f7bd4, 0.07);
+    V.scene.add(env);
+
+    const AX = ['q1', 'q2', 'q3'];
+    const st = {
+      on: [true, true, true],
+      soft: { q1: { min: -55, max: 55 }, q2: { min: -10, max: 75 }, q3: { min: -120, max: -15 } },
+      run: true, u: 0,
+    };
+    const gauges = buildAxisGauges(THREE, V.robot);
+    const vFull = sweptVolume(LIMITS);
+    let envSoft = null, builtKey = null;
+
+    function effLimits() {
+      const lim = {};
+      AX.forEach((k, i) => { lim[k] = st.on[i] ? st.soft[k] : LIMITS[k]; });
+      return lim;
+    }
+    function rebuild(lim) {
+      const key = AX.map((k) => lim[k].min + ':' + lim[k].max).join(',');
+      if (key === builtKey) return;
+      builtKey = key;
+      if (envSoft) V.scene.remove(envSoft);
+      envSoft = buildEnvelope(THREE, lim, 0x17a05e, 0.12);
+      envSoft.userData.materials[1].opacity = 0.8;
+      V.scene.add(envSoft);
+      const v = sweptVolume(lim);
+      $('#b-vfull').textContent = vFull.toFixed(1).replace('.', ',') + ' m³';
+      $('#b-vsoft').textContent = v.toFixed(1).replace('.', ',') + ' m³';
+      const r = Math.round((1 - v / vFull) * 100);
+      $('#b-red').textContent = r > 0 ? '−' + r + ' %' : '—';
+      envSoft.visible = st.on.some(Boolean);
+    }
+
+    V.step = function (dt) {
+      const lim = effLimits();
+      rebuild(lim);
+      if (st.run) st.u += dt * 0.09;
+      const u = (f, ph) => 0.5 - 0.5 * Math.cos(st.u * Math.PI * 2 * f + ph);
+      const pose = {
+        q1: lerp(lim.q1.min, lim.q1.max, u(2.5, 0)),
+        q2: lerp(lim.q2.min, lim.q2.max, u(4, 1.1)),
+        q3: lerp(lim.q3.min, lim.q3.max, u(5.5, 0.4)),
+        q5: 18 * Math.sin(st.u * Math.PI * 6),
+      };
+      V.robot.setPose(pose.q1, pose.q2, pose.q3, pose.q5);
+      gauges.update(AX.map((k) => LIMITS[k]), AX.map((k) => lim[k]), pose);
+
+      const jp = projectJoints(THREE, V);
+      const OFF = [[10, 7], [-10, -5], [9, -6]];
+      const NOM = ['Axe 1', 'Axe 2', 'Axe 3'];
+      $('#b-chips').innerHTML = AX.map((k, i) =>
+        `<div class="chip" style="left:${(jp[i].x * 100 + OFF[i][0]).toFixed(1)}%;top:${(jp[i].y * 100 + OFF[i][1]).toFixed(1)}%"><div class="hd">${NOM[i]}</div></div>`).join('');
+
+      // bandes : segment autorisé, repère de position, valeur
+      AX.forEach((k, i) => {
+        const n = i + 1;
+        const C = LIMITS[k];
+        const pct = (v) => ((v - C.min) / (C.max - C.min)) * 100;
+        const q = pose[k];
+        const atLim = st.on[i] &&
+          Math.min(Math.abs(q - lim[k].min), Math.abs(lim[k].max - q)) < 2.2;
+        const al = $('#b-allow' + n);
+        al.style.left = pct(lim[k].min).toFixed(1) + '%';
+        al.style.width = (pct(lim[k].max) - pct(lim[k].min)).toFixed(1) + '%';
+        $('#b-cur' + n).style.left = pct(q).toFixed(1) + '%';
+        $('#b-cv' + n).textContent = fmtDeg(q);
+        $('#b-bar' + n).classList.toggle('lim', atLim);
+      });
+    };
+    V.reset = function () { st.u = 0; };
+
+    function sync() {
+      AX.forEach((k, i) => {
+        const n = i + 1;
+        $('#b-on' + n).checked = st.on[i];
+        $('#b-min' + n).disabled = !st.on[i];
+        $('#b-max' + n).disabled = !st.on[i];
+        $('#b-min' + n).value = st.soft[k].min;
+        $('#b-max' + n).value = st.soft[k].max;
+        const forb = (LIMITS[k].max - LIMITS[k].min) - (st.soft[k].max - st.soft[k].min);
+        $('#b-rg' + n).innerHTML = st.on[i]
+          ? `<span class="ok">${fmtDeg(st.soft[k].min)} … ${fmtDeg(st.soft[k].max)}</span>` +
+            ` · <span class="ko">interdit ${Math.round(forb)}°</span>`
+          : `<span class="off">butée inactive</span>`;
+      });
+      builtKey = null;
+    }
+    AX.forEach((k, i) => {
+      $('#b-on' + (i + 1)).addEventListener('change', (ev) => { st.on[i] = ev.target.checked; sync(); });
+      $('#b-min' + (i + 1)).addEventListener('input', (ev) => {
+        st.soft[k].min = Math.min(+ev.target.value, st.soft[k].max - 10); sync();
+      });
+      $('#b-max' + (i + 1)).addEventListener('input', (ev) => {
+        st.soft[k].max = Math.max(+ev.target.value, st.soft[k].min + 10); sync();
+      });
+    });
+    sync();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 3 — Zones de sécurité
+  // ==========================================================
+  function viewZones(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(5.9, 5.2, 7.6);
+    V.target.set(0.1, 0.45, 0.25);
+    V.camera.lookAt(V.target);
+
+    const Z = { stop: 1.95, red: 3.1, det: 4.4 };
+    let rings = [], outlines = [];
+
+    function ringMesh(rIn, rOut, color, opacity) {
+      const m = new THREE.Mesh(new THREE.RingGeometry(rIn, rOut, 96),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity,
+          side: THREE.DoubleSide, depthWrite: false }));
+      m.rotation.x = -Math.PI / 2; m.position.y = 0.004;
+      return m;
+    }
+    function buildZones() {
+      rings.concat(outlines).forEach((o) => V.scene.remove(o));
+      rings = [
+        ringMesh(0, Z.stop, 0xd2232a, 0.24),
+        ringMesh(Z.stop, Z.red, 0xf0a202, 0.2),
+        ringMesh(Z.red, Z.det, 0x17a05e, 0.16),
+      ];
+      rings.forEach((r) => V.scene.add(r));
+      outlines = [[Z.stop, 0xd2232a], [Z.red, 0xf0a202], [Z.det, 0x17a05e]].map(([r, c]) => {
+        const pts = [];
+        for (let i = 0; i <= 120; i++) {
+          const a = (i / 120) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(a) * r, 0.012, Math.sin(a) * r));
+        }
+        const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),
+          new THREE.LineBasicMaterial({ color: c }));
+        V.scene.add(l); return l;
+      });
+      const k = clamp(Z.det / 4.4, 0.85, 1.5);
+      V.camera.position.set(5.9 * k, 5.2 * k, 7.6 * k);
+      V.camera.lookAt(V.target);
+      $('#z-warn').hidden = !(Z.stop < REACH);
+      $('#z-reach').textContent = fmtMm(REACH);
+    }
+
+    const scanner = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.2, 18),
+      new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
+    scanner.position.set(0.62, 0.1, 0.62); scanner.castShadow = true;
+    V.scene.add(scanner);
+
+    const op = buildOperator(THREE);
+    V.scene.add(op.root);
+
+    const dl = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+    const distLine = new THREE.Line(dl, new THREE.LineDashedMaterial({
+      color: 0x8b949e, dashSize: 0.12, gapSize: 0.09 }));
+    V.scene.add(distLine);
+
+    const st = { auto: true, t: 0.33, dist: 2.6, ph: 0, walk: 0 };
+
+    V.step = function (dt) {
+      let dist;
+      if (st.auto) {
+        st.t += dt * 0.075;
+        const cyc = 0.5 - 0.5 * Math.cos(st.t * Math.PI * 2);
+        dist = lerp(5.6, 1.35, cyc);
+      } else dist = st.dist;
+
+      const ang = d2r(28);
+      const px = Math.cos(ang) * dist, pz = Math.sin(ang) * dist;
+      op.root.position.set(px, 0, pz);
+      op.root.rotation.y = Math.atan2(-px, -pz) + Math.PI;
+
+      const p = distLine.geometry.attributes.position;
+      p.setXYZ(0, 0, 0.035, 0); p.setXYZ(1, px, 0.035, pz);
+      p.needsUpdate = true;
+      distLine.computeLineDistances();
+      distLine.geometry.computeBoundingSphere();
+
+      let state, pct;
+      if (dist > Z.det) { state = 'libre'; pct = 100; }
+      else if (dist > Z.red) { state = 'normale'; pct = 100; }
+      else if (dist > Z.stop) { state = 'reduite'; pct = 18; }
+      else { state = 'stop'; pct = 0; }
+
+      const moving = st.auto ? Math.abs(Math.sin(st.t * Math.PI * 2)) > 0.04 : false;
+      st.walk += dt * 9;
+      op.setWalk(st.walk, moving ? 1 : 0.12);
+
+      st.ph += dt * (pct / 100) * 0.55;
+      const a = st.ph * Math.PI * 2 * 1.6;
+      V.robot.setPose(115 * Math.sin(a * 0.7), lerp(5, 60, 0.5 + 0.5 * Math.sin(a * 1.5)),
+        lerp(-120, -25, 0.5 + 0.5 * Math.sin(a * 2.1)), 18 * Math.sin(a));
+
+      rings[2].material.opacity = state === 'normale' ? 0.3 : 0.14;
+      rings[1].material.opacity = state === 'reduite' ? 0.4 : 0.16;
+      rings[0].material.opacity = state === 'stop' ? 0.44 : 0.2;
+
+      const MAP = {
+        libre: ['Hors détection', 'Vitesse normale', 'idle'],
+        normale: ['Zone de détection', 'Vitesse normale', 'ok'],
+        reduite: ['Zone de ralentissement', 'Vitesse réduite ≤ 250 mm/s', 'warn'],
+        stop: ['Zone d’arrêt', 'Arrêt de sécurité', 'stop'],
+      };
+      const m = MAP[state];
+      const b = $('#z-badge');
+      b.textContent = m[1];
+      b.dataset.state = m[2];
+      $('#z-zone').textContent = m[0];
+      $('#z-dist').textContent = fmtMm(dist);
+      $('#z-speed').textContent = pct + ' %';
+    };
+
+    V.reset = function () { st.t = 0.33; st.ph = 0; };
+    function bindZ(id, key, lbl) {
+      const el = $(id);
+      el.addEventListener('input', () => {
+        Z[key] = +el.value / 100;
+        if (Z.red <= Z.stop + 0.2) Z.red = Z.stop + 0.2;
+        if (Z.det <= Z.red + 0.2) Z.det = Z.red + 0.2;
+        $(lbl).textContent = fmtMm(Z[key]);
+        buildZones();
+      });
+    }
+    bindZ('#z-r1', 'stop', '#z-l1');
+    bindZ('#z-r2', 'red', '#z-l2');
+    bindZ('#z-r3', 'det', '#z-l3');
+    $('#z-auto').addEventListener('change', (ev) => {
+      st.auto = ev.target.checked;
+      $('#z-d').disabled = st.auto;
+    });
+    $('#z-d').addEventListener('input', (ev) => { st.dist = +ev.target.value / 100; });
+    $('#z-d').disabled = true;
+    buildZones();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 4 — Zone de travail limitée + surveillance de la zone outil
+  // ==========================================================
+  function viewZoneOutil(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(4.45, 2.85, 4.55);
+    V.target.set(0.1, 0.85, 0);
+    V.camera.lookAt(V.target);
+
+    const Z = { cx: BOX.cx, cy: BOX.cy, cz: BOX.cz, sx: BOX.sx, sy: BOX.sy, sz: BOX.sz };
+    const st = { tool: false, auto: true, dir: 0, ext: 0.6 };
+    let box = null, edges = null;
+
+    function buildBox() {
+      if (box) { V.scene.remove(box); V.scene.remove(edges); }
+      const g = new THREE.BoxGeometry(Z.sx, Z.sy, Z.sz);
+      box = new THREE.Mesh(g, new THREE.MeshStandardMaterial({
+        color: 0x17a05e, transparent: true, opacity: 0.11, side: THREE.DoubleSide,
+        depthWrite: false, roughness: 0.9 }));
+      box.position.set(Z.cx, Z.cy, Z.cz);
+      V.scene.add(box);
+      edges = new THREE.LineSegments(new THREE.EdgesGeometry(g),
+        new THREE.LineBasicMaterial({ color: 0x17a05e, transparent: true, opacity: 0.85 }));
+      edges.position.copy(box.position);
+      V.scene.add(edges);
+    }
+    buildBox();
+
+    // repère du point piloté : la POINTE DE L'OUTIL (et non le poignet)
+    const tcpDot = new THREE.Mesh(new THREE.SphereGeometry(0.045, 18, 14),
+      new THREE.MeshBasicMaterial({ color: 0x17a05e, depthTest: false, depthWrite: false }));
+    tcpDot.renderOrder = 12;
+    V.scene.add(tcpDot);
+    const ball = new THREE.Mesh(new THREE.SphereGeometry(TOOL_R, 24, 18),
+      new THREE.MeshStandardMaterial({ color: 0xd96a00, transparent: true, opacity: 0.3,
+        depthWrite: false, roughness: 0.8 }));
+    V.scene.add(ball);
+    const wire = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.SphereGeometry(TOOL_R, 12, 8)),
+      new THREE.LineBasicMaterial({ color: 0xd96a00, transparent: true, opacity: 0.5 }));
+    V.scene.add(wire);
+
+    // paroi atteinte : surface + contour rouge, pour voir tout de suite laquelle bloque
+    const hitPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1),
+      new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.4,
+        side: THREE.DoubleSide, depthWrite: false }));
+    hitPlane.visible = false;
+    V.scene.add(hitPlane);
+    const hitEdge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.PlaneGeometry(1, 1)),
+      new THREE.LineBasicMaterial({ color: 0xd2232a }));
+    hitEdge.visible = false;
+    V.scene.add(hitEdge);
+
+    const inside = (p, m) =>
+      Math.abs(p.x - Z.cx) <= Z.sx / 2 - m &&
+      Math.abs(p.y - Z.cy) <= Z.sy / 2 - m &&
+      Math.abs(p.z - Z.cz) <= Z.sz / 2 - m;
+    const MANUAL = { az: 0, r: 1.78, y: 1.05 };   // course visée en commande manuelle
+
+    let u = 0;
+    V.step = function (dt) {
+      // une course dure environ 2,6 s : approche, arrêt sur la paroi, repli, pivot
+      if (st.auto) u = (u + dt / (2.6 * ZO_STROKES.length)) % 1;
+      const cmd = st.auto ? zoCommand(u, ZO_STROKES)
+        : { az: st.dir, lam: st.ext, target: MANUAL };
+      const margin = st.tool ? TOOL_R : 0;
+
+      // si le volume déclaré est si petit que la position de repli en est déjà
+      // sortie, on laisse le robot bouger et on le signale
+      const homeIn = inside(zoPose(cmd.az, 0, cmd.target).tcp, margin);
+      let lamOk = 0;
+      const N = 96;
+      for (let i = 0; i <= N; i++) {
+        const l = (i / N) * cmd.lam;
+        if (inside(zoPose(cmd.az, l, cmd.target).tcp, margin)) lamOk = l; else break;
+      }
+      let lo = lamOk, hi = Math.min(cmd.lam, lamOk + cmd.lam / N);
+      for (let i = 0; i < 14; i++) {
+        const mid = (lo + hi) / 2;
+        if (inside(zoPose(cmd.az, mid, cmd.target).tcp, margin)) lo = mid; else hi = mid;
+      }
+      const lam = homeIn ? lo : cmd.lam;
+      const blocked = homeIn && cmd.lam - lam > 0.004;
+
+      const p = zoPose(cmd.az, lam, cmd.target);
+      V.robot.setPose(p.q1, p.q2, p.q3, 0);
+      const tp = p.tcp;
+      tcpDot.position.set(tp.x, tp.y, tp.z);
+      tcpDot.material.color.setHex(blocked ? 0xd2232a : 0x17a05e);
+      ball.position.set(tp.x, tp.y, tp.z);
+      wire.position.set(tp.x, tp.y, tp.z);
+      ball.visible = st.tool;
+      wire.visible = st.tool;
+
+      // paroi la plus proche mise en évidence quand la limite est atteinte
+      hitPlane.visible = blocked;
+      hitEdge.visible = blocked;
+      if (blocked) {
+        const d = [
+          { k: 'x', v: Z.sx / 2 - margin - Math.abs(tp.x - Z.cx) },
+          { k: 'y', v: Z.sy / 2 - margin - Math.abs(tp.y - Z.cy) },
+          { k: 'z', v: Z.sz / 2 - margin - Math.abs(tp.z - Z.cz) },
+        ].sort((a, b) => a.v - b.v)[0];
+        const sgn = (k) => Math.sign(tp[k] - Z['c' + k]) || 1;
+        hitPlane.rotation.set(0, 0, 0);
+        if (d.k === 'x') {
+          hitPlane.scale.set(Z.sz, Z.sy, 1);
+          hitPlane.rotation.y = Math.PI / 2;
+          hitPlane.position.set(Z.cx + sgn('x') * Z.sx / 2, Z.cy, Z.cz);
+        } else if (d.k === 'z') {
+          hitPlane.scale.set(Z.sx, Z.sy, 1);
+          hitPlane.position.set(Z.cx, Z.cy, Z.cz + sgn('z') * Z.sz / 2);
+        } else {
+          hitPlane.scale.set(Z.sx, Z.sz, 1);
+          hitPlane.rotation.x = Math.PI / 2;
+          hitPlane.position.set(Z.cx, Z.cy + sgn('y') * Z.sy / 2, Z.cz);
+        }
+        hitEdge.position.copy(hitPlane.position);
+        hitEdge.rotation.copy(hitPlane.rotation);
+        hitEdge.scale.copy(hitPlane.scale);
+      }
+
+      // distance restante jusqu'à la paroi la plus proche
+      const marge = Math.max(0, Math.min(
+        Z.sx / 2 - margin - Math.abs(tp.x - Z.cx),
+        Z.sy / 2 - margin - Math.abs(tp.y - Z.cy),
+        Z.sz / 2 - margin - Math.abs(tp.z - Z.cz)));
+
+      $('#o-obj').textContent = st.tool ? 'Volume de l’outil' : 'Pointe de l’outil';
+      $('#o-marge').textContent = Math.round(margin * 1000) + ' mm';
+      $('#o-dist').textContent = Math.round(marge * 1000) + ' mm';
+      $('#o-etat').textContent = !homeIn ? 'Repli hors zone'
+        : blocked ? 'Arrêt sur limite' : 'Dans la zone';
+      $('#o-row').classList.toggle('hit', blocked);
+      $('#o-vol').textContent = (Z.sx * Z.sy * Z.sz).toFixed(1).replace('.', ',') + ' m³';
+
+      const bd = $('#o-badge');
+      bd.dataset.state = !homeIn ? 'warn' : blocked ? 'stop' : 'ok';
+      bd.textContent = !homeIn ? 'Volume trop petit — repli hors zone'
+        : blocked ? 'Limite de zone — arrêt' : 'Dans la zone';
+
+      // étiquette posée sur le point piloté
+      V.scene.updateMatrixWorld(true);
+      const pv = new THREE.Vector3(tp.x, tp.y, tp.z).project(V.camera);
+      const cx = ((pv.x + 1) / 2) * 100, cy = ((1 - pv.y) / 2) * 100;
+      const lx = Math.min(90, Math.max(10, cx + (cx > 54 ? -12 : 12)));
+      const ly = Math.min(90, Math.max(9, cy + (cy < 22 ? 11 : -9)));
+      $('#o-chips').innerHTML =
+        '<div class="chip' + (blocked ? ' lim' : '') + '" style="left:' +
+        lx.toFixed(1) + '%;top:' + ly.toFixed(1) + '%">' +
+        '<div class="hd">Point piloté</div>' +
+        '<div class="' + (blocked ? 'ko' : 'ok') + '">pointe de l’outil</div></div>';
+    };
+
+    V.reset = function () { u = 0; };
+    $('#o-tool').addEventListener('change', (ev) => { st.tool = ev.target.checked; });
+    $('#o-auto').addEventListener('change', (ev) => {
+      st.auto = ev.target.checked;
+      $('#o-dir').disabled = st.auto;
+      $('#o-ext').disabled = st.auto;
+    });
+    $('#o-dir').addEventListener('input', (ev) => { st.dir = +ev.target.value; });
+    $('#o-ext').addEventListener('input', (ev) => { st.ext = +ev.target.value / 100; });
+    [['#o-sx', 'sx', '#o-lx'], ['#o-sy', 'sy', '#o-ly'], ['#o-sz', 'sz', '#o-lz']]
+      .forEach(([id, k, lbl]) => {
+        $(id).addEventListener('input', () => {
+          Z[k] = +$(id).value / 100;
+          if (k === 'sy') Z.cy = Z.sy / 2 + 0.07;
+          $(lbl).textContent = fmtMm(Z[k]);
+          buildBox();
+        });
+      });
+    $('#o-dir').disabled = true;
+    $('#o-ext').disabled = true;
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 5 — Arrêt d'urgence
+  // ==========================================================
+  function viewUrgence(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(4.6, 2.75, 4.7);
+    V.target.set(0.15, 0.85, 0);
+    V.camera.lookAt(V.target);
+
+    const stand = new THREE.Group();
+    stand.position.set(-1.32, 0, 1.55);
+    V.scene.add(stand);
+    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.07, 1.02, 16),
+      new THREE.MeshStandardMaterial({ color: 0x8b949e, roughness: 0.5, metalness: 0.4 }));
+    post.position.y = 0.51; post.castShadow = true; stand.add(post);
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.12, 0.34),
+      new THREE.MeshStandardMaterial({ color: 0xf2c200, roughness: 0.6 }));
+    plate.position.y = 1.07; plate.castShadow = true; stand.add(plate);
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.135, 0.12, 0.09, 26),
+      new THREE.MeshStandardMaterial({ color: 0xd2232a, roughness: 0.45 }));
+    cap.position.y = 1.17; cap.castShadow = true; stand.add(cap);
+    const halo = new THREE.Mesh(new THREE.RingGeometry(0.17, 0.27, 32),
+      new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.4,
+        side: THREE.DoubleSide, depthWrite: false }));
+    halo.rotation.x = -Math.PI / 2;
+    halo.position.set(-1.32, 1.185, 1.55);
+    V.scene.add(halo);
+    const part = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.11, 0.11),
+      new THREE.MeshStandardMaterial({ color: 0x5b6773, roughness: 0.7 }));
+    part.castShadow = true;
+    V.scene.add(part);
+
+    // machine d'états : run -> stop -> unlocked -> armed -> run
+    const st = { s: 'run', ph: 0, blink: 0 };
+    const STATES = {
+      run:      { badge: 'En production',            cls: 'ok',   moteurs: 'Sous puissance', freins: 'Desserrés', prog: 'En cours' },
+      stop:     { badge: 'ARRÊT D’URGENCE ACTIF',    cls: 'stop', moteurs: 'Coupée',         freins: 'Serrés',    prog: 'Interrompu' },
+      unlocked: { badge: 'Bouton déverrouillé',      cls: 'warn', moteurs: 'Coupée',         freins: 'Serrés',    prog: 'Interrompu' },
+      armed:    { badge: 'Réarmé — prêt à relancer', cls: 'warn', moteurs: 'Rétablie',       freins: 'Desserrés', prog: 'À relancer' },
+    };
+
+    function refresh() {
+      const d = STATES[st.s];
+      const b = $('#u-badge');
+      b.textContent = d.badge;
+      b.dataset.state = d.cls;
+      $('#u-mot').textContent = d.moteurs;
+      $('#u-fre').textContent = d.freins;
+      $('#u-pro').textContent = d.prog;
+      $('#u-pin').textContent = 'Serrée (pièce tenue)';
+      ['mot', 'fre', 'pro'].forEach((k) => {
+        $('#u-r' + k).classList.toggle('hit', st.s !== 'run' && !(st.s === 'armed' && k !== 'pro'));
+      });
+      $('#u-press').disabled = st.s !== 'run';
+      $('#u-unlock').disabled = st.s !== 'stop';
+      $('#u-arm').disabled = st.s !== 'unlocked';
+      $('#u-go').disabled = st.s !== 'armed';
+      const H = {
+        run: 'Le robot exécute son programme. Appuyez sur l’arrêt d’urgence pour voir ce que cela déclenche.',
+        stop: 'Mouvements figés, puissance coupée — mais la pince tient toujours sa pièce. Rien ne repartira tant que le bouton est verrouillé.',
+        unlocked: 'Déverrouiller n’a rien remis en marche : cela autorise seulement le réarmement.',
+        armed: 'La puissance est rétablie, mais le programme ne redémarre pas tout seul : il faut le relancer.',
+      };
+      $('#u-hint').textContent = H[st.s];
+    }
+
+    V.step = function (dt) {
+      if (st.s === 'run') st.ph += dt * 0.42;
+      const a = st.ph * Math.PI * 2 * 1.35;
+      const q1 = 95 * Math.sin(a * 0.8);
+      const q2 = lerp(2, 66, 0.5 + 0.5 * Math.sin(a * 1.6));
+      const q3 = lerp(-124, -22, 0.5 + 0.5 * Math.sin(a * 2.3));
+      V.robot.setPose(q1, q2, q3, 16 * Math.sin(a));
+      const f = fk(q2, q3, TOOL_EXT);
+      const ang = d2r(q1);
+      part.position.set(Math.cos(ang) * f.r, f.y + 0.02, Math.sin(ang) * f.r);
+      part.rotation.y = ang;
+
+      const pressed = st.s === 'stop';
+      cap.position.y = pressed ? 1.125 : 1.17;
+      st.blink += dt;
+      halo.visible = pressed;
+      halo.material.opacity = 0.26 + 0.24 * Math.abs(Math.sin(st.blink * 6));
+    };
+
+    $('#u-press').addEventListener('click', () => { st.s = 'stop'; refresh(); });
+    $('#u-unlock').addEventListener('click', () => { st.s = 'unlocked'; refresh(); });
+    $('#u-arm').addEventListener('click', () => { st.s = 'armed'; refresh(); });
+    $('#u-go').addEventListener('click', () => { st.s = 'run'; refresh(); });
+    refresh();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 6 — Sélecteur de mode à clé
+  // ==========================================================
+  function viewModes(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(7.7, 5.75, 8.5);
+    V.target.set(0.35, 0.55, 0.65);
+    V.camera.lookAt(V.target);
+
+    const F = 1.75, H = 1.9, DOOR_W = 1.25, DOOR_X = 0.1;
+    const panelMat = new THREE.MeshStandardMaterial({
+      color: 0x9fb0c0, transparent: true, opacity: 0.22, side: THREE.DoubleSide,
+      depthWrite: false, roughness: 0.9 });
+    const frameMat = new THREE.LineBasicMaterial({ color: 0x5b6773 });
+    function wall(w, x, z, ry, mat) {
+      const g = new THREE.Group();
+      const pg = new THREE.PlaneGeometry(w, H);
+      const m = new THREE.Mesh(pg, mat || panelMat);
+      m.position.y = H / 2; g.add(m);
+      const e = new THREE.LineSegments(new THREE.EdgesGeometry(pg), frameMat);
+      e.position.y = H / 2; g.add(e);
+      for (let i = 1; i < Math.round(w / 0.28); i++) {
+        const pts = [new THREE.Vector3(-w / 2 + i * 0.28, 0.02, 0),
+                     new THREE.Vector3(-w / 2 + i * 0.28, H - 0.02, 0)];
+        g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), frameMat));
+      }
+      g.position.set(x, 0, z); g.rotation.y = ry;
+      return g;
+    }
+    V.scene.add(wall(2 * F, 0, -F, 0));
+    V.scene.add(wall(2 * F, -F, 0, Math.PI / 2));
+    V.scene.add(wall(2 * F, F, 0, Math.PI / 2));
+    V.scene.add(wall(F + DOOR_X, (-F + DOOR_X) / 2, F, 0));
+    V.scene.add(wall(F - DOOR_X - DOOR_W, (DOOR_X + DOOR_W + F) / 2, F, 0));
+    const doorPivot = new THREE.Group();
+    doorPivot.position.set(DOOR_X, 0, F);
+    V.scene.add(doorPivot);
+    doorPivot.add(wall(DOOR_W, DOOR_W / 2, 0, 0, new THREE.MeshStandardMaterial({
+      color: 0xf2c200, transparent: true, opacity: 0.35, side: THREE.DoubleSide,
+      depthWrite: false, roughness: 0.8 })));
+
+    const cab = new THREE.Group();
+    cab.position.set(2.78, 0, 1.72); cab.rotation.y = 0.62;
+    V.scene.add(cab);
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.42, 0.46),
+      new THREE.MeshStandardMaterial({ color: 0xd7dde3, roughness: 0.6, metalness: 0.15 }));
+    body.position.y = 0.71; body.castShadow = true; cab.add(body);
+    const facade = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.4),
+      new THREE.MeshStandardMaterial({ color: 0x8b949e, roughness: 0.5 }));
+    facade.position.set(0, 1.03, 0.232); cab.add(facade);
+    const selBase = new THREE.Mesh(new THREE.CylinderGeometry(0.085, 0.085, 0.03, 24),
+      new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
+    selBase.rotation.x = Math.PI / 2; selBase.position.set(-0.14, 1.03, 0.25); cab.add(selBase);
+    const keyPivot = new THREE.Group();
+    keyPivot.position.set(-0.14, 1.03, 0.26); cab.add(keyPivot);
+    const key = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.19, 0.014),
+      new THREE.MeshStandardMaterial({ color: 0xe8b44c, roughness: 0.35, metalness: 0.6 }));
+    key.position.y = 0.06; keyPivot.add(key);
+    const lamp = new THREE.Mesh(new THREE.SphereGeometry(0.058, 18, 14),
+      new THREE.MeshBasicMaterial({ color: 0x17a05e }));
+    lamp.position.set(0.15, 1.12, 0.25); cab.add(lamp);
+
+    const eStop = new THREE.Mesh(new THREE.CylinderGeometry(0.072, 0.066, 0.045, 22),
+      new THREE.MeshStandardMaterial({ color: 0xd2232a, roughness: 0.5 }));
+    eStop.rotation.x = Math.PI / 2; eStop.position.set(0.15, 0.93, 0.25); cab.add(eStop);
+
+    const op = buildOperator(THREE);
+    V.scene.add(op.root);
+
+    // pendant de commande, avec sa gâchette de validation
+    const pend = new THREE.Group();
+    pend.position.set(0.06, 1.0, 0.24);
+    pend.rotation.set(-0.5, 0, 0.15);
+    op.root.add(pend);
+    pend.add(new THREE.Mesh(new THREE.BoxGeometry(0.23, 0.34, 0.05),
+      new THREE.MeshStandardMaterial({ color: 0x3b4149, roughness: 0.55 })));
+    const pScreen = new THREE.Mesh(new THREE.PlaneGeometry(0.17, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0xc7d3dd, roughness: 0.4 }));
+    pScreen.position.set(0, 0.06, 0.027); pend.add(pScreen);
+    const pLamp = new THREE.Mesh(new THREE.SphereGeometry(0.036, 16, 12),
+      new THREE.MeshBasicMaterial({ color: 0x17a05e }));
+    pLamp.position.set(0, -0.09, 0.034); pend.add(pLamp);
+    const pTrig = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.11, 0.025),
+      new THREE.MeshStandardMaterial({ color: 0xd96a00, roughness: 0.5 }));
+    pTrig.position.set(-0.125, 0.02, -0.012); pend.add(pTrig);
+
+    const P_EXT = new THREE.Vector3(1.95, 0, 3.35);
+    const P_IN = new THREE.Vector3(1.02, 0, 1.22);
+
+    // gpos : 0 relâchée, 1 position intermédiaire (la seule qui autorise), 2 enfoncée à fond
+    const st = { manuel: false, porte: false, dedans: false, gpos: 1, ph: 0,
+                 anim: { door: 0, key: 0, pos: 0 } };
+    const V_MAX = 1500;                     // mm/s au point outil, en production
+    const V_RED = 250;                      // plafond de la vitesse réduite
+
+    function state() {
+      if (!st.manuel && st.porte) return 'stop';
+      if (st.manuel && st.gpos !== 1) return 'hm';
+      if (st.manuel && st.dedans) return 'reduit';
+      if (st.manuel) return 'manuel';
+      return 'auto';
+    }
+    const speedOf = (s) => (s === 'auto' ? 1 : s === 'reduit' || s === 'manuel' ? 0.22 : 0);
+    const mmsOf = (s) => (s === 'auto' ? V_MAX : s === 'reduit' || s === 'manuel' ? V_RED : 0);
+
+    const SWCAP = [
+      'Gâchette relâchée : moteurs hors puissance, aucun mouvement possible.',
+      'Position intermédiaire : moteurs sous puissance, le mouvement est autorisé si l’ordre de marche est maintenu.',
+      'Gâchette enfoncée à fond : moteurs hors puissance — la crispation de panique coupe comme le lâcher.',
+    ];
+
+    function refresh() {
+      if (!st.porte) { st.dedans = false; }
+      $('#m-dedans').disabled = !st.porte;
+      $('#m-dedans').checked = st.dedans;
+      const s = state();
+      const MAP = {
+        auto:   ['VITESSE NORMALE', 'ok',   '1 500 mm/s', 'Mode automatique, enceinte fermée : le robot travaille à pleine vitesse.'],
+        stop:   ['ARRÊT DE SÉCURITÉ', 'stop', '0 mm/s',  'La porte est interverrouillée : l’ouvrir en automatique arrête le robot immédiatement.'],
+        manuel: ['MODE MANUEL', 'warn', '≤ 250 mm/s', 'Clé sur manuel : la vitesse est plafonnée, même porte fermée.'],
+        reduit: ['VITESSE RÉDUITE', 'warn', '≤ 250 mm/s', 'Opérateur dans l’enceinte, gâchette tenue : vitesse plafonnée à 250 mm/s.'],
+        hm:     ['MOTEURS HORS PUISSANCE', 'stop', '0 mm/s', 'Gâchette relâchée ou serrée à fond : la puissance est coupée. En manuel, rien ne bouge sans l’homme mort.'],
+      };
+      const m = MAP[s];
+      const b = $('#m-badge');
+      b.textContent = m[0]; b.dataset.state = m[1];
+      $('#m-mode').textContent = st.manuel ? 'MANUEL' : 'AUTO';
+      $('#m-porte').textContent = st.porte ? 'Ouverte' : 'Fermée';
+      $('#m-vit').textContent = m[2];
+      $('#m-gacv').textContent = !st.manuel ? '—'
+        : st.gpos === 1 ? 'Tenue (position 2)' : st.gpos === 0 ? 'Relâchée' : 'Serrée à fond';
+      $('#m-hint').textContent = m[3];
+      $('#m-rporte').classList.toggle('hit', s === 'stop');
+      $('#m-rgac').classList.toggle('hit', s === 'hm');
+      $('#m-rvit').classList.toggle('hit', m[2].indexOf('0 mm') === 0);
+
+      // gâchette : position, voyant, boutons
+      const sw = $('#m-sw');
+      sw.dataset.pos = st.gpos;
+      sw.classList.toggle('off', !st.manuel);
+      swBtns.forEach((btn) => {
+        btn.classList.toggle('on', +btn.dataset.p === st.gpos);
+        btn.disabled = !st.manuel;
+      });
+      $('#m-swcap').textContent = st.manuel ? SWCAP[st.gpos]
+        : 'La gâchette n’agit qu’en mode manuel : en automatique, le pendant ne commande pas la puissance.';
+
+      // panneau de vitesse dans l'image
+      const v = mmsOf(s);
+      const pan = $('#m-spdpan');
+      pan.dataset.state = m[1];
+      $('#m-spv').textContent = v.toLocaleString('fr-FR');
+      $('#m-spb').style.width = Math.max(v === 0 ? 0 : 2, (v / V_MAX) * 100) + '%';
+      $('#m-spnote').innerHTML = v === 0 ? 'À l’arrêt — puissance coupée'
+        : v === V_MAX ? 'Vitesse de production'
+        : 'Plafond manuel — trait rouge à 250 mm/s';
+    }
+
+    V.step = function (dt) {
+      const A = st.anim;
+      const k = Math.min(1, dt * 4);
+      A.door += ((st.porte ? 1 : 0) - A.door) * k;
+      A.key += ((st.manuel ? 1 : 0) - A.key) * k;
+      A.pos += ((st.dedans ? 1 : 0) - A.pos) * k;
+      doorPivot.rotation.y = -A.door * 1.75;
+      keyPivot.rotation.z = -A.key * 1.0;
+      lamp.material.color.setHex(st.manuel ? 0xf0a202 : 0x17a05e);
+      pend.visible = st.manuel;
+      const okGac = st.gpos === 1;
+      pLamp.material.color.setHex(okGac ? 0x17a05e : 0xd2232a);
+      // 0 relâchée (sortie), 1 intermédiaire, 2 enfoncée à fond
+      const tx = [-0.142, -0.116, -0.098][st.gpos];
+      pTrig.position.x += (tx - pTrig.position.x) * Math.min(1, dt * 14);
+      pTrig.material.color.setHex(okGac ? 0xd96a00 : 0x8b949e);
+      const p = P_EXT.clone().lerp(P_IN, A.pos);
+      op.root.position.copy(p);
+      op.root.rotation.y = Math.atan2(p.x, p.z);
+      op.setWalk(performance.now() / 1000 * 9, Math.abs((st.dedans ? 1 : 0) - A.pos) > 0.01 ? 1 : 0.12);
+
+      st.ph += dt * speedOf(state()) * 0.5;
+      const a = st.ph * Math.PI * 2 * 1.5;
+      V.robot.setPose(80 * Math.sin(a * 0.75), lerp(8, 62, 0.5 + 0.5 * Math.sin(a * 1.5)),
+        lerp(-118, -28, 0.5 + 0.5 * Math.sin(a * 2.2)), 14 * Math.sin(a));
+    };
+
+    const swBtns = $$('#m-sw .swbtn button');
+    swBtns.forEach((btn) => btn.addEventListener('click', () => {
+      st.gpos = +btn.dataset.p;
+      refresh();
+    }));
+    $('#m-cle').addEventListener('change', (ev) => {
+      st.manuel = ev.target.checked;
+      if (!st.manuel) st.gpos = 1;         // on repart de la position tenue
+      refresh();
+    });
+    $('#m-porte-c').addEventListener('change', (ev) => { st.porte = ev.target.checked; refresh(); });
+    $('#m-dedans').addEventListener('change', (ev) => { st.dedans = ev.target.checked; refresh(); });
+    refresh();
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 7 — Robotique collaborative : les quatre modes
+  // ==========================================================
+  function viewCollab(canvas) {
+    const V = makeView(canvas);
+    V.camera.position.set(5.0, 3.5, 6.0);
+    V.target.set(0.05, 0.55, 0.15);
+    V.camera.lookAt(V.target);
+
+    // bras collaboratif : même cinématique, échelle plus petite
+    const SC = 0.66;
+    V.robot.root.scale.set(SC, SC, SC);
+    const RC = REACH * SC;                 // portée du bras collaboratif
+    const RCOLLAB = RC + 0.55;             // espace de collaboration
+
+    const VH = 1.6;        // vitesse d'approche de l'opérateur, m/s
+    const TSTOP = 0.5;     // temps de réaction + temps d'arrêt, s
+    const CINTR = 0.20;    // complément d'intrusion, m
+    const KF = 560;        // N par m/s — estimation pédagogique de l'effort au contact
+    const VMAX = 1000;     // plafond de l'échelle de vitesse, mm/s
+
+    function circleLine(r, color, dashed) {
+      const pts = [];
+      for (let i = 0; i <= 120; i++) {
+        const a = (i / 120) * Math.PI * 2;
+        pts.push(new THREE.Vector3(Math.cos(a) * r, 0.014, Math.sin(a) * r));
+      }
+      const mat = dashed
+        ? new THREE.LineDashedMaterial({ color, dashSize: 0.11, gapSize: 0.08 })
+        : new THREE.LineBasicMaterial({ color });
+      const l = new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat);
+      if (dashed) l.computeLineDistances();
+      return l;
+    }
+
+    // espace de collaboration
+    const collabDisc = new THREE.Mesh(new THREE.CircleGeometry(RCOLLAB, 96),
+      new THREE.MeshBasicMaterial({ color: 0x17a05e, transparent: true, opacity: 0.13,
+        side: THREE.DoubleSide, depthWrite: false }));
+    collabDisc.rotation.x = -Math.PI / 2; collabDisc.position.y = 0.004;
+    V.scene.add(collabDisc);
+    V.scene.add(circleLine(RCOLLAB, 0x17a05e, false));
+    V.scene.add(circleLine(RC, 0x8b949e, true));
+
+    // distance de séparation : un disque d'unité, mis à l'échelle chaque image
+    const sepDisc = new THREE.Mesh(new THREE.CircleGeometry(1, 96),
+      new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.2,
+        side: THREE.DoubleSide, depthWrite: false }));
+    sepDisc.rotation.x = -Math.PI / 2; sepDisc.position.y = 0.008;
+    V.scene.add(sepDisc);
+    const sepRing = circleLine(1, 0xd2232a, false);
+    V.scene.add(sepRing);
+
+    const op = buildOperator(THREE);
+    V.scene.add(op.root);
+
+    const dl = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
+    const distLine = new THREE.Line(dl, new THREE.LineDashedMaterial({
+      color: 0x8b949e, dashSize: 0.12, gapSize: 0.09 }));
+    V.scene.add(distLine);
+
+    // point de contact, visible en mode 4
+    const hit = new THREE.Mesh(new THREE.SphereGeometry(0.075, 18, 14),
+      new THREE.MeshBasicMaterial({ color: 0xd2232a, depthTest: false, depthWrite: false }));
+    hit.renderOrder = 14; hit.visible = false;
+    V.scene.add(hit);
+
+    const st = { mode: 0, auto: true, dist: 2.6, vprog: 600, seuil: 140, t: 0.3, ph: 0, walk: 0 };
+
+    const MHINT = [
+      'Le robot est à l’arrêt tant que l’opérateur est dans l’espace de collaboration, et repart quand il en sort. Il faut donc un moyen de détecter sa présence.',
+      'L’opérateur commande lui-même le mouvement, par un dispositif prévu pour cela et muni d’une validation. La vitesse reste plafonnée.',
+      'Le robot ralentit à mesure que l’opérateur approche, de façon à pouvoir toujours s’arrêter avant le contact. La distance de séparation se recalcule en permanence.',
+      'Le contact est admis, à condition que l’effort reste sous le seuil de la partie du corps exposée. Montez la vitesse programmée : c’est le seuil qui impose la vitesse, et non l’inverse.',
+    ];
+
+    function compute(dist) {
+      const v = st.vprog / 1000;
+      let veff = v, state = 'ok', S = null, F = null, txt = '', vadm = null, over = false;
+      if (st.mode === 0) {
+        if (dist <= RCOLLAB) { veff = 0; state = 'stop'; txt = 'Arrêt de sécurité contrôlé'; }
+        else txt = 'Espace libre — vitesse de production';
+      } else if (st.mode === 1) {
+        veff = Math.min(v, 0.25);
+        state = dist <= RCOLLAB ? 'warn' : 'ok';
+        txt = dist <= RCOLLAB ? 'Guidage manuel — 250 mm/s au plus'
+                              : 'Hors espace partagé — guidage inactif';
+      } else if (st.mode === 2) {
+        const vadm = Math.max(0, (dist - VH * TSTOP - CINTR) / TSTOP);
+        veff = Math.min(v, vadm);
+        S = VH * TSTOP + veff * TSTOP + CINTR;
+        state = veff <= 0.002 ? 'stop' : (veff < v - 0.002 ? 'warn' : 'ok');
+        txt = veff <= 0.002 ? 'Distance de séparation atteinte — arrêt'
+            : veff < v - 0.002 ? 'Vitesse bridée par la distance'
+            : 'Distance suffisante — vitesse de production';
+      } else {
+        veff = v;
+        F = KF * veff;
+        vadm = st.seuil / KF;
+        const contact = dist <= RC;
+        over = F > st.seuil + 0.5;
+        state = over ? (contact ? 'stop' : 'warn') : (contact ? 'warn' : 'ok');
+        txt = over
+          ? 'Trop rapide pour ce seuil — descendre à ' +
+            Math.round(vadm * 1000).toLocaleString('fr-FR') + ' mm/s'
+          : contact ? 'Contact possible, effort sous le seuil'
+                    : 'Hors de portée — effort admissible';
+      }
+      return { veff, state, S, F, txt, vadm, over };
+    }
+
+    V.step = function (dt) {
+      let dist;
+      if (st.auto) {
+        st.t += dt * 0.07;
+        dist = lerp(5.2, 0.62, 0.5 - 0.5 * Math.cos(st.t * Math.PI * 2));
+      } else dist = st.dist;
+
+      const r = compute(dist);
+
+      const ang = d2r(26);
+      const px = Math.cos(ang) * dist, pz = Math.sin(ang) * dist;
+      op.root.position.set(px, 0, pz);
+      op.root.rotation.y = Math.atan2(-px, -pz) + Math.PI;
+      const moving = st.auto ? Math.abs(Math.sin(st.t * Math.PI * 2)) > 0.04 : false;
+      st.walk += dt * 9;
+      op.setWalk(st.walk, moving ? 1 : 0.12);
+
+      const p = distLine.geometry.attributes.position;
+      p.setXYZ(0, 0, 0.035, 0); p.setXYZ(1, px, 0.035, pz);
+      p.needsUpdate = true;
+      distLine.computeLineDistances();
+      distLine.geometry.computeBoundingSphere();
+
+      // mouvement du bras
+      if (st.mode === 1) {
+        // guidage manuel : le bras suit la main de l'opérateur
+        const rr = clamp(dist - 0.45, 0.32, RC * 0.96);
+        const j = ikArm(rr / SC, 1.05 / SC);
+        const az = (Math.atan2(pz, px) * 180) / Math.PI;
+        V.robot.setPose(az, j.q2, j.q3, 0);
+      } else {
+        st.ph += dt * (r.veff / (VMAX / 1000)) * 0.9;
+        const a = st.ph * Math.PI * 2 * 1.6;
+        V.robot.setPose(105 * Math.sin(a * 0.7), lerp(6, 58, 0.5 + 0.5 * Math.sin(a * 1.5)),
+          lerp(-118, -26, 0.5 + 0.5 * Math.sin(a * 2.1)), 16 * Math.sin(a));
+      }
+
+      // disque de séparation : seulement en mode 3
+      const showSep = st.mode === 2 && r.S != null;
+      sepDisc.visible = showSep; sepRing.visible = showSep;
+      if (showSep) {
+        sepDisc.scale.set(r.S, r.S, 1);
+        sepRing.scale.set(r.S, 1, r.S);
+      }
+      collabDisc.material.opacity = dist <= RCOLLAB ? 0.2 : 0.11;
+
+      // contact
+      const contact = st.mode === 3 && dist <= RC;
+      hit.visible = contact;
+      if (contact) {
+        hit.position.set(Math.cos(ang) * Math.max(0.3, dist - 0.3), 1.05,
+                         Math.sin(ang) * Math.max(0.3, dist - 0.3));
+        hit.material.color.setHex(r.F <= st.seuil + 0.5 ? 0xc87e00 : 0xd2232a);
+      }
+
+      // affichage
+      const mm = Math.round(r.veff * 1000);
+      $('#c-spv').textContent = mm.toLocaleString('fr-FR');
+      $('#c-spb').style.width = Math.max(mm === 0 ? 0 : 2, (mm / VMAX) * 100) + '%';
+      $('#c-cmt').textContent = r.txt;
+      const pan = $('#c-pan');
+      pan.dataset.state = r.state;
+      const b = $('#c-badge');
+      b.dataset.state = r.state;
+      b.textContent = ['Arrêt de sécurité contrôlé', 'Guidage manuel',
+                       'Vitesse et distance de séparation', 'Puissance et force limitées'][st.mode];
+      $('#c-dist').textContent = fmtMm(dist);
+      $('#c-veff').textContent = mm.toLocaleString('fr-FR') + ' mm/s';
+      $('#c-S').textContent = r.S == null ? '—' : fmtMm(r.S);
+      $('#c-rs').classList.toggle('hit', r.S != null && dist <= r.S + 0.02);
+      $('#c-fqs').textContent = st.seuil + ' N';
+      $('#c-ftr').textContent = (st.seuil * 2) + ' N';
+      $('#c-f').textContent = r.F == null ? '—' : Math.round(r.F) + ' N';
+      $('#c-rf').classList.toggle('hit', r.over);
+      $('#c-va').textContent = r.vadm == null ? '—'
+        : Math.round(r.vadm * 1000).toLocaleString('fr-FR') + ' mm/s';
+      $('#c-rva').classList.toggle('hit', r.over);
+      $('#c-warn').hidden = !r.over;
+      if (st.auto) $('#c-d').value = Math.round(dist * 100);
+      $('#c-dv').textContent = fmtMm(dist);
+    };
+
+    V.reset = function () { st.t = 0.3; st.ph = 0; };
+
+    function setMode(m) {
+      st.mode = m;
+      $$('#c-modes button').forEach((x) => x.classList.toggle('on', +x.dataset.m === m));
+      $('#c-mhint').textContent = MHINT[m];
+    }
+    $$('#c-modes button').forEach((x) =>
+      x.addEventListener('click', () => setMode(+x.dataset.m)));
+    $$('#c-body button').forEach((x) => x.addEventListener('click', () => {
+      st.seuil = +x.dataset.f;
+      $$('#c-body button').forEach((y) => y.classList.toggle('on', y === x));
+    }));
+    $('#c-auto').addEventListener('change', (ev) => {
+      st.auto = ev.target.checked;
+      $('#c-d').disabled = st.auto;
+    });
+    $('#c-d').addEventListener('input', (ev) => { st.dist = +ev.target.value / 100; });
+    $('#c-v').addEventListener('input', (ev) => {
+      st.vprog = +ev.target.value;
+      $('#c-vv').textContent = st.vprog.toLocaleString('fr-FR') + ' mm/s';
+    });
+    $('#c-vv').textContent = st.vprog.toLocaleString('fr-FR') + ' mm/s';
+    setMode(0);
+    return V;
+  }
+
+  // ==========================================================
+  //  VUE 8 — L'effecteur : charge utile, diagramme de charge, aptitude au contact
+  //  Diagramme relevé sur la documentation ABB IRB 6620-150/2.2
+  // ==========================================================
+  const LOAD_CURVES = {
+    60: [[0,.845],[.022,.845],[.044,.843],[.065,.843],[.087,.841],[.109,.839],[.131,.837],[.152,.833],[.178,.829],[.216,.823],[.24,.823],[.277,.808],[.299,.802],[.321,.794],[.345,.786],[.366,.778],[.388,.77],[.412,.76],[.434,.751],[.457,.739],[.479,.729],[.497,.719],[.56,0]],
+    80: [[0,.637],[.026,.635],[.048,.635],[.069,.633],[.091,.631],[.117,.627],[.139,.625],[.16,.621],[.184,.619],[.208,.619],[.238,.601],[.261,.593],[.283,.586],[.305,.578],[.329,.568],[.35,.558],[.372,.548],[.394,.509],[.4,.45],[.406,.391],[.412,.332],[.418,.273],[.424,.214],[.43,.155],[.436,.096],[.442,.037],[.446,0]],
+    100: [[0,.499],[.022,.499],[.044,.497],[.069,.495],[.091,.493],[.113,.489],[.139,.487],[.16,.487],[.182,.476],[.206,.468],[.23,.46],[.251,.452],[.275,.442],[.297,.432],[.319,.422],[.329,.371],[.335,.318],[.341,.259],[.347,.2],[.352,.145],[.358,.092],[.364,.039],[.368,0]],
+    120: [[0,.401],[.022,.401],[.044,.401],[.065,.399],[.087,.395],[.109,.395],[.131,.387],[.152,.387],[.176,.375],[.198,.367],[.22,.36],[.242,.35],[.263,.34],[.275,.336],[.312,0]],
+    150: [[0,.299],[.022,.299],[.044,.297],[.065,.295],[.087,.291],[.109,.291],[.133,.285],[.156,.273],[.18,.265],[.202,.255],[.224,.246],[.234,.189],[.242,.126],[.25,.069],[.257,.014],[.259,0]],
+    155: [[0,.222],[.022,.222],[.044,.22],[.067,.216],[.097,.208],[.119,.2],[.141,.2],[.162,.189],[.184,.179],[.208,.167],[.228,.116],[.24,.057],[.25,0]],
+  };
+  const LC_MASS = [60, 80, 100, 120, 150, 155];
+
+  // hauteur admissible du centre de gravité, pour une masse tabulée et un déport L
+  function zMaxAt(m, L) {
+    const p = LOAD_CURVES[m];
+    if (L <= 0) return p[0][1];
+    for (let i = 1; i < p.length; i++) {
+      if (L <= p[i][0]) {
+        const t = (L - p[i - 1][0]) / (p[i][0] - p[i - 1][0] || 1);
+        return lerp(p[i - 1][1], p[i][1], t);
+      }
+    }
+    return -1;                                   // au-delà de la courbe
+  }
+  // masse maximale admissible au point (L, Z), par interpolation entre les courbes
+  function massAt(L, Z) {
+    const z = LC_MASS.map((m) => zMaxAt(m, L));
+    if (z[0] < 0 || Z > z[0]) return 0;          // au-delà de la courbe 60 kg
+    for (let i = 1; i < LC_MASS.length; i++) {
+      if (z[i] < 0) return LC_MASS[i - 1];       // cette masse ne va pas jusque-là
+      if (Z > z[i]) {
+        const t = (z[i - 1] - Z) / (z[i - 1] - z[i] || 1);
+        return lerp(LC_MASS[i - 1], LC_MASS[i], t);
+      }
+    }
+    return LC_MASS[LC_MASS.length - 1];
+  }
+
+  function viewEffecteur(canvas) {
+    const V = makeView(canvas);
+
+    // le diagramme est celui d'un IRB 6620 (portée 2,2 m) : on met le modèle
+    // générique à cette échelle pour que l'outil soit à sa vraie taille
+    const SC = 2.2 / 1.6;
+    V.robot.root.scale.setScalar(SC);
+
+    const POSE = { q1: 26, q2: 55, q3: 25, q5: 0 };
+    V.robot.setPose(POSE.q1, POSE.q2, POSE.q3, POSE.q5);
+    const aw = d2r(POSE.q1);
+    const side = d2r(POSE.q1 + 82);
+
+    // l'outil conique du modèle laisse la place à l'effecteur détaillé
+    V.robot.wrist.children.forEach((o) => {
+      if (o.geometry && o.geometry.type === 'ConeGeometry') o.visible = false;
+    });
+
+    // ---- effecteur monté sur la bride (dimensions en mètres réels) --------
+    const FLANGE_Y = 0.20;                        // face de bride, en sortie de poignet
+    const tool = new THREE.Group();
+    tool.position.y = FLANGE_Y / SC;              // le poignet porte l'échelle SC
+    tool.scale.setScalar(1 / SC);                 // les enfants sont en mètres réels
+    V.robot.wrist.add(tool);
+
+    const steel = new THREE.MeshStandardMaterial({ color: 0xc3cad2, roughness: 0.55, metalness: 0.15 });
+    const dark = new THREE.MeshStandardMaterial({ color: 0x6b7683, roughness: 0.6, metalness: 0.1 });
+
+    const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.026, 30),
+      new THREE.MeshStandardMaterial({ color: 0x2f7bd4, roughness: 0.45, metalness: 0.1 }));
+    flange.position.y = 0.013; tool.add(flange);
+    for (let i = 0; i < 6; i++) {
+      const b = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.036, 10), dark);
+      const t = (i / 6) * Math.PI * 2;
+      b.position.set(Math.cos(t) * 0.072, 0.022, Math.sin(t) * 0.072);
+      tool.add(b);
+    }
+
+    const body = new THREE.Mesh(new THREE.BoxGeometry(0.17, 1, 0.14), steel);
+    tool.add(body);
+    // mors : plus sombres que la pièce, pour qu'on voie ce qui serre et ce qui est serré
+    const jawMat = new THREE.MeshStandardMaterial({ color: 0x46505b, roughness: 0.5, metalness: 0.2 });
+    const fingerL = new THREE.Mesh(new THREE.BoxGeometry(0.036, 1, 0.09), jawMat);
+    const fingerR = new THREE.Mesh(new THREE.BoxGeometry(0.036, 1, 0.09), jawMat);
+    tool.add(fingerL, fingerR);
+    const part = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x8d99a6, roughness: 0.75, metalness: 0.1 }));
+    tool.add(part);
+    // support des mors : la traverse sur laquelle les deux mors sont montés
+    const yoke = new THREE.Mesh(new THREE.BoxGeometry(1, 0.05, 0.12), steel);
+    tool.add(yoke);
+    // liaison mécanique : c'est elle qui crée le déport du centre de gravité
+    const link = new THREE.Mesh(new THREE.BoxGeometry(1, 0.055, 0.055), steel);
+    tool.add(link);
+    [body, fingerL, fingerR, part, link, yoke].forEach((m) => { m.castShadow = true; });
+
+    // carter : coque translucide autour de l'outil
+    const carter = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: 0x17a05e, transparent: true, opacity: 0.22,
+        roughness: 0.6, depthWrite: false }));
+    const carterEdge = new THREE.LineSegments(
+      new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)),
+      new THREE.LineBasicMaterial({ color: 0x17a05e }));
+    tool.add(carter, carterEdge);
+
+    // repère du centre de gravité : sphère + croix 3D
+    const cdg = new THREE.Group();
+    tool.add(cdg);
+    const cdgBall = new THREE.Mesh(new THREE.SphereGeometry(0.042, 18, 14),
+      new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false }));
+    cdgBall.renderOrder = 14; cdg.add(cdgBall);
+    const crossMat = new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false });
+    [[0, 0, 0], [0, 0, Math.PI / 2], [Math.PI / 2, 0, 0]].forEach((r) => {
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.15, 8), crossMat);
+      c.rotation.set(r[0], r[1], r[2]);
+      c.renderOrder = 14;
+      cdg.add(c);
+    });
+
+    const tcpDot = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 10),
+      new THREE.MeshBasicMaterial({ color: 0x17a05e, depthTest: false, depthWrite: false }));
+    tcpDot.renderOrder = 14; tool.add(tcpDot);
+
+    // cotes Z puis L, depuis le centre de la bride
+    const dimMat = new THREE.LineBasicMaterial({ color: 0x5a636d });
+    const dimZ = new THREE.Line(new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(), new THREE.Vector3()]), dimMat);
+    const dimL = new THREE.Line(new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(), new THREE.Vector3()]), dimMat);
+    dimZ.renderOrder = 13; dimL.renderOrder = 13;
+    tool.add(dimZ, dimL);
+
+    // arêtes dangereuses, quand l'outil n'est ni sûr ni cartérisé
+    const danger = new THREE.Group();
+    tool.add(danger);
+    for (let i = 0; i < 2; i++) {
+      danger.add(new THREE.Mesh(new THREE.ConeGeometry(0.026, 0.06, 14),
+        new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.9 })));
+    }
+
+    const st = { m: 100, z: 0.30, l: 0.12, safe: false, carter: false,
+                 auto: true, u: 0.12, fige: false };
+
+    // balayage : on éloigne le centre de gravité le long d'une même direction et
+    // on prend à chaque fois la masse maximale que le diagramme autorise
+    const SWEEP = { ang: d2r(38), dmin: 0.12, dmax: 0.70 };
+    function balayer() {
+      const d = lerp(SWEEP.dmin, SWEEP.dmax, 0.5 - 0.5 * Math.cos(st.u * Math.PI * 2));
+      st.l = d * Math.sin(SWEEP.ang);
+      st.z = d * Math.cos(SWEEP.ang);
+      st.m = Math.max(20, massAt(st.l, st.z));
+      $('#f-m').value = Math.round(st.m);
+      $('#f-z').value = Math.round(st.z * 1000);
+      $('#f-l').value = Math.round(st.l * 1000);
+    }
+
+    // Pendant la démonstration, la vue 3D reste sur une configuration fixe :
+    // ce qui bouge, c'est le diagramme. En manuel, elle suit les trois curseurs.
+    const REF = { m: 100, z: 0.36, l: 0.18 };
+    const vue = () => (st.auto ? REF : st);
+
+    function place() {
+      const V0 = vue();
+      const Z = V0.z, L = V0.l;
+      const s = 0.18 * Math.cbrt(Math.max(10, V0.m) / 100);   // côté de la pièce
+      const jawT = 0.034;                                     // épaisseur d'un mors
+
+      // corps du préhenseur, monté sur la bride
+      const bH = clamp(Z * 0.30, 0.10, 0.30);
+      body.scale.y = bH; body.position.y = 0.026 + bH / 2;
+      const ay = 0.026 + bH;
+
+      // la pièce, serrée entre les deux mors : les faces intérieures des mors
+      // viennent exactement au contact de la pièce, sans la traverser
+      part.scale.set(s, s, s);
+      part.position.set(L, Z, 0);
+      const jawD = clamp((s * 0.85) / 0.09, 0.8, 1.8);
+      fingerL.scale.set(1, s * 1.15, jawD);       // les mors débordent la pièce
+      fingerR.scale.set(1, s * 1.15, jawD);
+      fingerL.position.set(L - (s / 2 + jawT / 2), Z, 0);
+      fingerR.position.set(L + (s / 2 + jawT / 2), Z, 0);
+
+      // traverse : elle porte les deux mors et reçoit la pièce en appui
+      const yy = Z - s / 2 - 0.025;
+      yoke.scale.set(s + 2 * jawT + 0.02, 1, clamp((s * 0.9) / 0.12, 0.8, 1.6));
+      yoke.position.set(L, yy, 0);
+
+      // bras rigide entre le corps et la traverse : c'est lui qui crée le déport
+      const hx = L, hy = (yy - 0.025) - ay, len = Math.hypot(hx, hy);
+      link.scale.x = Math.max(0.02, len);
+      link.position.set(L / 2, (ay + yy - 0.025) / 2, 0);
+      link.rotation.z = Math.atan2(hy, hx);
+      link.visible = len > 0.05;
+
+      tcpDot.position.set(L, Z + s / 2 + 0.03, 0);
+      cdg.position.set(L, Z, 0);
+      dimZ.geometry.setFromPoints([new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, Z, 0)]);
+      dimL.geometry.setFromPoints([new THREE.Vector3(0, Z, 0), new THREE.Vector3(L, Z, 0)]);
+
+      const xmin = Math.min(-0.09, L - s / 2 - jawT) - 0.05;
+      const xmax = Math.max(0.09, L + s / 2 + jawT) + 0.05;
+      const top = Z + s / 2 + 0.07;
+      carter.scale.set(xmax - xmin, top - 0.026, Math.max(0.34, s + 0.16));
+      carter.position.set((xmin + xmax) / 2, 0.026 + (top - 0.026) / 2, 0);
+      carterEdge.scale.copy(carter.scale);
+      carterEdge.position.copy(carter.position);
+      // les arêtes vives : le haut des mors, là où se trouve la zone de pincement
+      danger.children[0].position.set(L - (s / 2 + jawT / 2), Z + s / 2 + 0.035, 0);
+      danger.children[1].position.set(L + (s / 2 + jawT / 2), Z + s / 2 + 0.035, 0);
+    }
+
+    function frame() {
+      const V0 = vue();
+      const big = Math.max(V0.z, Math.abs(V0.l) * 0.9);
+      const fc = fk(POSE.q2, POSE.q3, (FLANGE_Y + big * 0.55) / SC);
+      V.target.set(Math.cos(aw) * fc.r * SC, fc.y * SC, Math.sin(aw) * fc.r * SC);
+      const dist = 0.80 + 1.35 * big;
+      V.camera.position.set(V.target.x + Math.cos(side) * dist, V.target.y + 0.30 + big * 0.3,
+                            V.target.z + Math.sin(side) * dist);
+      V.camera.lookAt(V.target);
+    }
+
+    // ---- diagramme de charge --------------------------------------------
+    const PX = (L) => 40 + (L / 0.60) * 234;
+    const PY = (Z) => 172 - (Z / 0.90) * 156;
+    const NS = 'http://www.w3.org/2000/svg';
+    function el(n, at) {
+      const e = document.createElementNS(NS, n);
+      Object.keys(at).forEach((k) => e.setAttribute(k, at[k]));
+      return e;
+    }
+    function drawAxes() {
+      const g = $('#f-axes');
+      g.innerHTML = '';
+      g.appendChild(el('path', { class: 'ax', d: 'M40,12 L40,172 L286,172' }));
+      for (let v = 0; v <= 0.6001; v += 0.1) {
+        g.appendChild(el('line', { class: 'ax', x1: PX(v), y1: 172, x2: PX(v), y2: 176 }));
+        const t = el('text', { x: PX(v), y: 188, 'font-size': 9, 'text-anchor': 'middle' });
+        t.textContent = v.toFixed(1).replace('.', ','); g.appendChild(t);
+      }
+      for (let v = 0; v <= 0.9001; v += 0.1) {
+        g.appendChild(el('line', { class: 'ax', x1: 36, y1: PY(v), x2: 40, y2: PY(v) }));
+        const u = el('text', { x: 33, y: PY(v) + 3, 'font-size': 9, 'text-anchor': 'end' });
+        u.textContent = v.toFixed(1).replace('.', ','); g.appendChild(u);
+      }
+      const lx = el('text', { x: 163, y: 203, 'font-size': 9.5, 'text-anchor': 'middle' });
+      lx.textContent = 'L — déport du centre de gravité (m)';
+      g.appendChild(lx);
+      const ly = el('text', { x: 12, y: 92, 'font-size': 9.5, 'text-anchor': 'middle',
+                              transform: 'rotate(-90 12 92)' });
+      ly.textContent = 'Z (m)';
+      g.appendChild(ly);
+    }
+    function drawCurves() {
+      const g = $('#f-curves');
+      g.innerHTML = '';
+      const sel = LC_MASS.reduce((a, b) => (Math.abs(b - st.m) < Math.abs(a - st.m) ? b : a));
+      LC_MASS.forEach((m) => {
+        const p = LOAD_CURVES[m];
+        const d = 'M' + p.map(([L, Z]) => `${PX(L)},${PY(Z)}`).join(' L');
+        if (m === sel) {
+          g.appendChild(el('path', { class: 'fillok',
+            d: `M40,172 L40,${PY(p[0][1])} ` + p.map(([L, Z]) => `L${PX(L)},${PY(Z)}`).join(' ') + ' Z' }));
+        }
+        g.appendChild(el('path', { class: 'cv' + (m === sel ? ' sel' : ''), d }));
+        const k = Math.max(1, Math.round(p.length * 0.42));
+        const t = el('text', { x: PX(p[k][0]) + 4, y: PY(p[k][1]) - 4, 'font-size': 8.5,
+                               fill: m === sel ? 'var(--accent)' : 'var(--blue)' });
+        t.textContent = m + ' kg';
+        g.appendChild(t);
+      });
+    }
+    // le point de fonctionnement est construit une fois, puis simplement déplacé
+    let PT = null;
+    function drawPoint(ok) {
+      const g = $('#f-pt');
+      if (!PT) {
+        g.innerHTML = '';
+        PT = {
+          ray: el('line', { x1: PX(0), y1: PY(0), x2: PX(0), y2: PY(0), stroke: 'var(--muted)',
+                            'stroke-width': 0.9, 'stroke-dasharray': '2 4', opacity: 0.55 }),
+          hz: el('line', { x1: 40, y1: 0, x2: 0, y2: 0, 'stroke-width': 0.9,
+                           'stroke-dasharray': '3 3', opacity: 0.7 }),
+          vt: el('line', { x1: 0, y1: 172, x2: 0, y2: 0, 'stroke-width': 0.9,
+                           'stroke-dasharray': '3 3', opacity: 0.7 }),
+          halo: el('circle', { r: 10, opacity: 0.22 }),
+          dot: el('circle', { r: 5 }),
+        };
+        [PT.ray, PT.hz, PT.vt, PT.halo, PT.dot].forEach((n) => g.appendChild(n));
+      }
+      const x = PX(Math.min(0.6, st.l)), y = PY(Math.min(0.9, st.z));
+      const c = ok ? 'var(--green)' : 'var(--red)';
+      // rayon de balayage : la direction dans laquelle on éloigne la charge
+      PT.ray.setAttribute('x2', PX(Math.min(0.6, SWEEP.dmax * Math.sin(SWEEP.ang))));
+      PT.ray.setAttribute('y2', PY(Math.min(0.9, SWEEP.dmax * Math.cos(SWEEP.ang))));
+      PT.ray.style.display = st.auto ? '' : 'none';
+      PT.hz.setAttribute('y1', y); PT.hz.setAttribute('y2', y); PT.hz.setAttribute('x2', x);
+      PT.vt.setAttribute('x1', x); PT.vt.setAttribute('x2', x); PT.vt.setAttribute('y2', y);
+      [PT.hz, PT.vt].forEach((n) => n.setAttribute('stroke', c));
+      [PT.halo, PT.dot].forEach((n) => {
+        n.setAttribute('cx', x); n.setAttribute('cy', y); n.setAttribute('fill', c);
+      });
+    }
+
+    // ---- schéma « déclarer la charge au contrôleur », piloté par les mêmes valeurs
+    function drawDecl() {
+      const FX = 74, FY = 28;                       // centre de la bride
+      const x = FX + 18 + (Math.min(0.6, st.l) / 0.6) * 96;
+      const y = FY + 46 + (Math.min(0.9, st.z) / 0.9) * 68;
+      const r = 4.5 + 10 * (Math.max(10, st.m) / 155);
+      const set = (id, at) => {
+        const n = $(id);
+        if (n) Object.keys(at).forEach((k) => n.setAttribute(k, at[k]));
+      };
+      set('#dc-lz', { x1: FX, y1: FY, x2: FX, y2: y });
+      set('#dc-lxy', { x1: FX, y1: y, x2: Math.max(FX + 1, x - r - 3), y2: y });
+      set('#dc-ball', { cx: x, cy: y, r: r });
+      set('#dc-ring', { cx: x, cy: y, r: r + 6 });
+      set('#dc-body', { transform: `translate(${x},${y}) scale(${(0.55 + 0.25 * (st.m / 155)).toFixed(3)})` });
+      set('#dc-inert', { transform: `translate(${(x - 172).toFixed(1)},${(y - 124).toFixed(1)})` });
+      set('#dc-tlz', { x: FX - 8, y: (FY + y) / 2 + 3 });
+      set('#dc-tlxy', { x: (FX + x) / 2, y: y + r + 13 });
+      set('#dc-tm', { x: x + r + 7, y: y - r - 7 });
+      const tz = $('#dc-tlz'), tl = $('#dc-tlxy'), tm = $('#dc-tm');
+      if (tz) tz.textContent = 'Lz ' + Math.round(st.z * 1000) + ' mm';
+      if (tl) tl.textContent = 'Lxy ' + Math.round(st.l * 1000) + ' mm';
+      if (tm) tm.textContent = Math.round(st.m) + ' kg';
+    }
+
+    function refresh() {
+      const L = st.l, Z = st.z;
+      const d = Math.hypot(L, Z);
+      const mMax = massAt(L, Z);
+      const ok = st.m <= mMax + 0.01;
+      const s = 0.18 * Math.cbrt(Math.max(10, st.m) / 100);
+      const inertie = st.m * (L * L + s * s / 6);       // autour de l'axe de la bride
+
+      $('#f-mv').textContent = Math.round(st.m) + ' kg';
+      $('#f-zv').textContent = Math.round(Z * 1000) + ' mm';
+      $('#f-lv').textContent = Math.round(L * 1000) + ' mm';
+      $('#f-d').textContent = Math.round(d * 1000) + ' mm';
+      $('#f-mom').textContent = Math.round(st.m * 9.81 * d) + ' N·m';
+      $('#f-inert').textContent = inertie.toFixed(1).replace('.', ',') + ' kg·m²';
+      $('#f-max').textContent = mMax <= 0 ? 'hors diagramme' : Math.round(mMax) + ' kg';
+      $('#f-verdict').textContent = st.auto ? 'Sur la courbe limite'
+        : ok ? 'Dans le domaine'
+        : mMax <= 0 ? 'Point hors diagramme'
+        : 'Dépassement de ' + Math.round((st.m / mMax - 1) * 100) + ' %';
+      $('#f-rverdict').classList.toggle('hit', !ok);
+      $('#f-phrase').innerHTML = mMax <= 0
+        ? 'À cette distance, <b>aucune charge</b> n’est admissible : le point est sorti du diagramme.'
+        : 'Centre de gravité à <b>' + Math.round(d * 1000) + ' mm</b> du centre de bride ' +
+          '→ <b>' + Math.round(mMax) + ' kg</b> admissibles.';
+
+      const collab = st.safe ? 'safe' : st.carter ? 'carter' : 'ko';
+      const b = $('#f-badge');
+      if (!ok) {
+        b.dataset.state = 'stop';
+        b.textContent = 'Hors diagramme de charge';
+      } else if (collab === 'safe') {
+        b.dataset.state = 'ok';
+        b.textContent = 'Effecteur apte au contact';
+      } else if (collab === 'carter') {
+        b.dataset.state = 'warn';
+        b.textContent = 'Outil cartérisé — contact sur le carter';
+      } else {
+        b.dataset.state = 'stop';
+        b.textContent = 'Contact interdit — à cartériser';
+      }
+      $('#f-chint').innerHTML = collab === 'safe'
+        ? 'Bords arrondis, pas de zone de pincement accessible, surfaces de contact suffisantes, pièce maintenue à la coupure d’énergie : le préhenseur peut entrer dans l’espace collaboratif tel quel.'
+        : collab === 'carter'
+          ? 'L’outil n’est pas conçu pour le contact, mais son carter l’est : c’est le carter qui touche l’opérateur. Les limites de l’ISO/TS 15066 se vérifient alors sur le carter, pièce comprise.'
+          : 'Un robot collaboratif ne rend pas l’application collaborative : tant que l’outil présente des arêtes vives ou une zone de pincement, il faut le <b>cartériser</b> — ou renoncer au mode collaboratif et séparer.';
+
+      carter.visible = st.carter && !st.safe;
+      carterEdge.visible = carter.visible;
+      danger.visible = !st.safe && !st.carter;
+
+      drawCurves();
+      drawPoint(ok);
+      drawDecl();
+      // en démonstration la scène 3D est figée : on ne la reconstruit qu'une fois
+      if (!st.auto) {
+        st.fige = false;
+        place(); frame(); chips(ok);
+      } else if (!st.fige) {
+        st.fige = true;
+        place(); frame(); chips(REF.m <= massAt(REF.l, REF.z) + 0.01);
+      }
+      $('#f-ahint').textContent = st.auto
+        ? 'Pendant la démonstration, la vue 3D reste sur un exemple fixe — c’est le diagramme qui bouge. Décochez pour piloter les trois curseurs.'
+        : 'Les trois curseurs pilotent la vue 3D, le diagramme et le schéma de déclaration.';
+    }
+
+    // étiquettes posées sur la scène
+    function chips(ok) {
+      const V0 = vue();
+      const d = Math.hypot(V0.l, V0.z);
+      V.scene.updateMatrixWorld(true);
+      V.camera.updateMatrixWorld(true);
+      V.camera.updateProjectionMatrix();
+      const pv = (o) => {
+        const p = new THREE.Vector3().setFromMatrixPosition(o.matrixWorld).project(V.camera);
+        return { x: (p.x + 1) / 2 * 100, y: (1 - p.y) / 2 * 100 };
+      };
+      const a = pv(cdg), c = pv(flange);
+      $('#f-chips').innerHTML =
+        '<div class="chip" style="left:' + clamp(a.x + 13, 12, 88).toFixed(1) +
+        '%;top:' + clamp(a.y - 6, 8, 92).toFixed(1) + '%">' +
+        '<div class="hd">Centre de gravité</div>' +
+        (st.auto ? '' : '<div class="' + (ok ? 'ok' : 'ko') + '">' +
+          Math.round(V0.m) + ' kg à ' + Math.round(d * 1000) + ' mm</div>') + '</div>' +
+        '<div class="chip tag-only" style="left:' + clamp(c.x - 1, 10, 90).toFixed(1) +
+        '%;top:' + clamp(c.y + 13, 8, 92).toFixed(1) + '%">' +
+        '<div class="hd">Bride</div></div>';
+    }
+
+    V.step = function (dt) {
+      if (!st.auto || !(dt > 0)) return;     // en manuel, rien ne bouge tout seul
+      st.u = (st.u + dt * 0.055) % 1;        // un aller-retour complet en ~18 s
+      balayer();
+      refresh();
+    };
+    V.reset = function () { st.u = 0.12; if (st.auto) balayer(); refresh(); };
+
+    drawAxes();
+    function syncAuto() {
+      ['#f-m', '#f-z', '#f-l'].forEach((s) => { $(s).disabled = st.auto; });
+      st.fige = false;
+      if (st.auto) balayer();
+      refresh();
+    }
+    $('#f-auto').addEventListener('change', (e) => { st.auto = e.target.checked; syncAuto(); });
+    $('#f-m').addEventListener('input', (e) => { st.m = +e.target.value; refresh(); });
+    $('#f-z').addEventListener('input', (e) => { st.z = +e.target.value / 1000; refresh(); });
+    $('#f-l').addEventListener('input', (e) => { st.l = +e.target.value / 1000; refresh(); });
+    $('#f-safe').addEventListener('change', (e) => {
+      st.safe = e.target.checked;
+      if (st.safe) { st.carter = false; $('#f-carter').checked = false; }
+      refresh();
+    });
+    $('#f-carter').addEventListener('change', (e) => {
+      st.carter = e.target.checked;
+      if (st.carter) { st.safe = false; $('#f-safe').checked = false; }
+      refresh();
+    });
+    syncAuto();
+    return V;
+  }
+
+  // ----------------------------------------------------------
+  //  Orchestration
+  // ----------------------------------------------------------
+  const BUILDERS = { enveloppe: viewEnveloppe, butees: viewButees, zoneoutil: viewZoneOutil,
+                     zones: viewZones, modes: viewModes, urgence: viewUrgence,
+                     collab: viewCollab, effecteur: viewEffecteur };
+  const views = {};
+  let current = 'enveloppe';
+
+  function activate(name) {
+    current = name;
+    $$('.tab').forEach((b) => {
+      const on = b.dataset.view === name;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    $$('.pane').forEach((p) => { p.hidden = p.dataset.view !== name; });
+    $('#transport').hidden = (name === 'modes' || name === 'urgence' || name === 'effecteur');
+    if (!views[name]) views[name] = BUILDERS[name]($('#cv-' + name));
+    views[name].resize();
+  }
+
+  $$('.tab').forEach((b) => b.addEventListener('click', () => activate(b.dataset.view)));
+
+  let playing = true;
+  let speed = 1;
+  const spIn = $('#tp-speed');
+  if (spIn) {
+    spIn.addEventListener('input', () => {
+      speed = +spIn.value / 100;
+      $('#tp-spv').textContent = '×' + speed.toFixed(1).replace('.', ',');
+    });
+  }
+  function setPlay(p) {
+    playing = p;
+    $('#tp-play').classList.toggle('on', p);
+    $('#tp-pause').classList.toggle('on', !p);
+  }
+  $('#tp-play').addEventListener('click', () => setPlay(true));
+  $('#tp-pause').addEventListener('click', () => setPlay(false));
+  $('#tp-stop').addEventListener('click', () => {
+    setPlay(false);
+    const V = views[current];
+    if (V && V.reset) V.reset();
+  });
+
+  let last = performance.now();
+  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function loop(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    const V = views[current];
+    if (V) { V.resize(); V.step(playing ? (reduce ? dt * 0.35 : dt) * speed : 0); V.render(); }
+    requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('resize', () => { Object.values(views).forEach((v) => v.resize()); });
+  const mq = window.matchMedia('(prefers-color-scheme: dark)');
+  mq.addEventListener('change', () => Object.values(views).forEach((v) => v.applyTheme()));
+  new MutationObserver(() => Object.values(views).forEach((v) => v.applyTheme()))
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+  activate('enveloppe');
+  requestAnimationFrame(loop);
+})();
+
+</script>
+
+</body>
+</html>
