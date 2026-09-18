@@ -3,3 +3,6 @@ desktop.ini
 .DS_Store
 *.tmp
 ~$*
+
+# Mémo de travail local, pas destiné au site
+NOTES.md
