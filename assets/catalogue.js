@@ -27,16 +27,16 @@ window.CATALOGUE = {
   ],
 
   tp: [
-    // Exemple de ce qu'une entrée de TP contiendra :
-    // {
-    //   slug: 'manipulation-abb',
-    //   titre: 'Manipulation d’un robot ABB',
-    //   sous: 'IRB 140 et IRB 6620',
-    //   texte: 'Repérage des dispositifs de sécurité, questionnaire autocorrigé, ' +
-    //          'comparatif des deux machines.',
-    //   tags: ['TP', 'ABB'],
-    //   maj: '2026-09-17',
-    //   icone: 'cle',
-    // },
+    {
+      slug: 'manipulation-robot-abb',
+      titre: 'Manipulation d’un robot ABB',
+      sous: 'IRB 140 et IRB 6620, TP auto-corrigé',
+      texte: 'Repérage des dix dispositifs de sécurité sur la cellule, questionnaire à ' +
+             'correction immédiate, questions à défendre à l’oral, comparatif des deux ' +
+             'machines et checklist de feu vert avant manipulation.',
+      tags: ['TP', 'ABB', 'Sécurité'],
+      maj: '2026-09-18',
+      icone: 'cle',
+    },
   ],
 };

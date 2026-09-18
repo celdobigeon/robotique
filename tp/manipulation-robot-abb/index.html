@@ -1,0 +1,655 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Manipulation d’un robot ABB — Robotique industrielle</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
+  --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
+  --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
+  --robot:#F07C00; --metal:#8B949E; --dark:#3B4149;
+  --fieldstop:rgba(210,35,42,.46); --fieldwarn:rgba(200,126,0,.44);
+  --okbg:rgba(23,160,94,.10); --kobg:rgba(210,35,42,.09);
+  --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+    --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+    --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+    --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+    --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
+    --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+  --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+  --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+  --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+  --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
+  --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:30px 48px;
+  display:flex;flex-direction:column;gap:26px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,38px);line-height:1.1;
+  letter-spacing:-.02em;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:66ch;margin:10px 0 0}
+.switch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.switch .lbl{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-family:Archivo,sans-serif;font-weight:600;font-size:14.5px;
+  background:none;border:0;border-radius:6px;padding:7px 18px;color:var(--muted);cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  box-shadow:var(--shadow);margin:0}
+.specs div{background:var(--surface);padding:11px 14px 13px}
+.specs dt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 3px}
+.specs dd{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:16px;
+  font-variant-numeric:tabular-nums;line-height:1.3}
+.specs dd.soft{font-weight:500;font-size:14px;color:var(--muted);font-style:italic}
+section{display:flex;flex-direction:column;gap:14px}
+h2{font-family:Archivo,sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;
+  margin:0;display:flex;align-items:baseline;gap:10px;text-wrap:balance}
+h2 .step{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:#fff;
+  background:var(--accent);border-radius:5px;padding:2px 8px;letter-spacing:.06em;
+  position:relative;top:-2px;flex:none}
+h3{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:16px}
+.sub{color:var(--muted);margin:-4px 0 0;max-width:72ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:16px 17px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:13px}
+.figure{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  box-shadow:var(--shadow);overflow:hidden}
+.figure .svgbox{overflow-x:auto}
+.figure svg{display:block;width:100%;min-width:660px;height:auto}
+.figcap{border-top:1px solid var(--line);padding:11px 16px 13px;font-size:13px;color:var(--muted)}
+.figcap b{color:var(--ink);font-weight:600}
+.match{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+@media (max-width:760px){.match{grid-template-columns:minmax(0,1fr)}}
+.mrow{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--line);border-radius:9px;
+  padding:8px 10px;background:var(--surface-2)}
+.mrow .no{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:#fff;
+  background:var(--dark);border-radius:50%;width:24px;height:24px;flex:none;
+  display:flex;align-items:center;justify-content:center;margin-top:3px}
+.mrow .fld{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.mrow select{font:inherit;font-size:13.5px;width:100%;background:var(--surface);color:var(--ink);
+  border:1px solid var(--line);border-radius:7px;padding:6px 8px}
+.mrow select:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.mrow .why{font-size:12.5px;line-height:1.4;color:var(--muted)}
+.mrow.ok{border-color:var(--green);background:var(--okbg)}
+.mrow.ok .no{background:var(--green)}
+.mrow.ko{border-color:var(--red);background:var(--kobg)}
+.mrow.ko .no{background:var(--red)}
+.q{border-top:1px solid var(--line);padding-top:13px;display:flex;flex-direction:column;gap:8px}
+.q:first-of-type{border-top:0;padding-top:0}
+.q .ask{font-weight:600;display:flex;gap:9px;align-items:flex-start}
+.q .ask .n{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--accent);
+  font-weight:500;flex:none;padding-top:2px}
+.opts{display:flex;flex-direction:column;gap:5px;margin-left:30px}
+.opt{display:flex;gap:9px;align-items:flex-start;font-size:14px;cursor:pointer;
+  border:1px solid transparent;border-radius:7px;padding:5px 8px;line-height:1.45}
+.opt:hover{background:var(--surface-2)}
+.opt input{accent-color:var(--accent);margin:3px 0 0;flex:none}
+.opt.good{border-color:var(--green);background:var(--okbg)}
+.opt.bad{border-color:var(--red);background:var(--kobg)}
+.expl{margin-left:30px;border-left:3px solid var(--accent);background:var(--surface-2);
+  border-radius:0 8px 8px 0;padding:9px 13px;font-size:13.5px}
+.btns{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button.act{font:inherit;font-size:14px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 14px;color:var(--ink);cursor:pointer}
+button.act:hover{border-color:var(--muted)}
+button.act.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.act.primary:hover{filter:brightness(1.07)}
+button.act:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.score{font-family:Archivo,sans-serif;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+.score.ok{color:var(--green)} .score.mid{color:var(--amber)} .score.ko{color:var(--red)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:var(--surface);
+  box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);font-weight:500}
+thead th.here{color:var(--accent)}
+tbody th{font-weight:600;color:var(--ink);width:34%}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+td{font-variant-numeric:tabular-nums}
+td.here{background:var(--surface-2);font-weight:600}
+td.fill{color:var(--muted);font-style:italic;font-variant-numeric:normal}
+details{border:1px solid var(--line);border-radius:9px;background:var(--surface-2);
+  padding:10px 13px}
+summary{cursor:pointer;font-weight:600;font-size:14.5px;line-height:1.45}
+summary::marker{color:var(--accent)}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+details .ans{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:14px;
+  color:var(--muted)}
+details .ans b{color:var(--ink);font-weight:600}
+.openlist{display:flex;flex-direction:column;gap:9px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer;
+  padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2)}
+.check input{accent-color:var(--green);width:17px;height:17px;margin:2px 0 0;flex:none}
+.check:has(input:checked){border-color:var(--green);background:var(--okbg)}
+.gate{border-radius:9px;padding:11px 14px;font-size:14.5px;font-weight:600;
+  background:var(--kobg);border:1px solid var(--red);color:var(--red);margin:0}
+.gate.go{background:var(--okbg);border-color:var(--green);color:var(--green)}
+.note{border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px}
+.note b{font-family:Archivo,sans-serif}
+.warn{border-left:3px solid var(--red);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px}
+.warn b{color:var(--red);font-family:Archivo,sans-serif}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* --- fil d'Ariane ajouté pour l'intégration au site --- */
+.crumb{border-bottom:1px solid var(--line);background:var(--surface);font-size:14px}
+.crumb .in{max-width:1180px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;
+  gap:9px;color:var(--muted);flex-wrap:wrap}
+.crumb a{text-decoration:none;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.crumb a:hover{color:var(--ink)}
+.crumb a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.crumb svg{display:block;width:18px;height:18px;color:var(--accent)}
+.crumb .sep{opacity:.45}
+.crumb b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>Manipulation d’un robot ABB</b></div></div>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Robotique industrielle — TP sécurité</p>
+    <h1>Manipulation robot ABB</h1>
+    <p class="lede" id="lede"></p>
+    <div class="switch">
+      <span class="lbl">Robot étudié</span>
+      <div class="seg" role="group" aria-label="Robot étudié">
+        <button type="button" id="b140" aria-pressed="true">IRB 140</button>
+        <button type="button" id="b6620" aria-pressed="false">IRB 6620</button>
+      </div>
+    </div>
+  </header>
+
+  <dl class="specs" id="specs"></dl>
+
+  <section>
+    <h2><span class="step">1</span> <span id="t1"></span></h2>
+    <p class="sub">Dix repères sont placés sur le schéma. Associez chaque numéro au dispositif
+      qu'il désigne, puis allez vérifier sur la cellule réelle que vous savez le montrer du
+      doigt.</p>
+    <div class="figure">
+      <div class="svgbox" id="fig140"><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
+     aria-label="Schéma d'une cellule ABB IRB 140 sans protecteur fixe : le robot est posé sur une table, un scrutateur laser surveille un plan horizontal proche du sol, et deux champs sont matérialisés au sol — champ d'alerte puis champ de protection. L'armoire IRC5 et le boîtier d'apprentissage se trouvent à l'extérieur. Dix repères numérotés désignent les dispositifs de sécurité.">
+  <defs>
+    <pattern id="astop" width="10" height="10" patternTransform="rotate(45)"
+             patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="10" stroke="var(--fieldstop)" stroke-width="6"/>
+    </pattern>
+    <pattern id="awarn" width="14" height="14" patternTransform="rotate(45)"
+             patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="14" stroke="var(--fieldwarn)" stroke-width="5"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="980" height="560" fill="var(--ground)"/>
+  <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
+  <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
+
+  <rect x="258" y="474" width="184" height="9" fill="var(--dark)"/>
+  <rect x="200" y="489" width="300" height="13" fill="url(#astop)"
+        stroke="var(--red)" stroke-width="1"/>
+  <rect x="140" y="508" width="420" height="13" fill="url(#awarn)"
+        stroke="var(--amber)" stroke-width="1"/>
+
+  <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
+    <rect x="646" y="482" width="26" height="8" fill="var(--dark)"/>
+    <text x="682" y="490">Espace maximal du robot</text>
+    <rect x="646" y="502" width="26" height="12" fill="url(#astop)"
+          stroke="var(--red)" stroke-width="1"/>
+    <text x="682" y="512">Champ de protection — arrêt</text>
+    <rect x="646" y="523" width="26" height="12" fill="url(#awarn)"
+          stroke="var(--amber)" stroke-width="1"/>
+    <text x="682" y="533">Champ d'alerte — ralentissement</text>
+  </g>
+
+  <rect x="108" y="440" width="14" height="30" fill="var(--dark)"/>
+  <rect x="96" y="412" width="38" height="28" rx="4" fill="var(--dark)"/>
+  <circle cx="115" cy="426" r="8" fill="var(--red)"/>
+  <line x1="134" y1="426" x2="250" y2="426" stroke="var(--red)" stroke-width="2.2"
+        stroke-dasharray="8 6"/>
+  <text x="140" y="414" font-size="12.5" fill="var(--muted)"
+        font-family="IBM Plex Sans, sans-serif">plan de détection ≈ 0,2 m</text>
+
+  <rect x="250" y="384" width="200" height="86" fill="var(--surface-2)"
+        stroke="var(--metal)" stroke-width="1.6"/>
+  <rect x="240" y="368" width="220" height="16" rx="3" fill="var(--metal)"/>
+
+  <rect x="320" y="330" width="60" height="38" rx="5" fill="var(--dark)"/>
+  <rect x="327" y="288" width="46" height="46" rx="7" fill="var(--robot)"
+        stroke="var(--dark)" stroke-width="1.2"/>
+  <g stroke-linecap="round">
+    <line x1="350" y1="296" x2="367" y2="216" stroke="var(--robot)" stroke-width="30"/>
+    <line x1="367" y1="216" x2="441" y2="242" stroke="var(--robot)" stroke-width="24"/>
+  </g>
+  <circle cx="350" cy="296" r="13" fill="var(--dark)"/>
+  <circle cx="367" cy="216" r="12" fill="var(--dark)"/>
+  <rect x="378" y="194" width="24" height="16" rx="3" fill="var(--surface)"
+        stroke="var(--ink)" stroke-width="2.2"/>
+  <circle cx="441" cy="242" r="10" fill="var(--metal)"/>
+  <path d="M441 242 L467 256 L459 268 Z" fill="var(--metal)"/>
+  <text x="248" y="356" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">IRB 140</text>
+  <text x="392" y="232" font-size="12" fill="var(--muted)" font-family="IBM Plex Mono, monospace">axe 3</text>
+  
+    <rect x="574" y="268" width="182" height="202" rx="5" fill="var(--surface)"
+          stroke="var(--dark)" stroke-width="2.4"/>
+    <rect x="574" y="268" width="182" height="30" rx="5" fill="var(--dark)"/>
+    <text x="590" y="289" font-size="13" fill="var(--ground)" font-family="IBM Plex Mono, monospace">IRC5</text>
+    <circle cx="616" cy="336" r="17" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+    <line x1="616" y1="336" x2="628" y2="326" stroke="var(--ink)" stroke-width="3"/>
+    <text x="598" y="372" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif">AUTO / MAN</text>
+    <circle cx="678" cy="336" r="20" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+    <circle cx="678" cy="336" r="13" fill="var(--red)"/>
+    <circle cx="726" cy="336" r="11" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+    <text x="702" y="372" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif">moteurs</text>
+    <g stroke="var(--line)" stroke-width="2">
+      <line x1="594" y1="408" x2="736" y2="408"/><line x1="594" y1="422" x2="736" y2="422"/>
+      <line x1="594" y1="436" x2="736" y2="436"/>
+    </g>
+
+    <rect x="806" y="238" width="112" height="176" rx="14" fill="var(--surface)"
+          stroke="var(--dark)" stroke-width="2.4"/>
+    <rect x="820" y="270" width="84" height="66" rx="4" fill="var(--metal)"
+          stroke="var(--dark)" stroke-width="1.1"/>
+    <circle cx="862" cy="256" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+    <circle cx="862" cy="256" r="8" fill="var(--red)"/>
+    <circle cx="862" cy="368" r="14" fill="var(--metal)"/>
+    <rect x="826" y="392" width="72" height="10" rx="4" fill="var(--metal)"/>
+    <path d="M806 296 q-18 0 -18 18 q0 18 18 18" fill="none" stroke="var(--ink)"
+          stroke-width="4" stroke-linecap="round"/>
+    <text x="862" y="432" font-size="12" fill="var(--muted)" text-anchor="middle"
+          font-family="IBM Plex Sans, sans-serif">boîtier d'apprentissage</text>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="592" y1="438" x2="592" y2="452"/><line x1="764" y1="314" x2="794" y2="314"/><line x1="908" y1="232" x2="880" y2="250"/><line x1="412" y1="188" x2="400" y2="198"/><line x1="78" y1="404" x2="96" y2="416"/><line x1="518" y1="496" x2="500" y2="496"/><line x1="578" y1="515" x2="560" y2="515"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="592" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="592" y="457" fill="var(--ink)">1</text></g><g><circle cx="616" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="616" y="305" fill="var(--ink)">2</text></g><g><circle cx="678" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="678" y="305" fill="var(--ink)">3</text></g><g><circle cx="862" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="862" y="457" fill="var(--ink)">4</text></g><g><circle cx="908" cy="218" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="908" y="223" fill="var(--ink)">5</text></g><g><circle cx="764" cy="314" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="764" y="319" fill="var(--ink)">6</text></g><g><circle cx="412" cy="174" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="412" y="179" fill="var(--ink)">7</text></g><g><circle cx="78" cy="390" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="78" y="395" fill="var(--ink)">8</text></g><g><circle cx="532" cy="496" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="532" y="501" fill="var(--ink)">9</text></g><g><circle cx="592" cy="515" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="592" y="520" fill="var(--ink)">10</text></g></g>
+</svg></div>
+      <div class="svgbox" id="fig6620" hidden><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
+     aria-label="Schéma d'une cellule ABB IRB 6620 en enceinte grillagée fermée : le robot est posé au sol à l'intérieur de l'enceinte, dont l'unique porte porte un interrupteur à interverrouillage. Un bouton d'acquittement est placé à l'extérieur. L'armoire IRC5 et le boîtier d'apprentissage sont dehors. Dix repères numérotés désignent les dispositifs de sécurité.">
+  <defs>
+    <pattern id="bmesh" width="17" height="17" patternUnits="userSpaceOnUse">
+      <path d="M17 0 L0 0 0 17" fill="none" stroke="var(--metal)" stroke-width="1.1"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="980" height="560" fill="var(--ground)"/>
+  <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
+  <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
+
+  <!-- espace maximal + écart jusqu'au grillage -->
+  <rect x="86" y="475" width="296" height="11" fill="var(--dark)"/>
+  <g stroke="var(--blue)" stroke-width="1.6">
+    <line x1="382" y1="500" x2="500" y2="500"/>
+    <line x1="382" y1="494" x2="382" y2="506"/>
+    <line x1="500" y1="494" x2="500" y2="506"/>
+  </g>
+  <text x="441" y="522" font-size="12" fill="var(--blue)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">écart</text>
+  <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
+    <rect x="646" y="486" width="26" height="9" fill="var(--dark)"/>
+    <text x="682" y="494">Espace maximal du robot</text>
+    <text x="646" y="518">Écart grillage / espace maximal : à mesurer</text>
+  </g>
+
+  <!-- enceinte grillagée -->
+  <rect x="76" y="146" width="418" height="324" fill="url(#bmesh)"/>
+  <rect x="76" y="146" width="418" height="324" fill="none" stroke="var(--metal)" stroke-width="1.4"/>
+  <line x1="70" y1="143" x2="500" y2="143" stroke="var(--dark)" stroke-width="7"/>
+  <rect x="70" y="140" width="12" height="330" fill="var(--dark)"/>
+  <rect x="488" y="140" width="12" height="330" fill="var(--dark)"/>
+
+  <!-- porte + interrupteur à interverrouillage -->
+  <rect x="356" y="176" width="128" height="294" fill="none" stroke="var(--dark)" stroke-width="2.6"/>
+  <line x1="362" y1="182" x2="362" y2="464" stroke="var(--dark)" stroke-width="1.2"
+        stroke-dasharray="5 5"/>
+  <circle cx="468" cy="330" r="6" fill="var(--metal)"/>
+  <rect x="486" y="288" width="22" height="46" rx="3" fill="var(--dark)"/>
+  <rect x="474" y="303" width="14" height="17" rx="2" fill="var(--metal)"/>
+  <text x="392" y="200" font-size="12.5" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif">porte</text>
+
+  <!-- acquittement, hors enceinte -->
+  <rect x="520" y="394" width="12" height="76" fill="var(--dark)"/>
+  <rect x="504" y="360" width="44" height="34" rx="4" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2"/>
+  <circle cx="526" cy="377" r="9" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+
+  <!-- robot IRB 6620, posé au sol -->
+  <rect x="150" y="418" width="108" height="52" rx="6" fill="var(--dark)"/>
+  <rect x="160" y="352" width="88" height="70" rx="8" fill="var(--robot)"
+        stroke="var(--dark)" stroke-width="1.2"/>
+  <g stroke-linecap="round">
+    <line x1="204" y1="368" x2="242" y2="228" stroke="var(--robot)" stroke-width="44"/>
+    <line x1="242" y1="228" x2="346" y2="264" stroke="var(--robot)" stroke-width="34"/>
+  </g>
+  <g fill="none" stroke="var(--dark)" stroke-width="1.1">
+    <line x1="184" y1="372" x2="222" y2="232"/><line x1="226" y1="364" x2="264" y2="224"/>
+  </g>
+  <circle cx="204" cy="368" r="19" fill="var(--dark)"/>
+  <circle cx="242" cy="228" r="16" fill="var(--dark)"/>
+  <circle cx="346" cy="264" r="13" fill="var(--metal)"/>
+  <path d="M346 264 L378 282 L368 296 Z" fill="var(--metal)"/>
+  <!-- butées mécaniques des axes 1, 2 et 3 -->
+  <rect x="254" y="428" width="26" height="18" rx="3" fill="var(--surface)"
+        stroke="var(--ink)" stroke-width="2.2"/>
+  <rect x="230" y="356" width="24" height="17" rx="3" fill="var(--surface)"
+        stroke="var(--ink)" stroke-width="2.2"/>
+  <rect x="258" y="212" width="24" height="17" rx="3" fill="var(--surface)"
+        stroke="var(--ink)" stroke-width="2.2"/>
+  <g font-size="11" fill="var(--muted)" font-family="IBM Plex Mono, monospace">
+    <text x="286" y="442">axe 1</text><text x="262" y="350">axe 2</text>
+    <text x="290" y="226">axe 3</text>
+  </g>
+  <text x="92" y="410" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">IRB 6620</text>
+  
+    <rect x="574" y="268" width="182" height="202" rx="5" fill="var(--surface)"
+          stroke="var(--dark)" stroke-width="2.4"/>
+    <rect x="574" y="268" width="182" height="30" rx="5" fill="var(--dark)"/>
+    <text x="590" y="289" font-size="13" fill="var(--ground)" font-family="IBM Plex Mono, monospace">IRC5</text>
+    <circle cx="616" cy="336" r="17" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+    <line x1="616" y1="336" x2="628" y2="326" stroke="var(--ink)" stroke-width="3"/>
+    <text x="598" y="372" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif">AUTO / MAN</text>
+    <circle cx="678" cy="336" r="20" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+    <circle cx="678" cy="336" r="13" fill="var(--red)"/>
+    <circle cx="726" cy="336" r="11" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+    <text x="702" y="372" font-size="11" fill="var(--muted)" font-family="IBM Plex Sans, sans-serif">moteurs</text>
+    <g stroke="var(--line)" stroke-width="2">
+      <line x1="594" y1="408" x2="736" y2="408"/><line x1="594" y1="422" x2="736" y2="422"/>
+      <line x1="594" y1="436" x2="736" y2="436"/>
+    </g>
+
+    <rect x="806" y="238" width="112" height="176" rx="14" fill="var(--surface)"
+          stroke="var(--dark)" stroke-width="2.4"/>
+    <rect x="820" y="270" width="84" height="66" rx="4" fill="var(--metal)"
+          stroke="var(--dark)" stroke-width="1.1"/>
+    <circle cx="862" cy="256" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+    <circle cx="862" cy="256" r="8" fill="var(--red)"/>
+    <circle cx="862" cy="368" r="14" fill="var(--metal)"/>
+    <rect x="826" y="392" width="72" height="10" rx="4" fill="var(--metal)"/>
+    <path d="M806 296 q-18 0 -18 18 q0 18 18 18" fill="none" stroke="var(--ink)"
+          stroke-width="4" stroke-linecap="round"/>
+    <text x="862" y="432" font-size="12" fill="var(--muted)" text-anchor="middle"
+          font-family="IBM Plex Sans, sans-serif">boîtier d'apprentissage</text>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="592" y1="438" x2="592" y2="452"/><line x1="764" y1="314" x2="794" y2="314"/><line x1="908" y1="232" x2="880" y2="250"/><line x1="322" y1="290" x2="288" y2="234"/><line x1="320" y1="312" x2="262" y2="360"/><line x1="328" y1="314" x2="298" y2="430"/><line x1="108" y1="200" x2="128" y2="232"/><line x1="530" y1="262" x2="510" y2="292"/><line x1="534" y1="344" x2="530" y2="360"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="592" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="592" y="457" fill="var(--ink)">1</text></g><g><circle cx="616" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="616" y="305" fill="var(--ink)">2</text></g><g><circle cx="678" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="678" y="305" fill="var(--ink)">3</text></g><g><circle cx="862" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="862" y="457" fill="var(--ink)">4</text></g><g><circle cx="908" cy="218" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="908" y="223" fill="var(--ink)">5</text></g><g><circle cx="764" cy="314" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="764" y="319" fill="var(--ink)">6</text></g><g><circle cx="330" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="330" y="305" fill="var(--ink)">7</text></g><g><circle cx="108" cy="186" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="108" y="191" fill="var(--ink)">8</text></g><g><circle cx="534" cy="250" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="534" y="255" fill="var(--ink)">9</text></g><g><circle cx="534" cy="330" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="534" y="335" fill="var(--ink)">10</text></g></g>
+</svg></div>
+      <p class="figcap" id="figcap"></p>
+    </div>
+    <div class="card">
+      <h3>Associez chaque repère</h3>
+      <div class="match" id="match"></div>
+      <div class="btns">
+        <button type="button" class="act primary" id="m-check">Vérifier</button>
+        <button type="button" class="act" id="m-reset">Effacer</button>
+        <button type="button" class="act" id="m-show">Afficher le corrigé</button>
+        <span class="score" id="m-score" hidden></span>
+      </div>
+    </div>
+    <p class="note" id="apres"></p>
+  </section>
+
+  <section>
+    <h2><span class="step">2</span> Questionnaire écrit</h2>
+    <p class="sub">Dix questions à une seule bonne réponse, adaptées au robot sélectionné. Elles
+      reprennent les six démonstrations de <i>Enveloppe, butées et zones</i>. Il faut 8 bonnes
+      réponses pour passer à la manipulation.</p>
+    <div class="card">
+      <div id="quiz"></div>
+      <div class="btns">
+        <button type="button" class="act primary" id="q-check">Vérifier mes réponses</button>
+        <button type="button" class="act" id="q-reset">Recommencer</button>
+        <span class="score" id="q-score" hidden></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Cinq questions à défendre à l'oral</h2>
+    <p class="sub">Répondez d'abord par écrit, puis dépliez la réponse attendue.</p>
+    <div class="openlist" id="open"></div>
+  </section>
+
+  <section>
+    <h2><span class="step">4</span> Les deux cellules côte à côte</h2>
+    <p class="sub">Même architecture de sécurité, deux échelles et deux stratégies de protection.
+      La colonne du robot étudié est mise en avant. Les valeurs manquantes se relèvent dans le
+      manuel produit et dans l'analyse de risques de la cellule.</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th scope="col">Caractéristique</th>
+          <th scope="col" id="th140">IRB 140</th>
+          <th scope="col" id="th6620">IRB 6620</th></tr></thead>
+        <tbody id="cmp"></tbody>
+      </table>
+    </div>
+    <p class="warn"><b>Le piège du copier-coller :</b> les deux cellules n'appellent pas les mêmes
+      marges. Une barrière immatérielle ne protège que si le temps d'arrêt est connu et si la
+      distance qui en découle est respectée ; une enceinte ne protège que si son écart à l'espace
+      maximal et sa maille interdisent d'atteindre le robot. Toute modification — outil plus long,
+      pièce plus encombrante, vitesse augmentée, meuble déplacé — impose de reprendre l'analyse
+      de risques.</p>
+  </section>
+
+  <section>
+    <h2><span class="step">5</span> Feu vert avant manipulation</h2>
+    <p class="sub">À cocher devant l'enseignant, binôme par binôme. Tant qu'une case reste vide,
+      personne ne prend le boîtier.</p>
+    <div class="card">
+      <div id="golist" style="display:flex;flex-direction:column;gap:9px"></div>
+      <p class="gate" id="gate"></p>
+    </div>
+  </section>
+
+  <footer>Valeurs constructeur indicatives (IRB 140 : 6 kg / 810 mm ; IRB 6620 : 150 kg /
+    2 200 mm), à confirmer dans le manuel produit de la machine du laboratoire. Débattements
+    d'axes, temps d'arrêt et distances de sécurité réels se relèvent dans la documentation
+    constructeur, la notice du protecteur et l'analyse de risques de la cellule. Complément :
+    <i>Enveloppe, butées et zones</i>.</footer>
+</div>
+
+<script>window.__TP__ = {"nom": {"irb140": "IRB 140", "irb6620": "IRB 6620"}, "specs": {"irb140": [["Charge utile", "6 kg", false], ["Portée au poignet", "810 mm", false], ["Masse du robot", "≈ 98 kg", false], ["Butée mécanique visible", "axe 3", false], ["Protecteur", "scrutateur laser", false]], "irb6620": [["Charge utile", "150 kg", false], ["Portée au poignet", "2 200 mm", false], ["Masse du robot", "≈ 900 kg", false], ["Butées mécaniques", "axes 1 à 3", false], ["Protecteur", "enceinte grillagée", false]]}, "rep": {"irb140": [{"nom": "Armoire de commande IRC5", "role": "Contient l'automate de sécurité, les variateurs et les circuits d'arrêt. C'est là que sont configurés les butées logicielles, les zones surveillées et les paramètres du protecteur."}, {"nom": "Sélecteur de mode à clé", "role": "AUTO, manuel à vitesse réduite, et sur certaines armoires manuel à pleine vitesse. À clé : changer de mode est un acte volontaire, réservé et traçable."}, {"nom": "Arrêt d'urgence de l'armoire", "role": "Coup-de-poing à accrochage. Coupe la puissance des moteurs et serre les freins. Se déverrouille par rotation, ne se réarme jamais tout seul."}, {"nom": "Boîtier d'apprentissage (FlexPendant)", "role": "Seul organe de commande autorisé quand quelqu'un est dans la zone. Porte lui-même deux dispositifs de sécurité."}, {"nom": "Arrêt d'urgence du boîtier", "role": "Le second arrêt d'urgence, celui qui reste sous la main de l'opérateur entré dans la zone. Il agit sur la même chaîne que celui de l'armoire."}, {"nom": "Dispositif de validation à 3 positions", "role": "La gâchette au dos du boîtier. Relâchée ou serrée à fond : puissance coupée. Seule la position intermédiaire autorise le mouvement."}, {"nom": "Butée mécanique de l'axe 3", "role": "Obstacle physique monté sur le coude. Reste efficace contrôleur hors tension — contrairement à la butée logicielle, invisible et configurée dans l'IRC5."}, {"nom": "Scrutateur laser de sécurité (LIDAR)", "role": "Surveille un plan horizontal proche du sol. Il détecte l'intrusion, il ne l'empêche pas : toute la sécurité repose sur le temps d'arrêt qui suit la détection."}, {"nom": "Champ de protection — arrêt", "role": "Zone intérieure. Toute intrusion y déclenche un arrêt de sécurité. Sa limite n'est qu'un marquage au sol : rien ne retient celui qui la franchit."}, {"nom": "Champ d'alerte — ralentissement", "role": "Zone extérieure. L'intrusion y fait passer le robot en vitesse réduite avant l'arrêt : moins d'arrêts intempestifs, et une distance d'arrêt plus courte si l'arrêt survient."}], "irb6620": [{"nom": "Armoire de commande IRC5", "role": "Contient l'automate de sécurité, les variateurs et les circuits d'arrêt. C'est là que sont configurés les butées logicielles, les zones surveillées et les paramètres du protecteur."}, {"nom": "Sélecteur de mode à clé", "role": "AUTO, manuel à vitesse réduite, et sur certaines armoires manuel à pleine vitesse. À clé : changer de mode est un acte volontaire, réservé et traçable."}, {"nom": "Arrêt d'urgence de l'armoire", "role": "Coup-de-poing à accrochage. Coupe la puissance des moteurs et serre les freins. Se déverrouille par rotation, ne se réarme jamais tout seul."}, {"nom": "Boîtier d'apprentissage (FlexPendant)", "role": "Seul organe de commande autorisé quand quelqu'un est dans la zone. Porte lui-même deux dispositifs de sécurité."}, {"nom": "Arrêt d'urgence du boîtier", "role": "Le second arrêt d'urgence, celui qui reste sous la main de l'opérateur entré dans la zone. Il agit sur la même chaîne que celui de l'armoire."}, {"nom": "Dispositif de validation à 3 positions", "role": "La gâchette au dos du boîtier. Relâchée ou serrée à fond : puissance coupée. Seule la position intermédiaire autorise le mouvement."}, {"nom": "Butées mécaniques des axes 1, 2 et 3", "role": "Obstacles physiques montés sur les trois axes qui déplacent le plus de masse. Restent efficaces contrôleur hors tension — contrairement aux butées logicielles, invisibles et configurées dans l'IRC5."}, {"nom": "Enceinte grillagée (protecteur fixe)", "role": "Oppose un obstacle matériel à l'accès, et retient au passage une pièce ou un outil éjecté — ce qu'aucune barrière immatérielle ne fait. Son démontage exige un outil."}, {"nom": "Porte et son interrupteur à interverrouillage", "role": "Le seul accès à la zone. En marche automatique, son ouverture déclenche un arrêt de sécurité ; la refermeture seule ne relance rien."}, {"nom": "Dispositif d'acquittement, placé hors de l'enceinte", "role": "Remet la cellule en service après un arrêt de sécurité. Placé à l'extérieur, avec vue sur toute la zone : on ne peut pas relancer depuis l'intérieur."}]}, "quiz": {"irb140": [{"q": "L'IRB 140 a une portée annoncée de 810 mm. L'espace à protéger autour du robot est :", "o": ["un cylindre de ce rayon autour de l'axe 1", "la portée, augmentée de l'outil et de l'encombrement de la pièce", "le volume effectivement balayé par le programme en cours"], "a": 1, "e": "La portée catalogue se mesure au centre du poignet. L'espace maximal y ajoute l'outil et la pièce transportée — et il ne dépend jamais du programme, qui peut changer. C'est autour de cet espace, pas de la portée, que se place le protecteur."}, {"q": "En mode manuel à vitesse réduite, la vitesse maximale au point outil est de :", "o": ["100 mm/s", "250 mm/s", "500 mm/s"], "a": 1, "e": "250 mm/s : la valeur est normative, pas constructeur. Elle correspond à ce qu'un opérateur peut encore esquiver."}, {"q": "Le dispositif de validation a trois positions. Les moteurs sont sous puissance :", "o": ["en position relâchée uniquement", "en position intermédiaire uniquement", "en position intermédiaire et en position enfoncée à fond"], "a": 1, "e": "Les deux réflexes d'un opérateur surpris — lâcher, ou se crisper — coupent tous deux la puissance. C'est tout l'intérêt des trois positions."}, {"q": "Qu'est-ce qui distingue fondamentalement une barrière immatérielle d'un protecteur fixe ?", "o": ["la barrière immatérielle est plus fiable, étant électronique et testée en permanence", "le protecteur fixe empêche l'accès ; la barrière immatérielle ne fait que le détecter", "la barrière immatérielle dispense de définir l'espace maximal du robot"], "a": 1, "e": "Un protecteur fixe oppose un obstacle et retient au passage les projections. Un scrutateur ne retient rien : il déclenche un arrêt. Toute la sécurité se reporte alors sur le temps d'arrêt et sur la distance qui en découle."}, {"q": "Un opérateur traverse d'abord le champ d'alerte, puis le champ de protection. Que se passe-t-il successivement ?", "o": ["un arrêt de sécurité, puis une reprise en vitesse réduite", "un ralentissement, puis un arrêt de sécurité", "rien, puis un arrêt de sécurité"], "a": 1, "e": "Le champ d'alerte sert à ralentir avant d'arrêter : moins d'arrêts intempestifs, et surtout une distance d'arrêt plus courte au moment où l'arrêt survient."}, {"q": "La personne ressort du champ de protection. Le robot :", "o": ["repart dès que le champ est libéré", "reste à l'arrêt jusqu'à un acquittement volontaire, fait depuis l'extérieur de la zone", "repart après une temporisation de sécurité"], "a": 1, "e": "Un redémarrage automatique laisserait repartir le robot alors que quelqu'un peut encore être dans la zone — accroupi, ou sous le plan de détection. L'acquittement placé à l'extérieur oblige à avoir quitté les lieux."}, {"q": "Le plan de détection du scrutateur est horizontal, à une vingtaine de centimètres du sol. Quel risque cela laisse-t-il ouvert ?", "o": ["aucun : le plan couvre tout accès à la zone", "un bras tendu au-dessus du plan, ou une pièce projetée, ne sont pas détectés", "le scrutateur ne détecte pas les objets métalliques"], "a": 1, "e": "Un scrutateur surveille un plan, pas un volume. Il ne retient rien non plus : les projections de pièce ou d'outil restent à traiter séparément dans l'analyse de risques."}, {"q": "Juste après un appui sur l'arrêt d'urgence, la cellule est :", "o": ["en état sûr : on peut entrer sans précaution", "figée, mais les énergies résiduelles subsistent — pièce serrée, pression pneumatique", "arrêtée, et le programme reprendra seul au déverrouillage"], "a": 1, "e": "L'arrêt d'urgence fige les mouvements. Il ne consigne pas la cellule : la pince reste serrée, la pression est toujours là. Consigner est une autre opération."}, {"q": "Le point outil est resté dans le volume autorisé, et pourtant l'outil a touché le montage. Pourquoi ?", "o": ["le volume déclaré était trop grand", "seul le point outil était surveillé, pas le corps de l'outil", "la butée logicielle de l'axe 5 avait été désactivée"], "a": 1, "e": "Surveiller un point ne protège pas un volume. En déclarant l'encombrement de l'outil, le contrôleur arrête le mouvement une marge plus tôt."}, {"q": "La distance entre la limite du champ de protection et l'espace maximal du robot se calcule à partir de :", "o": ["la portée du robot", "la vitesse d'approche de l'opérateur, le temps de réponse total de la chaîne et des compléments liés au scrutateur", "la vitesse maximale du robot en production"], "a": 1, "e": "Distance = vitesse d'approche × temps de réponse total (détection + traitement + freinage du robot), augmentée de compléments liés à la résolution et à la hauteur du plan de détection. Un robot plus lourd s'arrête plus loin : le champ doit être repoussé d'autant."}], "irb6620": [{"q": "L'IRB 6620 a une portée annoncée de 2 200 mm. L'espace à protéger autour du robot est :", "o": ["un cylindre de ce rayon autour de l'axe 1", "la portée, augmentée de l'outil et de l'encombrement de la pièce", "le volume effectivement balayé par le programme en cours"], "a": 1, "e": "La portée catalogue se mesure au centre du poignet. L'espace maximal y ajoute l'outil et la pièce transportée — et il ne dépend jamais du programme, qui peut changer. C'est autour de cet espace, pas de la portée, que se place le protecteur."}, {"q": "En mode manuel à vitesse réduite, la vitesse maximale au point outil est de :", "o": ["100 mm/s", "250 mm/s", "500 mm/s"], "a": 1, "e": "250 mm/s : la valeur est normative, pas constructeur. Elle correspond à ce qu'un opérateur peut encore esquiver."}, {"q": "Le dispositif de validation a trois positions. Les moteurs sont sous puissance :", "o": ["en position relâchée uniquement", "en position intermédiaire uniquement", "en position intermédiaire et en position enfoncée à fond"], "a": 1, "e": "Les deux réflexes d'un opérateur surpris — lâcher, ou se crisper — coupent tous deux la puissance. C'est tout l'intérêt des trois positions."}, {"q": "La cellule tourne en automatique. Quelqu'un ouvre la porte de l'enceinte. Que se passe-t-il ?", "o": ["rien : la porte n'est surveillée qu'en mode manuel", "l'interrupteur à interverrouillage déclenche un arrêt de sécurité", "le robot passe automatiquement en vitesse réduite"], "a": 1, "e": "En automatique, personne n'a rien à faire dans l'enceinte : l'ouverture de la porte est un défaut, pas un mode de travail. L'interverrouillage est ce qui rend l'enceinte efficace — un grillage avec une porte libre ne protège personne."}, {"q": "La porte vient d'être refermée après un arrêt de sécurité. Le robot :", "o": ["repart dès que la porte est refermée", "reste à l'arrêt jusqu'à un acquittement volontaire, fait depuis l'extérieur", "repart après une temporisation de sécurité"], "a": 1, "e": "Refermer une porte ne prouve pas que la zone est vide. L'acquittement, placé dehors avec vue sur la zone, oblige à avoir constaté que personne n'est resté à l'intérieur."}, {"q": "Qu'apporte une enceinte fermée qu'une barrière immatérielle n'apporte pas ?", "o": ["elle réagit plus vite, n'ayant pas d'électronique de détection", "elle oppose un obstacle matériel et retient une pièce ou un outil éjecté", "elle dispense de définir l'espace maximal du robot"], "a": 1, "e": "Une barrière immatérielle détecte, elle n'empêche rien et ne retient rien. À 150 kg de charge, la projection n'est pas un risque théorique : c'est l'argument décisif en faveur du protecteur fixe sur cette cellule."}, {"q": "Juste après un appui sur l'arrêt d'urgence, la cellule est :", "o": ["en état sûr : on peut entrer sans précaution", "figée, mais les énergies résiduelles subsistent — pièce serrée, pression pneumatique", "arrêtée, et le programme reprendra seul au déverrouillage"], "a": 1, "e": "L'arrêt d'urgence fige les mouvements. Il ne consigne pas la cellule : la pince reste serrée, la pression est toujours là. Consigner est une autre opération."}, {"q": "Le point outil est resté dans le volume autorisé, et pourtant l'outil a touché le montage. Pourquoi ?", "o": ["le volume déclaré était trop grand", "seul le point outil était surveillé, pas le corps de l'outil", "la butée logicielle de l'axe 5 avait été désactivée"], "a": 1, "e": "Surveiller un point ne protège pas un volume. En déclarant l'encombrement de l'outil, le contrôleur arrête le mouvement une marge plus tôt."}, {"q": "À vitesse comparable, la distance d'arrêt de l'IRB 6620 par rapport à celle de l'IRB 140 est :", "o": ["comparable, la vitesse au point outil étant limitée de la même façon", "nettement plus grande, l'énergie à dissiper étant sans commune mesure", "plus courte, les freins d'un robot lourd étant plus puissants"], "a": 1, "e": "L'énergie varie comme la masse et comme le carré de la vitesse. Des freins plus puissants ne compensent pas un ensemble mobile dix fois plus lourd : le temps d'arrêt s'allonge, et toute distance de sécurité qui en dépend grandit d'autant. C'est aussi pourquoi le grillage est placé en retrait de l'espace maximal."}, {"q": "Sur l'IRB 6620, les butées mécaniques sont visibles sur les axes 1, 2 et 3, alors que l'IRB 140 n'en porte qu'une, sur l'axe 3. Pourquoi ?", "o": ["parce que les butées logicielles ne fonctionnent pas sur les robots lourds", "parce que ce sont les trois axes qui déplacent le plus de masse et ouvrent le plus grand volume", "parce que la norme impose une butée par axe au-delà de 100 kg de charge utile"], "a": 1, "e": "Limiter l'axe 1 restreint le secteur balayé au sol ; limiter les axes 2 et 3 restreint l'allonge du bras et la portée verticale. Sur un robot de 900 kg, l'énergie en jeu justifie de borner physiquement les trois. Le nombre de butées se déduit de l'analyse de risques, pas du catalogue."}]}, "oral": {"irb140": [{"q": "Faites l'inventaire des arrêts d'urgence accessibles sur la cellule étudiée. Combien en trouvez-vous, et lequel est le plus proche de votre poste de travail ?", "a": "Au minimum deux : celui de l'armoire IRC5 et celui du boîtier d'apprentissage ; beaucoup de cellules en ont un troisième, déporté près de l'accès. Tous agissent sur la même chaîne de sécurité. Ce qui est évalué n'est pas le nombre, c'est le geste : savoir sans réfléchir lequel est à portée de main depuis l'endroit où l'on travaille."}, {"q": "Relevez dans la documentation technique l'enveloppe de travail du robot étudié. S'il parcourt la totalité de cette enveloppe, avec quoi risque-t-il d'entrer en collision ? Déduisez-en les éléments à identifier pour définir sa zone de travail.", "a": "L'enveloppe de la documentation est un volume de révolution autour de l'axe 1, défini au centre du poignet : elle ne dit rien de l'outil, ni de la pièce, ni de ce qu'il y a autour. Parcourue entièrement, elle amène le robot contre son propre support — table ou socle, car l'enveloppe descend sous le plan de pose ; contre le montage et la pièce ; contre les équipements de la cellule à portée — convoyeur, éclairage, structure, protecteur lui-même ; contre ses propres câbles et flexibles, et contre lui-même, l'outil pouvant toucher le bras ou la base ; contre le sol, si l'outil est long ; et contre toute personne présente dans l'espace maximal. D'où la zone de travail : le volume plus petit qu'on déclare au contrôleur pour que le robot ne parcoure jamais tout cela. La définir, c'est identifier — l'espace maximal (enveloppe + longueur de l'outil + encombrement de la pièce, dans toutes les orientations) ; tout ce qui est fixe dans la cellule, avec son encombrement réel et non son emprise au sol ; les trajectoires réellement nécessaires au programme, approches et dégagements compris ; les endroits où un opérateur intervient et par où il y accède ; le cheminement des câbles et flexibles, qui balaie lui aussi un volume ; la position de maintenance, souvent hors trajectoire normale ; les marges d'incertitude — dérive pendant la distance d'arrêt, précision du montage, jeu de la pièce dans la pince ; et le repère dans lequel tout cela est exprimé."}, {"q": "Quelle différence entre les butées virtuelles et la gestion des collisions écrite dans le programme ?", "a": "Elles n'agissent ni au même endroit, ni au même moment. La butée virtuelle est une limite d'espace déclarée dans le contrôleur : elle est surveillée en permanence par le système de commande, indépendamment du programme en cours. Elle s'applique donc à tous les programmes, et aussi au déplacement manuel au boîtier. Un ordre qui la dépasse est refusé ou provoque un arrêt — le robot ne sort pas du volume, quelle que soit l'erreur commise. La gestion des collisions dans le programme, c'est le programmeur qui contourne les obstacles : points de passage, approches, dégagements, ordre des mouvements. Cela ne vaut que pour ce programme-là, avec ce montage-là ; une trajectoire recopiée, un point retouché, un montage déplacé de deux centimètres, et l'évitement ne tient plus. Le déplacement manuel, lui, n'en bénéficie jamais. Il existe en plus une détection de collision par surveillance du couple des moteurs : elle réagit au contact, pas avant — elle limite les dégâts, elle n'empêche pas le choc. En résumé : le programme dit par où passer, la butée virtuelle dit où il est interdit d'aller, la butée mécanique garantit la limite ultime même contrôleur hors tension. Et aucune des trois n'est, à elle seule, un dispositif de protection des personnes."}, {"q": "Vous devez apprendre un point situé à 5 cm d'un montage. Décrivez votre procédure complète, du choix du mode jusqu'au retour en production.", "a": "Prévenir le binôme et vérifier que personne d'autre n'est dans la zone ; passer le sélecteur en manuel, retirer la clé et la garder sur soi ; entrer avec le boîtier d'apprentissage en sachant que rien ne se refermera derrière soi ; travailler en vitesse réduite, gâchette en position intermédiaire, en se ménageant une sortie ; approcher le point par petits incréments plutôt qu'en continu ; enregistrer ; sortir complètement des champs ; repasser en AUTO, réinsérer la clé ; acquitter depuis l'extérieur de la zone ; lancer le premier cycle à vitesse réduite avant la pleine vitesse."}, {"q": "Cette cellule n'a pas de protecteur fixe. Quels risques le scrutateur laser ne couvre-t-il pas, et comment les traiter ?", "a": "Il ne retient pas les projections : une pièce ou un outil éjecté traverse la zone sans être arrêté par quoi que ce soit — un capotage, lui, les aurait retenus. Il ne surveille qu'un plan : un bras tendu au-dessus, ou un accès par-dessus un obstacle, passe inaperçu. Il est aveugle derrière tout objet posé dans son champ : une table, un chariot, un carton créent une zone masquée où quelqu'un peut se tenir sans être détecté. Enfin, un acquittement mal placé rend possible un redémarrage alors que la zone n'est pas libre. Traitement : contour et hauteur des champs validés à la réception et revérifiés après tout déplacement de mobilier ; interdiction formelle de poser quoi que ce soit dans les champs ; marquage au sol maintenu lisible ; acquittement placé hors zone, avec vue sur toute la zone ; écran anti-projection si l'analyse de risques le demande ; essai de franchissement périodique."}], "irb6620": [{"q": "Faites l'inventaire des arrêts d'urgence accessibles sur la cellule étudiée. Combien en trouvez-vous, et lequel est le plus proche de votre poste de travail ?", "a": "Au minimum deux : celui de l'armoire IRC5 et celui du boîtier d'apprentissage ; beaucoup de cellules en ont un troisième, déporté près de l'accès. Tous agissent sur la même chaîne de sécurité. Ce qui est évalué n'est pas le nombre, c'est le geste : savoir sans réfléchir lequel est à portée de main depuis l'endroit où l'on travaille."}, {"q": "Relevez dans la documentation technique l'enveloppe de travail du robot étudié. S'il parcourt la totalité de cette enveloppe, avec quoi risque-t-il d'entrer en collision ? Déduisez-en les éléments à identifier pour définir sa zone de travail.", "a": "L'enveloppe de la documentation est un volume de révolution autour de l'axe 1, défini au centre du poignet : elle ne dit rien de l'outil, ni de la pièce, ni de ce qu'il y a autour. Parcourue entièrement, elle amène le robot contre son propre support — table ou socle, car l'enveloppe descend sous le plan de pose ; contre le montage et la pièce ; contre les équipements de la cellule à portée — convoyeur, éclairage, structure, protecteur lui-même ; contre ses propres câbles et flexibles, et contre lui-même, l'outil pouvant toucher le bras ou la base ; contre le sol, si l'outil est long ; et contre toute personne présente dans l'espace maximal. D'où la zone de travail : le volume plus petit qu'on déclare au contrôleur pour que le robot ne parcoure jamais tout cela. La définir, c'est identifier — l'espace maximal (enveloppe + longueur de l'outil + encombrement de la pièce, dans toutes les orientations) ; tout ce qui est fixe dans la cellule, avec son encombrement réel et non son emprise au sol ; les trajectoires réellement nécessaires au programme, approches et dégagements compris ; les endroits où un opérateur intervient et par où il y accède ; le cheminement des câbles et flexibles, qui balaie lui aussi un volume ; la position de maintenance, souvent hors trajectoire normale ; les marges d'incertitude — dérive pendant la distance d'arrêt, précision du montage, jeu de la pièce dans la pince ; et le repère dans lequel tout cela est exprimé."}, {"q": "Quelle différence entre les butées virtuelles et la gestion des collisions écrite dans le programme ?", "a": "Elles n'agissent ni au même endroit, ni au même moment. La butée virtuelle est une limite d'espace déclarée dans le contrôleur : elle est surveillée en permanence par le système de commande, indépendamment du programme en cours. Elle s'applique donc à tous les programmes, et aussi au déplacement manuel au boîtier. Un ordre qui la dépasse est refusé ou provoque un arrêt — le robot ne sort pas du volume, quelle que soit l'erreur commise. La gestion des collisions dans le programme, c'est le programmeur qui contourne les obstacles : points de passage, approches, dégagements, ordre des mouvements. Cela ne vaut que pour ce programme-là, avec ce montage-là ; une trajectoire recopiée, un point retouché, un montage déplacé de deux centimètres, et l'évitement ne tient plus. Le déplacement manuel, lui, n'en bénéficie jamais. Il existe en plus une détection de collision par surveillance du couple des moteurs : elle réagit au contact, pas avant — elle limite les dégâts, elle n'empêche pas le choc. En résumé : le programme dit par où passer, la butée virtuelle dit où il est interdit d'aller, la butée mécanique garantit la limite ultime même contrôleur hors tension. Et aucune des trois n'est, à elle seule, un dispositif de protection des personnes."}, {"q": "Vous devez apprendre un point situé à 5 cm d'un montage. Décrivez votre procédure complète, du choix du mode jusqu'au retour en production.", "a": "Prévenir le binôme et vérifier que personne d'autre n'est dans l'enceinte ; passer le sélecteur en manuel, retirer la clé et la garder sur soi ; ouvrir la porte et entrer avec le boîtier d'apprentissage, sans jamais laisser l'accès se refermer derrière soi ; travailler en vitesse réduite, gâchette en position intermédiaire, en se ménageant une sortie vers la porte ; approcher le point par petits incréments plutôt qu'en continu ; enregistrer ; sortir, vérifier visuellement que l'enceinte est vide, refermer la porte ; repasser en AUTO, réinsérer la clé ; acquitter depuis l'extérieur ; lancer le premier cycle à vitesse réduite avant la pleine vitesse."}, {"q": "L'enceinte est fermée et verrouillée. Quels risques subsistent, et que doit-on vérifier avant de relancer le cycle ?", "a": "Le risque majeur est l'enfermement : quelqu'un resté à l'intérieur, non détecté, pendant que la porte se referme et que le cycle repart. Rien dans l'enceinte ne le signale — un protecteur fixe ne détecte personne, il ne fait qu'empêcher d'entrer. D'où : contrôle visuel de toute la cellule avant fermeture, angles morts compris — derrière le montage, sous le convoyeur ; moyen de sortir ou de se signaler depuis l'intérieur ; acquittement placé dehors avec vue sur toute la zone ; consignation dès qu'on intervient sur la machine. S'y ajoutent : l'interverrouillage doit résister au contournement — clé captive, aimant, cale ; la maille du grillage et sa distance à l'espace maximal doivent empêcher d'atteindre le robot bras passé au travers ; la tenue du grillage doit être dimensionnée pour la charge transportée ; et toute ouverture de passage — convoyeur, trappe, goulotte — est un accès à traiter à part."}]}, "go": {"irb140": ["Je montre du doigt l'arrêt d'urgence le plus proche de mon poste de travail.", "Je situe au sol la limite du champ de protection — et je sais que rien ne m'empêche physiquement de la franchir.", "Je sais que le robot ne repart pas seul après un franchissement, et que l'acquittement se fait depuis l'extérieur de la zone.", "Rien n'obstrue le scrutateur, et aucun objet n'a été posé dans les champs.", "Je sais où est la clé du sélecteur de mode et qui la détient.", "Je connais la vitesse maximale autorisée en mode manuel et ce qui l'impose.", "Je tiens le dispositif de validation en position intermédiaire, sans crispation.", "Personne ne se trouve dans l'espace maximal du robot, et mon binôme le confirme."], "irb6620": ["Je montre du doigt l'arrêt d'urgence le plus proche de mon poste de travail.", "Je sais que la porte de l'enceinte est le seul accès, et ce qui se passe si elle s'ouvre en marche automatique.", "Avant toute fermeture, je vérifie visuellement que personne n'est resté dans l'enceinte, angles morts compris.", "Je sais où se fait l'acquittement, et qu'il est placé hors de l'enceinte.", "Je sais où est la clé du sélecteur de mode et qui la détient.", "Je connais la vitesse maximale autorisée en mode manuel et ce qui l'impose.", "Je tiens le dispositif de validation en position intermédiaire, sans crispation.", "Personne ne se trouve dans l'espace maximal du robot, et mon binôme le confirme."]}, "cmp": [["Charge utile", "6 kg", "150 kg"], ["Portée au centre du poignet", "810 mm", "2 200 mm"], ["Masse du robot", "≈ 98 kg", "≈ 900 kg"], ["Type de protecteur", "scrutateur laser — barrière immatérielle", "enceinte grillagée — protecteur fixe"], ["Détection de l'intrusion", "champs d'alerte et de protection", "porte à interverrouillage"], ["Axes munis d'une butée mécanique", "axe 3", "axes 1, 2 et 3"], ["Espace maximal (portée + outil + pièce)", "à calculer", "à calculer"], ["Temps d'arrêt, catégorie 1, axe 1", "à relever", "à relever"], ["Distance protecteur → espace maximal", "à mesurer", "à mesurer"]], "lede": {"irb140": "La cellule IRB 140 n'a pas de protecteur fixe : rien n'empêche physiquement d'entrer. La protection repose sur un scrutateur laser et sur le temps d'arrêt du robot. Avant de toucher au boîtier d'apprentissage, retrouvez sur la cellule réelle les dispositifs vus en simulation. En binôme, robot à l'arrêt, sélecteur sur MANUEL et clé retirée.", "irb6620": "La cellule IRB 6620 est fermée par une enceinte grillagée dont la porte est le seul accès. Le robot déplace 150 kg à 2,2 m : l'énergie en jeu est sans commune mesure avec celle de l'IRB 140, et tout le dimensionnement de la sécurité suit. En binôme, robot à l'arrêt, sélecteur sur MANUEL et clé retirée."}, "figcap": {"irb140": "<b>Schéma de principe</b> — cellule IRB 140 sans protecteur fixe. Le scrutateur laser surveille un plan horizontal proche du sol ; les deux champs qu'il déclenche sont matérialisés au sol par un marquage, pas par un obstacle. L'agencement de la cellule du laboratoire peut différer : c'est elle qui fait foi.", "irb6620": "<b>Schéma de principe</b> — cellule IRB 6620 en enceinte grillagée fermée. La porte est le seul accès ; l'acquittement est placé à l'extérieur. Les butées mécaniques des axes 1, 2 et 3 sont visibles sur la machine. L'agencement de la cellule du laboratoire peut différer : c'est elle qui fait foi."}, "apres": {"irb140": "<b>Sur la cellule réelle :</b> vérifiez la hauteur réelle du plan de détection, le contour exact des deux champs, et notez tout dispositif trouvé en plus — second scrutateur, tapis sensible, arrêt d'urgence déporté, écran anti-projection.", "irb6620": "<b>Sur la cellule réelle :</b> mesurez l'écart entre le grillage et le marquage de l'espace maximal, relevez la taille de maille, et cherchez les autres accès à l'enceinte — passage de convoyeur, trappe, goulotte. Ce sont eux que l'analyse de risques oublie le plus souvent."}};</script>
+<script>
+const D = window.__TP__;
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c;
+  if (x != null) n.textContent = x; return n; };
+const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const SEUIL = 8;
+let ROBOT = 'irb140';
+
+/* ---------------- fiche technique ---------------- */
+function renderSpecs() {
+  const b = document.getElementById('specs');
+  b.textContent = '';
+  D.specs[ROBOT].forEach(([k, v, soft]) => {
+    const d = el('div'); d.append(el('dt', null, k), el('dd', soft ? 'soft' : null, v)); b.append(d);
+  });
+}
+
+/* ---------------- 1. appariement ---------------- */
+function renderMatch() {
+  const box = document.getElementById('match');
+  const rep = D.rep[ROBOT];
+  const choix = shuffled(rep.map(r => r.nom));
+  box.textContent = '';
+  rep.forEach((r, i) => {
+    const row = el('div', 'mrow'); row.dataset.i = i;
+    row.append(el('span', 'no', String(i + 1)));
+    const fld = el('div', 'fld');
+    const sel = el('select');
+    sel.id = ROBOT + '-rep' + i;
+    sel.setAttribute('aria-label', 'Dispositif désigné par le repère ' + (i + 1));
+    const vide = el('option', null, '— choisir —'); vide.value = ''; sel.append(vide);
+    choix.forEach(n => { const o = el('option', null, n); o.value = n; sel.append(o); });
+    const why = el('p', 'why'); why.hidden = true;
+    fld.append(sel, why); row.append(fld); box.append(row);
+  });
+  document.getElementById('m-score').hidden = true;
+}
+function matchRows() { return Array.from(document.querySelectorAll('#match .mrow')); }
+
+document.getElementById('m-check').addEventListener('click', () => {
+  const rep = D.rep[ROBOT]; let bons = 0;
+  matchRows().forEach((row, i) => {
+    const why = row.querySelector('.why');
+    const juste = row.querySelector('select').value === rep[i].nom;
+    row.classList.toggle('ok', juste); row.classList.toggle('ko', !juste);
+    if (juste) bons++;
+    why.hidden = false;
+    why.textContent = juste ? rep[i].role : 'À revoir — ce repère désigne autre chose.';
+  });
+  const s = document.getElementById('m-score'); s.hidden = false;
+  s.textContent = bons + ' / ' + rep.length + ' repères identifiés';
+  s.className = 'score ' + (bons === rep.length ? 'ok' : bons >= 7 ? 'mid' : 'ko');
+});
+document.getElementById('m-reset').addEventListener('click', renderMatch);
+document.getElementById('m-show').addEventListener('click', () => {
+  const rep = D.rep[ROBOT];
+  matchRows().forEach((row, i) => {
+    row.querySelector('select').value = rep[i].nom;
+    row.classList.add('ok'); row.classList.remove('ko');
+    const why = row.querySelector('.why'); why.hidden = false; why.textContent = rep[i].role;
+  });
+  const s = document.getElementById('m-score'); s.hidden = false;
+  s.textContent = 'Corrigé affiché'; s.className = 'score mid';
+});
+
+/* ---------------- 2. QCM ---------------- */
+function renderQuiz() {
+  const box = document.getElementById('quiz');
+  box.textContent = '';
+  D.quiz[ROBOT].forEach((item, i) => {
+    const q = el('div', 'q'); q.dataset.i = i;
+    const ask = el('div', 'ask');
+    ask.append(el('span', 'n', 'Q' + (i + 1)), el('span', null, item.q));
+    q.append(ask);
+    const opts = el('div', 'opts');
+    item.o.forEach((t, j) => {
+      const lab = el('label', 'opt'); lab.dataset.j = j;
+      const inp = el('input'); inp.type = 'radio'; inp.name = ROBOT + '-q' + i;
+      inp.value = String(j); inp.id = ROBOT + '-q' + i + 'o' + j;
+      lab.append(inp, el('span', null, t)); opts.append(lab);
+    });
+    q.append(opts);
+    const ex = el('p', 'expl'); ex.hidden = true; ex.textContent = item.e; q.append(ex);
+    box.append(q);
+  });
+  document.getElementById('q-score').hidden = true;
+}
+document.getElementById('q-check').addEventListener('click', () => {
+  const quiz = D.quiz[ROBOT]; let bons = 0;
+  quiz.forEach((item, i) => {
+    const q = document.querySelector('#quiz [data-i="' + i + '"]');
+    const ch = q.querySelector('input:checked');
+    q.querySelectorAll('.opt').forEach(lab => {
+      const j = Number(lab.dataset.j);
+      lab.classList.remove('good', 'bad');
+      if (j === item.a) lab.classList.add('good');
+      else if (ch && Number(ch.value) === j) lab.classList.add('bad');
+    });
+    if (ch && Number(ch.value) === item.a) bons++;
+    q.querySelector('.expl').hidden = false;
+  });
+  const s = document.getElementById('q-score'); s.hidden = false;
+  s.textContent = bons + ' / ' + quiz.length +
+    (bons >= SEUIL ? ' — vous pouvez passer à la manipulation' : ' — reprendre avant de manipuler');
+  s.className = 'score ' + (bons >= SEUIL ? 'ok' : bons >= 5 ? 'mid' : 'ko');
+});
+document.getElementById('q-reset').addEventListener('click', renderQuiz);
+
+/* ---------------- 3. questions orales ---------------- */
+function renderOral() {
+  const box = document.getElementById('open');
+  box.textContent = '';
+  D.oral[ROBOT].forEach((item, i) => {
+    const d = el('details');
+    const a = el('div', 'ans');
+    a.append(el('b', null, 'Réponse attendue — '), document.createTextNode(item.a));
+    d.append(el('summary', null, 'O' + (i + 1) + '. ' + item.q), a);
+    box.append(d);
+  });
+}
+
+/* ---------------- 4. comparatif ---------------- */
+function renderCmp() {
+  const b = document.getElementById('cmp');
+  b.textContent = '';
+  D.cmp.forEach(([k, v1, v2]) => {
+    const tr = el('tr');
+    const th = el('th', null, k); th.scope = 'row';
+    const a = el('td', null, v1), c = el('td', null, v2);
+    if (/relever|calculer|mesurer/.test(v1)) a.classList.add('fill');
+    if (/relever|calculer|mesurer/.test(v2)) c.classList.add('fill');
+    (ROBOT === 'irb140' ? a : c).classList.add('here');
+    tr.append(th, a, c); b.append(tr);
+  });
+  document.getElementById('th140').classList.toggle('here', ROBOT === 'irb140');
+  document.getElementById('th6620').classList.toggle('here', ROBOT === 'irb6620');
+}
+
+/* ---------------- 5. feu vert ---------------- */
+function majGate() {
+  const gos = Array.from(document.querySelectorAll('#golist .go'));
+  const n = gos.filter(c => c.checked).length, tout = n === gos.length;
+  const g = document.getElementById('gate');
+  g.textContent = n + ' / ' + gos.length +
+    (tout ? ' — manipulation autorisée sous supervision' : ' — manipulation non autorisée');
+  g.classList.toggle('go', tout);
+}
+function renderGo() {
+  const box = document.getElementById('golist');
+  box.textContent = '';
+  D.go[ROBOT].forEach((t, i) => {
+    const lab = el('label', 'check');
+    const inp = el('input'); inp.type = 'checkbox'; inp.className = 'go';
+    inp.id = ROBOT + '-go' + i;
+    lab.append(inp, el('span', null, t));
+    inp.addEventListener('change', majGate);
+    box.append(lab);
+  });
+  majGate();
+}
+
+/* ---------------- bascule ---------------- */
+function setRobot(r) {
+  ROBOT = r;
+  document.getElementById('lede').textContent = D.lede[r];
+  document.getElementById('t1').textContent = 'Repérer les dispositifs sur la cellule ' + D.nom[r];
+  document.getElementById('figcap').innerHTML = D.figcap[r];
+  document.getElementById('apres').innerHTML = D.apres[r];
+  document.getElementById('fig140').hidden = r !== 'irb140';
+  document.getElementById('fig6620').hidden = r !== 'irb6620';
+  ['b140', 'b6620'].forEach(id => {
+    const on = (id === 'b140') === (r === 'irb140');
+    document.getElementById(id).classList.toggle('on', on);
+    document.getElementById(id).setAttribute('aria-pressed', String(on));
+  });
+  renderSpecs(); renderMatch(); renderQuiz(); renderOral(); renderCmp(); renderGo();
+}
+document.getElementById('b140').addEventListener('click', () => setRobot('irb140'));
+document.getElementById('b6620').addEventListener('click', () => setRobot('irb6620'));
+setRobot('irb140');
+</script>
+</body>
+</html>
