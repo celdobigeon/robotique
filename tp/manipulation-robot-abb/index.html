@@ -435,13 +435,17 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
   </section>
 
   <section>
-    <h2><span class="step">2</span> Cinq questions à défendre à l'oral</h2>
+    <h2><span class="step">2</span> Questionnaire à faire sur papier</h2>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Cinq questions à défendre à l'oral</h2>
     <p class="sub">Préparez vos réponses par écrit : elles sont à défendre devant l'enseignant.</p>
     <div class="openlist" id="open"></div>
   </section>
 
   <section>
-    <h2><span class="step">3</span> Les deux cellules côte à côte</h2>
+    <h2><span class="step">4</span> Les deux cellules côte à côte</h2>
     <p class="sub">Même architecture de sécurité, deux échelles et deux stratégies de protection.
       La colonne du robot étudié est mise en avant. Les valeurs manquantes se relèvent dans le
       manuel produit et dans l'analyse de risques de la cellule.</p>
@@ -462,7 +466,7 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
   </section>
 
   <section>
-    <h2><span class="step">4</span> Feu vert avant manipulation</h2>
+    <h2><span class="step">5</span> Feu vert avant manipulation</h2>
     <p class="sub">À cocher devant l'enseignant, binôme par binôme. Tant qu'une case reste vide,
       personne ne prend le boîtier.</p>
     <div class="card">
@@ -661,7 +665,7 @@ document.getElementById('m-show').addEventListener('click', () => {
   s.textContent = 'Corrigé affiché'; s.className = 'score mid';
 });
 
-/* ---------------- 2. questions orales ---------------- */
+/* ---------------- 3. questions orales ---------------- */
 function renderOral() {
   const box = document.getElementById('open');
   box.textContent = '';
@@ -670,7 +674,7 @@ function renderOral() {
   });
 }
 
-/* ---------------- 3. comparatif ---------------- */
+/* ---------------- 4. comparatif ---------------- */
 function renderCmp() {
   const b = document.getElementById('cmp');
   b.textContent = '';
@@ -687,7 +691,7 @@ function renderCmp() {
   document.getElementById('th6620').classList.toggle('here', ROBOT === 'irb6620');
 }
 
-/* ---------------- 4. feu vert ---------------- */
+/* ---------------- 5. feu vert ---------------- */
 function majGate() {
   const gos = Array.from(document.querySelectorAll('#golist .go'));
   const n = gos.filter(c => c.checked).length, tout = n === gos.length;
