@@ -38,5 +38,16 @@ window.CATALOGUE = {
       maj: '2026-09-18',
       icone: 'cle',
     },
+    {
+      slug: 'manipulation-cobot-ur',
+      titre: 'Manipulation d’un cobot UR',
+      sous: 'UR5 et UR10, TP auto-corrigé',
+      texte: 'Le poste collaboratif sans protecteur : repérage auto-corrigé des dix ' +
+             'dispositifs, cinq questions à défendre à l’oral, comparatif des deux ' +
+             'cobots et checklist de feu vert avant manipulation.',
+      tags: ['TP', 'Universal Robots', 'Collaboratif'],
+      maj: '2026-09-18',
+      icone: 'cle',
+    },
   ],
 };

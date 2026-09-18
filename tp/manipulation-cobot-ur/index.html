@@ -1,0 +1,743 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Manipulation d’un cobot UR — Robotique industrielle</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
+  --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
+  --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
+  --robot:#F07C00; --metal:#8B949E; --dark:#3B4149;
+  --fieldstop:rgba(210,35,42,.46); --fieldwarn:rgba(200,126,0,.44);
+  --okbg:rgba(23,160,94,.10); --kobg:rgba(210,35,42,.09);
+  --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+    --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+    --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+    --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+    --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
+    --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
+  --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
+  --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+  --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+  --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
+  --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--ground);color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,Segoe UI,sans-serif;font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding-inline:16px;padding-block:30px 48px;
+  display:flex;flex-direction:column;gap:26px}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 6px}
+h1{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,38px);line-height:1.1;
+  letter-spacing:-.02em;margin:0;text-wrap:balance}
+.lede{color:var(--muted);max-width:66ch;margin:10px 0 0}
+.switch{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+.switch .lbl{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--muted)}
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:9px;padding:3px;gap:3px}
+.seg button{font:inherit;font-family:Archivo,sans-serif;font-weight:600;font-size:14.5px;
+  background:none;border:0;border-radius:6px;padding:7px 18px;color:var(--muted);cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--accent);color:#fff}
+.seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.specs{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:11px;overflow:hidden;
+  box-shadow:var(--shadow);margin:0}
+.specs div{background:var(--surface);padding:11px 14px 13px}
+.specs dt{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 3px}
+.specs dd{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:16px;
+  font-variant-numeric:tabular-nums;line-height:1.3}
+.specs dd.soft{font-weight:500;font-size:14px;color:var(--muted);font-style:italic}
+section{display:flex;flex-direction:column;gap:14px}
+h2{font-family:Archivo,sans-serif;font-weight:700;font-size:21px;letter-spacing:-.01em;
+  margin:0;display:flex;align-items:baseline;gap:10px;text-wrap:balance}
+h2 .step{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:500;color:#fff;
+  background:var(--accent);border-radius:5px;padding:2px 8px;letter-spacing:.06em;
+  position:relative;top:-2px;flex:none}
+h3{margin:0;font-family:Archivo,sans-serif;font-weight:600;font-size:16px}
+.sub{color:var(--muted);margin:-4px 0 0;max-width:72ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:16px 17px;
+  box-shadow:var(--shadow);display:flex;flex-direction:column;gap:13px}
+.figure{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  box-shadow:var(--shadow);overflow:hidden}
+.figure .svgbox{overflow-x:auto}
+.figure svg{display:block;width:100%;min-width:660px;height:auto}
+.figcap{border-top:1px solid var(--line);padding:11px 16px 13px;font-size:13px;color:var(--muted)}
+.figcap b{color:var(--ink);font-weight:600}
+.match{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+@media (max-width:760px){.match{grid-template-columns:minmax(0,1fr)}}
+.mrow{display:flex;align-items:flex-start;gap:9px;border:1px solid var(--line);border-radius:9px;
+  padding:8px 10px;background:var(--surface-2)}
+.mrow .no{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:500;color:#fff;
+  background:var(--dark);border-radius:50%;width:24px;height:24px;flex:none;
+  display:flex;align-items:center;justify-content:center;margin-top:3px}
+.mrow .fld{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+/* --- glisser-déposer du repérage --- */
+.banque{display:flex;flex-wrap:wrap;gap:7px;padding:11px;margin:0 0 13px;min-height:56px;
+  border:1px dashed var(--line);border-radius:10px;background:var(--surface-2);
+  align-content:flex-start}
+.banque.over{border-color:var(--accent);background:var(--surface)}
+.banque .vide{margin:2px 4px;font-size:13px;color:var(--muted);font-style:italic}
+.etq{font:inherit;font-size:13px;line-height:1.3;text-align:left;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:18px;
+  padding:6px 13px;cursor:grab;touch-action:manipulation}
+.etq:hover{border-color:var(--accent)}
+.etq:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.etq.pris{border-color:var(--accent);background:var(--surface-2);cursor:grabbing}
+.etq.vole{opacity:.4}
+.slot{font:inherit;font-size:13.5px;line-height:1.35;width:100%;min-height:34px;text-align:left;
+  color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:7px;
+  padding:6px 9px;cursor:pointer;touch-action:manipulation}
+.slot.plein{color:var(--ink);border-style:solid;cursor:grab}
+.slot.over{border-color:var(--accent);background:var(--surface-2);color:var(--ink)}
+.slot:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.mrow.viser .slot{border-color:var(--accent)}
+.hint{font-size:12.5px;color:var(--muted);margin:-4px 0 11px}
+.mrow .why{font-size:12.5px;line-height:1.4;color:var(--muted)}
+.mrow.ok{border-color:var(--green);background:var(--okbg)}
+.mrow.ok .no{background:var(--green)}
+.mrow.ko{border-color:var(--red);background:var(--kobg)}
+.mrow.ko .no{background:var(--red)}
+.q{border-top:1px solid var(--line);padding-top:13px;display:flex;flex-direction:column;gap:8px}
+.q:first-of-type{border-top:0;padding-top:0}
+.q .ask{font-weight:600;display:flex;gap:9px;align-items:flex-start}
+.q .ask .n{font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--accent);
+  font-weight:500;flex:none;padding-top:2px}
+.opts{display:flex;flex-direction:column;gap:5px;margin-left:30px}
+.opt{display:flex;gap:9px;align-items:flex-start;font-size:14px;cursor:pointer;
+  border:1px solid transparent;border-radius:7px;padding:5px 8px;line-height:1.45}
+.opt:hover{background:var(--surface-2)}
+.opt input{accent-color:var(--accent);margin:3px 0 0;flex:none}
+.opt.good{border-color:var(--green);background:var(--okbg)}
+.opt.bad{border-color:var(--red);background:var(--kobg)}
+.expl{margin-left:30px;border-left:3px solid var(--accent);background:var(--surface-2);
+  border-radius:0 8px 8px 0;padding:9px 13px;font-size:13.5px}
+.btns{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+button.act{font:inherit;font-size:14px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:8px;padding:8px 14px;color:var(--ink);cursor:pointer}
+button.act:hover{border-color:var(--muted)}
+button.act.primary{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+button.act.primary:hover{filter:brightness(1.07)}
+button.act:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.score{font-family:Archivo,sans-serif;font-weight:700;font-size:16px;font-variant-numeric:tabular-nums}
+.score.ok{color:var(--green)} .score.mid{color:var(--amber)} .score.ko{color:var(--red)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:11px;background:var(--surface);
+  box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);font-weight:500}
+thead th.here{color:var(--accent)}
+tbody th{font-weight:600;color:var(--ink);width:34%}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+td{font-variant-numeric:tabular-nums}
+td.here{background:var(--surface-2);font-weight:600}
+td.fill{color:var(--muted);font-style:italic;font-variant-numeric:normal}
+details{border:1px solid var(--line);border-radius:9px;background:var(--surface-2);
+  padding:10px 13px}
+summary{cursor:pointer;font-weight:600;font-size:14.5px;line-height:1.45}
+summary::marker{color:var(--accent)}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+details .ans{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:14px;
+  color:var(--muted)}
+details .ans b{color:var(--ink);font-weight:600}
+.openlist{display:flex;flex-direction:column;gap:9px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;cursor:pointer;
+  padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-2)}
+.check input{accent-color:var(--green);width:17px;height:17px;margin:2px 0 0;flex:none}
+.check:has(input:checked){border-color:var(--green);background:var(--okbg)}
+.gate{border-radius:9px;padding:11px 14px;font-size:14.5px;font-weight:600;
+  background:var(--kobg);border:1px solid var(--red);color:var(--red);margin:0}
+.gate.go{background:var(--okbg);border-color:var(--green);color:var(--green)}
+.note{border-left:3px solid var(--accent);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px}
+.note b{font-family:Archivo,sans-serif}
+.warn{border-left:3px solid var(--red);background:var(--surface-2);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px}
+.warn b{color:var(--red);font-family:Archivo,sans-serif}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.openlist .oq{background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;margin:0 0 9px;font-size:14.5px}
+
+/* --- fil d'Ariane ajouté pour l'intégration au site --- */
+.crumb{border-bottom:1px solid var(--line);background:var(--surface);font-size:14px}
+.crumb .in{max-width:1180px;margin:0 auto;padding:9px 16px;display:flex;align-items:center;
+  gap:9px;color:var(--muted);flex-wrap:wrap}
+.crumb a{text-decoration:none;color:var(--muted);display:inline-flex;align-items:center;gap:7px}
+.crumb a:hover{color:var(--ink)}
+.crumb a:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+.crumb svg{display:block;width:18px;height:18px;color:var(--accent)}
+.crumb .sep{opacity:.45}
+.crumb b{color:var(--ink);font-weight:600}
+</style>
+</head>
+<body>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>Manipulation d’un cobot UR</b></div></div>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Robotique industrielle — TP sécurité</p>
+    <h1>Manipulation cobot UR</h1>
+    <p class="lede" id="lede"></p>
+    <div class="switch">
+      <span class="lbl">Cobot étudié</span>
+      <div class="seg" role="group" aria-label="Cobot étudié">
+        <button type="button" id="b140" aria-pressed="true">UR5</button>
+        <button type="button" id="b6620" aria-pressed="false">UR10</button>
+      </div>
+    </div>
+  </header>
+
+  <dl class="specs" id="specs"></dl>
+
+  <section>
+    <h2><span class="step">1</span> <span id="t1"></span></h2>
+    <p class="sub">Dix repères sont placés sur le schéma. Associez chaque numéro au dispositif
+      qu'il désigne, puis allez vérifier sur le poste réel que vous savez le montrer du
+      doigt.</p>
+    <div class="figure">
+      <div class="svgbox" id="fig140"><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
+     aria-label="Schéma d'un poste collaboratif Universal Robots : le bras est boulonné sur un établi, sans aucun protecteur, et un opérateur se tient à côté. Le boîtier de commande est sous l'établi, le pupitre PolyScope sur un support à droite. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
+  <defs>
+    <pattern id="ccollab" width="13" height="13" patternTransform="rotate(45)"
+             patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="13" stroke="var(--fieldwarn)" stroke-width="5"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="980" height="560" fill="var(--ground)"/>
+  <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
+  <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
+
+  <!-- espace de collaboration au sol -->
+  <rect x="200" y="480" width="460" height="13" fill="url(#ccollab)"
+        stroke="var(--amber)" stroke-width="1"/>
+  <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
+    <rect x="690" y="502" width="26" height="12" fill="url(#ccollab)"
+          stroke="var(--amber)" stroke-width="1"/>
+    <text x="726" y="512">Espace de collaboration</text>
+    <text x="690" y="534">Aucun protecteur matériel</text>
+  </g>
+
+  <!-- espace maximal : arc en pointillés -->
+  <circle cx="300" cy="322" r="150" fill="none" stroke="var(--blue)" stroke-width="1.6"
+          stroke-dasharray="7 6" opacity=".85"/>
+  <text x="300" y="162" font-size="12" fill="var(--blue)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">espace maximal (UR5 + outil)</text>
+
+  <!-- plan de sécurité configuré -->
+  <line x1="548" y1="150" x2="548" y2="366" stroke="var(--red)" stroke-width="2.2"
+        stroke-dasharray="9 7"/>
+  <text x="556" y="204" font-size="12" fill="var(--red)"
+        font-family="IBM Plex Sans, sans-serif">plan de sécurité</text>
+  <text x="556" y="221" font-size="11" fill="var(--muted)"
+        font-family="IBM Plex Sans, sans-serif">configuré dans PolyScope,</text>
+  <text x="556" y="236" font-size="11" fill="var(--muted)"
+        font-family="IBM Plex Sans, sans-serif">invisible sur le poste</text>
+
+  <!-- établi -->
+  <rect x="170" y="352" width="360" height="15" rx="3" fill="var(--metal)"/>
+  <rect x="182" y="367" width="14" height="103" fill="var(--metal)"/>
+  <rect x="504" y="367" width="14" height="103" fill="var(--metal)"/>
+
+  <!-- boîtier de commande sous l'établi -->
+  <rect x="196" y="384" width="92" height="80" rx="4" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.2"/>
+  <circle cx="218" cy="402" r="8" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+  <circle cx="242" cy="402" r="5" fill="var(--amber)"/>
+  <g stroke="var(--line)" stroke-width="2">
+    <line x1="208" y1="428" x2="276" y2="428"/><line x1="208" y1="440" x2="276" y2="440"/>
+  </g>
+
+  <!-- bras UR -->
+  <rect x="272" y="330" width="56" height="22" rx="4" fill="var(--dark)"/>
+  <circle cx="300" cy="320" r="17" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <g stroke-linecap="round">
+    <line x1="300" y1="320" x2="352" y2="236" stroke="var(--robot)" stroke-width="26"/>
+    <line x1="352" y1="236" x2="424" y2="290" stroke="var(--robot)" stroke-width="22"/>
+  </g>
+  <circle cx="352" cy="236" r="15" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <circle cx="424" cy="290" r="13" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <circle cx="444" cy="304" r="10" fill="var(--metal)" stroke="var(--dark)" stroke-width="1.2"/>
+  <path d="M452 312 L470 324 M452 320 L470 332" stroke="var(--metal)" stroke-width="7"
+        stroke-linecap="round" fill="none"/>
+  <text x="178" y="316" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">UR5</text>
+
+  <!-- montage + pièce sur l'établi, et zone de coincement -->
+  <rect x="398" y="334" width="44" height="18" rx="2" fill="var(--metal)"/>
+  <circle cx="410" cy="318" r="17" fill="none" stroke="var(--red)" stroke-width="1.6"
+          stroke-dasharray="4 4"/>
+  <text x="378" y="292" font-size="11" fill="var(--red)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">zone de</text>
+  <text x="378" y="304" font-size="11" fill="var(--red)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">coincement</text>
+
+  <!-- opérateur -->
+  <circle cx="606" cy="268" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
+  <path d="M606 289 L606 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M606 316 L556 336" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M606 316 L646 344" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M606 396 L586 470 M606 396 L630 470" stroke="var(--dark)" stroke-width="12"
+        stroke-linecap="round" fill="none"/>
+
+  <!-- pupitre PolyScope -->
+  <rect x="806" y="400" width="14" height="70" fill="var(--dark)"/>
+  <rect x="752" y="234" width="122" height="168" rx="12" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.4"/>
+  <rect x="764" y="248" width="98" height="104" rx="3" fill="var(--metal)"
+        stroke="var(--dark)" stroke-width="1.1"/>
+  <text x="813" y="288" font-size="11" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">SAFETY</text>
+  <text x="813" y="306" font-size="11" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">CHECKSUM</text>
+  <text x="813" y="326" font-size="13" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">4F2C</text>
+  <circle cx="776" cy="378" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+  <circle cx="776" cy="378" r="8" fill="var(--red)"/>
+  <path d="M874 296 q18 0 18 16 q0 16 -18 16" fill="none" stroke="var(--ink)"
+        stroke-width="4" stroke-linecap="round"/>
+  <text x="813" y="424" font-size="12" fill="var(--muted)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">pupitre PolyScope</text>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="166" y1="446" x2="192" y2="434"/><line x1="164" y1="402" x2="194" y2="402"/><line x1="734" y1="248" x2="752" y2="244"/><line x1="734" y1="378" x2="760" y2="378"/><line x1="888" y1="312" x2="874" y2="312"/><line x1="492" y1="306" x2="470" y2="316"/><line x1="254" y1="338" x2="272" y2="340"/><line x1="604" y1="494" x2="604" y2="486"/><line x1="560" y1="162" x2="552" y2="192"/><line x1="812" y1="220" x2="812" y2="232"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="152" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="152" y="457" fill="var(--ink)">1</text></g><g><circle cx="150" cy="402" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="150" y="407" fill="var(--ink)">2</text></g><g><circle cx="720" cy="248" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="253" fill="var(--ink)">3</text></g><g><circle cx="720" cy="378" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="383" fill="var(--ink)">4</text></g><g><circle cx="902" cy="312" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="902" y="317" fill="var(--ink)">5</text></g><g><circle cx="506" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="506" y="305" fill="var(--ink)">6</text></g><g><circle cx="240" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="240" y="341" fill="var(--ink)">7</text></g><g><circle cx="604" cy="500" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="604" y="505" fill="var(--ink)">8</text></g><g><circle cx="560" cy="148" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="560" y="153" fill="var(--ink)">9</text></g><g><circle cx="812" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="812" y="211" fill="var(--ink)">10</text></g></g>
+</svg></div>
+      <div class="svgbox" id="fig6620" hidden><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
+     aria-label="Schéma d'un poste collaboratif Universal Robots : le bras est boulonné sur un établi, sans aucun protecteur, et un opérateur se tient à côté. Le boîtier de commande est sous l'établi, le pupitre PolyScope sur un support à droite. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
+  <defs>
+    <pattern id="dcollab" width="13" height="13" patternTransform="rotate(45)"
+             patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="13" stroke="var(--fieldwarn)" stroke-width="5"/>
+    </pattern>
+  </defs>
+  <rect x="0" y="0" width="980" height="560" fill="var(--ground)"/>
+  <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
+  <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
+
+  <!-- espace de collaboration au sol -->
+  <rect x="200" y="480" width="460" height="13" fill="url(#dcollab)"
+        stroke="var(--amber)" stroke-width="1"/>
+  <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
+    <rect x="690" y="502" width="26" height="12" fill="url(#dcollab)"
+          stroke="var(--amber)" stroke-width="1"/>
+    <text x="726" y="512">Espace de collaboration</text>
+    <text x="690" y="534">Aucun protecteur matériel</text>
+  </g>
+
+  <!-- espace maximal : arc en pointillés -->
+  <circle cx="300" cy="322" r="210" fill="none" stroke="var(--blue)" stroke-width="1.6"
+          stroke-dasharray="7 6" opacity=".85"/>
+  <text x="300" y="102" font-size="12" fill="var(--blue)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">espace maximal (UR10 + outil)</text>
+
+  <!-- plan de sécurité configuré -->
+  <line x1="548" y1="150" x2="548" y2="366" stroke="var(--red)" stroke-width="2.2"
+        stroke-dasharray="9 7"/>
+  <text x="556" y="204" font-size="12" fill="var(--red)"
+        font-family="IBM Plex Sans, sans-serif">plan de sécurité</text>
+  <text x="556" y="221" font-size="11" fill="var(--muted)"
+        font-family="IBM Plex Sans, sans-serif">configuré dans PolyScope,</text>
+  <text x="556" y="236" font-size="11" fill="var(--muted)"
+        font-family="IBM Plex Sans, sans-serif">invisible sur le poste</text>
+
+  <!-- établi -->
+  <rect x="170" y="352" width="360" height="15" rx="3" fill="var(--metal)"/>
+  <rect x="182" y="367" width="14" height="103" fill="var(--metal)"/>
+  <rect x="504" y="367" width="14" height="103" fill="var(--metal)"/>
+
+  <!-- boîtier de commande sous l'établi -->
+  <rect x="196" y="384" width="92" height="80" rx="4" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.2"/>
+  <circle cx="218" cy="402" r="8" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
+  <circle cx="242" cy="402" r="5" fill="var(--amber)"/>
+  <g stroke="var(--line)" stroke-width="2">
+    <line x1="208" y1="428" x2="276" y2="428"/><line x1="208" y1="440" x2="276" y2="440"/>
+  </g>
+
+  <!-- bras UR -->
+  <rect x="272" y="330" width="56" height="22" rx="4" fill="var(--dark)"/>
+  <circle cx="300" cy="320" r="17" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <g stroke-linecap="round">
+    <line x1="300" y1="320" x2="352" y2="236" stroke="var(--robot)" stroke-width="26"/>
+    <line x1="352" y1="236" x2="424" y2="290" stroke="var(--robot)" stroke-width="22"/>
+  </g>
+  <circle cx="352" cy="236" r="15" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <circle cx="424" cy="290" r="13" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <circle cx="444" cy="304" r="10" fill="var(--metal)" stroke="var(--dark)" stroke-width="1.2"/>
+  <path d="M452 312 L470 324 M452 320 L470 332" stroke="var(--metal)" stroke-width="7"
+        stroke-linecap="round" fill="none"/>
+  <text x="178" y="316" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">UR10</text>
+
+  <!-- montage + pièce sur l'établi, et zone de coincement -->
+  <rect x="398" y="334" width="44" height="18" rx="2" fill="var(--metal)"/>
+  <circle cx="410" cy="318" r="17" fill="none" stroke="var(--red)" stroke-width="1.6"
+          stroke-dasharray="4 4"/>
+  <text x="378" y="292" font-size="11" fill="var(--red)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">zone de</text>
+  <text x="378" y="304" font-size="11" fill="var(--red)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">coincement</text>
+
+  <!-- opérateur -->
+  <circle cx="606" cy="268" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
+  <path d="M606 289 L606 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M606 316 L556 336" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M606 316 L646 344" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M606 396 L586 470 M606 396 L630 470" stroke="var(--dark)" stroke-width="12"
+        stroke-linecap="round" fill="none"/>
+
+  <!-- pupitre PolyScope -->
+  <rect x="806" y="400" width="14" height="70" fill="var(--dark)"/>
+  <rect x="752" y="234" width="122" height="168" rx="12" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.4"/>
+  <rect x="764" y="248" width="98" height="104" rx="3" fill="var(--metal)"
+        stroke="var(--dark)" stroke-width="1.1"/>
+  <text x="813" y="288" font-size="11" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">SAFETY</text>
+  <text x="813" y="306" font-size="11" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">CHECKSUM</text>
+  <text x="813" y="326" font-size="13" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Mono, monospace">4F2C</text>
+  <circle cx="776" cy="378" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+  <circle cx="776" cy="378" r="8" fill="var(--red)"/>
+  <path d="M874 296 q18 0 18 16 q0 16 -18 16" fill="none" stroke="var(--ink)"
+        stroke-width="4" stroke-linecap="round"/>
+  <text x="813" y="424" font-size="12" fill="var(--muted)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">pupitre PolyScope</text>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="166" y1="446" x2="192" y2="434"/><line x1="164" y1="402" x2="194" y2="402"/><line x1="734" y1="248" x2="752" y2="244"/><line x1="734" y1="378" x2="760" y2="378"/><line x1="888" y1="312" x2="874" y2="312"/><line x1="492" y1="306" x2="470" y2="316"/><line x1="254" y1="338" x2="272" y2="340"/><line x1="604" y1="494" x2="604" y2="486"/><line x1="560" y1="162" x2="552" y2="192"/><line x1="812" y1="220" x2="812" y2="232"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="152" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="152" y="457" fill="var(--ink)">1</text></g><g><circle cx="150" cy="402" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="150" y="407" fill="var(--ink)">2</text></g><g><circle cx="720" cy="248" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="253" fill="var(--ink)">3</text></g><g><circle cx="720" cy="378" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="383" fill="var(--ink)">4</text></g><g><circle cx="902" cy="312" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="902" y="317" fill="var(--ink)">5</text></g><g><circle cx="506" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="506" y="305" fill="var(--ink)">6</text></g><g><circle cx="240" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="240" y="341" fill="var(--ink)">7</text></g><g><circle cx="604" cy="500" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="604" y="505" fill="var(--ink)">8</text></g><g><circle cx="560" cy="148" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="560" y="153" fill="var(--ink)">9</text></g><g><circle cx="812" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="812" y="211" fill="var(--ink)">10</text></g></g>
+</svg></div>
+      <p class="figcap" id="figcap"></p>
+    </div>
+    <div class="card">
+      <h3>Associez chaque repère</h3>
+      <p class="hint">Glissez chaque étiquette sur le numéro qu'elle désigne. Au doigt ou au
+        clavier : sélectionnez une étiquette, puis le repère. Une étiquette déjà posée se
+        reprend en la sélectionnant.</p>
+      <div class="banque" id="banque" aria-label="Étiquettes à placer"></div>
+      <div class="match" id="match"></div>
+      <div class="btns">
+        <button type="button" class="act primary" id="m-check">Vérifier</button>
+        <button type="button" class="act" id="m-reset">Effacer</button>
+        <button type="button" class="act" id="m-show">Afficher le corrigé</button>
+        <span class="score" id="m-score" hidden></span>
+      </div>
+    </div>
+    <p class="note" id="apres"></p>
+  </section>
+
+  <section>
+    <h2><span class="step">2</span> Questionnaire (version papier)</h2>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Cinq questions à défendre à l'oral</h2>
+    <p class="sub">Préparez vos réponses par écrit : elles sont à défendre devant l'enseignant.</p>
+    <div class="openlist" id="open"></div>
+  </section>
+
+  <section>
+    <h2><span class="step">4</span> Les deux cobots côte à côte</h2>
+    <p class="sub">Même architecture de sécurité, deux échelles et deux stratégies de protection.
+      La colonne du robot étudié est mise en avant. Les valeurs manquantes se relèvent dans le
+      manuel produit et dans l'analyse de risques de la cellule.</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th scope="col">Caractéristique</th>
+          <th scope="col" id="th140">UR5</th>
+          <th scope="col" id="th6620">UR10</th></tr></thead>
+        <tbody id="cmp"></tbody>
+      </table>
+    </div>
+    <p class="warn"><b>Le piège du copier-coller :</b> les deux postes n'appellent pas les mêmes
+      marges. Une barrière immatérielle ne protège que si le temps d'arrêt est connu et si la
+      distance qui en découle est respectée ; une enceinte ne protège que si son écart à l'espace
+      maximal et sa maille interdisent d'atteindre le robot. Toute modification — outil plus long,
+      pièce plus encombrante, vitesse augmentée, meuble déplacé — impose de reprendre l'analyse
+      de risques.</p>
+  </section>
+
+  <section>
+    <h2><span class="step">5</span> Feu vert avant manipulation</h2>
+    <p class="sub">À cocher devant l'enseignant, binôme par binôme. Tant qu'une case reste vide,
+      personne ne prend le boîtier.</p>
+    <div class="card">
+      <div id="golist" style="display:flex;flex-direction:column;gap:9px"></div>
+      <p class="gate" id="gate"></p>
+    </div>
+  </section>
+
+  <footer>Valeurs constructeur indicatives (UR5 : 5 kg / 850 mm ; UR10 : 10 kg / 1 300 mm), à confirmer dans le manuel produit de la machine du laboratoire. Les seuils d'effort et la distance de séparation relèvent de l'ISO/TS 15066 et se vérifient par mesure sur l'application réelle. Complément : <i>Enveloppe, butées et zones</i>.</footer>
+</div>
+
+<script>window.__TP__ = {"nom": {"ur5": "UR5", "ur10": "UR10"}, "specs": {"ur5": [["Charge utile", "5 kg", false], ["Portée à la bride", "850 mm", false], ["Masse du robot", "≈ 18,4 kg", false], ["Articulations", "± 360°", false], ["Protecteur", "aucun — effort limité", false]], "ur10": [["Charge utile", "10 kg", false], ["Portée à la bride", "1 300 mm", false], ["Masse du robot", "≈ 28,9 kg", false], ["Articulations", "± 360°", false], ["Protecteur", "aucun — effort limité", false]]}, "rep": {"ur5": [{"nom": "Boîtier de commande (control box)", "role": "Contient l'alimentation, les cartes de commande et les entrées-sorties de sécurité. Le reste de la sécurité n'est pas dans une armoire : il est dans la configuration."}, {"nom": "Bouton de mise sous tension et de déverrouillage des freins", "role": "Met le bras sous puissance. Tant qu'il n'a pas été actionné, les freins tiennent le bras — ce qui n'empêche pas le bras de bouger si on le pousse une fois sous tension."}, {"nom": "Pupitre PolyScope", "role": "Écran de programmation et de configuration. C'est le seul endroit où l'on peut lire les limites de sécurité réellement appliquées au robot."}, {"nom": "Arrêt d'urgence du pupitre", "role": "Coupe la puissance du bras et serre les freins. À distinguer de l'arrêt de protection, qui maintient la puissance et ne demande pas de déverrouillage."}, {"nom": "Bouton Freedrive, au dos du pupitre", "role": "Permet de déplacer le bras à la main. Commodité de programmation, pas fonction de sécurité : le robot reste sous puissance et l'outil peut tomber si le bras est mal équilibré."}, {"nom": "Bride outil et outil (préhenseur)", "role": "Ce que le robot porte n'est pas couvert par sa limitation d'effort : arête vive, force de serrage, température et pièce transportée sont à traiter séparément."}, {"nom": "Socle et sa fixation sur l'établi", "role": "Le bras ne tient que par cette fixation, et l'ensemble table + robot doit résister au mouvement. Un robot posé sans être boulonné n'est pas une installation."}, {"nom": "Espace de collaboration, matérialisé au sol", "role": "La zone où opérateur et robot peuvent se trouver en même temps. Elle se définit dans l'analyse de risques, pas au feutre : c'est elle qui décide de la hauteur de travail et de la position de l'opérateur."}, {"nom": "Plans de sécurité et limites d'articulation (PolyScope)", "role": "Des limites purement logicielles : rien ne les matérialise dans l'atelier. Elles ne se vérifient qu'à l'écran, et un essai de franchissement est le seul contrôle valable."}, {"nom": "Somme de contrôle de la configuration de sécurité", "role": "Le code affiché par PolyScope qui identifie la configuration en vigueur. Le comparer à celui validé est la seule façon rapide de savoir que personne n'a rien changé."}], "ur10": [{"nom": "Boîtier de commande (control box)", "role": "Contient l'alimentation, les cartes de commande et les entrées-sorties de sécurité. Le reste de la sécurité n'est pas dans une armoire : il est dans la configuration."}, {"nom": "Bouton de mise sous tension et de déverrouillage des freins", "role": "Met le bras sous puissance. Tant qu'il n'a pas été actionné, les freins tiennent le bras — ce qui n'empêche pas le bras de bouger si on le pousse une fois sous tension."}, {"nom": "Pupitre PolyScope", "role": "Écran de programmation et de configuration. C'est le seul endroit où l'on peut lire les limites de sécurité réellement appliquées au robot."}, {"nom": "Arrêt d'urgence du pupitre", "role": "Coupe la puissance du bras et serre les freins. À distinguer de l'arrêt de protection, qui maintient la puissance et ne demande pas de déverrouillage."}, {"nom": "Bouton Freedrive, au dos du pupitre", "role": "Permet de déplacer le bras à la main. Commodité de programmation, pas fonction de sécurité : le robot reste sous puissance et l'outil peut tomber si le bras est mal équilibré."}, {"nom": "Bride outil et outil (préhenseur)", "role": "Ce que le robot porte n'est pas couvert par sa limitation d'effort : arête vive, force de serrage, température et pièce transportée sont à traiter séparément."}, {"nom": "Socle et sa fixation sur l'établi", "role": "Le bras ne tient que par cette fixation, et l'ensemble table + robot doit résister au mouvement. Un robot posé sans être boulonné n'est pas une installation."}, {"nom": "Espace de collaboration, matérialisé au sol", "role": "La zone où opérateur et robot peuvent se trouver en même temps. Elle se définit dans l'analyse de risques, pas au feutre : c'est elle qui décide de la hauteur de travail et de la position de l'opérateur."}, {"nom": "Plans de sécurité et limites d'articulation (PolyScope)", "role": "Des limites purement logicielles : rien ne les matérialise dans l'atelier. Elles ne se vérifient qu'à l'écran, et un essai de franchissement est le seul contrôle valable."}, {"nom": "Somme de contrôle de la configuration de sécurité", "role": "Le code affiché par PolyScope qui identifie la configuration en vigueur. Le comparer à celui validé est la seule façon rapide de savoir que personne n'a rien changé."}]}, "oral": {"ur5": [{"q": "Relevez dans la documentation technique l'enveloppe de travail du robot. S'il parcourt la totalité de cette enveloppe, avec quoi risque-t-il d'entrer en collision ? Déduisez-en les éléments à identifier pour définir sa zone de travail."}, {"q": "Votre poste est-il une application collaborative ? Justifiez en examinant l'outil, la pièce, la tâche et les personnes présentes."}, {"q": "Citez les quatre modes de collaboration de l'ISO/TS 15066. Lequel s'applique à votre poste, et que faudrait-il ajouter pour en mettre un autre en œuvre ?"}, {"q": "Identifiez les zones de coincement de votre poste. Comment les supprimer ou les réduire ?"}, {"q": "On remplace le préhenseur par un modèle plus long, et la pièce par une tôle à arêtes vives. Que devez-vous reprendre avant de relancer ?"}], "ur10": [{"q": "Relevez dans la documentation technique l'enveloppe de travail du robot. S'il parcourt la totalité de cette enveloppe, avec quoi risque-t-il d'entrer en collision ? Déduisez-en les éléments à identifier pour définir sa zone de travail."}, {"q": "Votre poste est-il une application collaborative ? Justifiez en examinant l'outil, la pièce, la tâche et les personnes présentes."}, {"q": "Citez les quatre modes de collaboration de l'ISO/TS 15066. Lequel s'applique à votre poste, et que faudrait-il ajouter pour en mettre un autre en œuvre ?"}, {"q": "Identifiez les zones de coincement de votre poste. Comment les supprimer ou les réduire ?"}, {"q": "On remplace le préhenseur par un modèle plus long, et la pièce par une tôle à arêtes vives. Que devez-vous reprendre avant de relancer ?"}]}, "go": {"ur5": ["Je montre du doigt l'arrêt d'urgence du pupitre, et je sais qu'il n'y en a pas d'autre.", "Je distingue un arrêt de protection d'un arrêt d'urgence, et je sais ce que chacun exige pour repartir.", "Je sais que le Freedrive laisse le bras sous puissance, et je préviens mon binôme avant de l'utiliser.", "Je sais où lire la somme de contrôle de la configuration de sécurité, et à quoi la comparer.", "Je sais que les plans de sécurité et les limites d'articulation ne se voient pas dans l'atelier, et je les ai lus à l'écran.", "J'ai identifié les zones de coincement de mon poste et je n'y place jamais la main.", "Je sais que l'outil et la pièce ne sont pas couverts par la limitation d'effort du bras.", "Personne n'a la tête ni le visage dans l'espace de collaboration."], "ur10": ["Je montre du doigt l'arrêt d'urgence du pupitre, et je sais qu'il n'y en a pas d'autre.", "Je distingue un arrêt de protection d'un arrêt d'urgence, et je sais ce que chacun exige pour repartir.", "Je sais que le Freedrive laisse le bras sous puissance, et je préviens mon binôme avant de l'utiliser.", "Je sais où lire la somme de contrôle de la configuration de sécurité, et à quoi la comparer.", "Je sais que les plans de sécurité et les limites d'articulation ne se voient pas dans l'atelier, et je les ai lus à l'écran.", "J'ai identifié les zones de coincement de mon poste et je n'y place jamais la main.", "Je sais que l'outil et la pièce ne sont pas couverts par la limitation d'effort du bras.", "Personne n'a la tête ni le visage dans l'espace de collaboration."]}, "cmp": [["Charge utile", "5 kg", "10 kg"], ["Portée à la bride outil", "850 mm", "1 300 mm"], ["Masse du robot", "≈ 18,4 kg", "≈ 28,9 kg"], ["Débattement des articulations", "± 360°", "± 360°"], ["Protecteur matériel", "aucun", "aucun"], ["Mode de collaboration appliqué au poste", "à relever", "à relever"], ["Espace maximal (portée + outil + pièce)", "à calculer", "à calculer"], ["Limites de vitesse et d'effort configurées", "à relever", "à relever"], ["Somme de contrôle de sécurité", "à relever", "à relever"], ["Zones de coincement identifiées", "à relever", "à relever"]], "lede": {"ur5": "L'UR5 n'a aucun protecteur : l'opérateur partage l'espace du bras, et ce sont les limites d'effort, de vitesse et de puissance configurées dans le logiciel qui tiennent lieu de barrière. Rien de tout cela ne se voit sur le poste. Avant de toucher au pupitre, retrouvez sur le poste réel les dispositifs vus en simulation. En binôme, robot à l'arrêt.", "ur10": "L'UR10 obéit aux mêmes principes que l'UR5, avec 10 kg au bout d'un bras de 1 300 mm. L'énergie en jeu et le volume à surveiller grandissent d'autant, alors que la protection reste immatérielle : les seuils réglés sur une machine ne se transposent pas tels quels sur l'autre. En binôme, robot à l'arrêt."}, "figcap": {"ur5": "<b>Schéma de principe</b> — poste collaboratif UR5, sans protecteur matériel. Le plan de sécurité est configuré dans PolyScope : il n'existe que dans le logiciel, rien ne le matérialise sur le poste. L'agencement du poste du laboratoire peut différer : c'est lui qui fait foi.", "ur10": "<b>Schéma de principe</b> — poste collaboratif UR10, sans protecteur matériel. L'espace maximal est nettement plus vaste que celui de l'UR5, pour un poste de même encombrement : c'est là que se joue la différence. L'agencement du poste du laboratoire peut différer : c'est lui qui fait foi."}, "apres": {"ur5": "<b>Sur le poste réel :</b> relevez la somme de contrôle de sécurité affichée sur le pupitre, les limites d'effort, de vitesse et de puissance réellement configurées, et repérez les zones de coincement entre le bras, l'outil et le montage.", "ur10": "<b>Sur le poste réel :</b> mêmes relevés que sur l'UR5, et regardez en plus ce que la portée supplémentaire met à portée du bras — bord d'établi, armoire, passage. Vérifiez que l'espace de collaboration matérialisé au sol couvre encore l'espace maximal."}};</script>
+<script>
+const D = window.__TP__;
+const el = (t, c, x) => { const n = document.createElement(t); if (c) n.className = c;
+  if (x != null) n.textContent = x; return n; };
+const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+let ROBOT = 'ur5';
+
+/* ---------------- fiche technique ---------------- */
+function renderSpecs() {
+  const b = document.getElementById('specs');
+  b.textContent = '';
+  D.specs[ROBOT].forEach(([k, v, soft]) => {
+    const d = el('div'); d.append(el('dt', null, k), el('dd', soft ? 'soft' : null, v)); b.append(d);
+  });
+}
+
+/* ---------------- 1. appariement par glisser-déposer ---------------- */
+/* PLACE[i] = nom de l'étiquette posée sur le repère i, ou null.
+   PRIS = étiquette saisie au clic, au doigt ou au clavier, en attente d'une cible.
+   Le glisser-déposer natif sert la souris ; la sélection en deux temps sert le tactile
+   et le clavier, où le glisser n'existe pas. */
+let ORDRE = [];
+let PLACE = [];
+let PRIS = null;
+
+const banque = document.getElementById('banque');
+const bocal = document.getElementById('match');
+
+function renderMatch() {
+  const rep = D.rep[ROBOT];
+  PLACE = rep.map(() => null);
+  ORDRE = shuffled(rep.map(r => r.nom));
+  PRIS = null;
+  dessine();
+  document.getElementById('m-score').hidden = true;
+}
+
+function dessine() {
+  const rep = D.rep[ROBOT];
+  banque.textContent = '';
+  bocal.textContent = '';
+  const restantes = ORDRE.filter(n => PLACE.indexOf(n) < 0);
+  if (restantes.length) {
+    restantes.forEach(n => {
+      const b = el('button', 'etq' + (n === PRIS ? ' pris' : ''), n);
+      b.type = 'button'; b.draggable = true; b.dataset.nom = n;
+      b.setAttribute('aria-pressed', String(n === PRIS));
+      banque.append(b);
+    });
+  } else {
+    banque.append(el('p', 'vide', 'Toutes les étiquettes sont placées.'));
+  }
+  rep.forEach((r, i) => {
+    const row = el('div', 'mrow' + (PRIS ? ' viser' : '')); row.dataset.i = i;
+    row.append(el('span', 'no', String(i + 1)));
+    const fld = el('div', 'fld');
+    const pose = PLACE[i];
+    const s = el('button', 'slot' + (pose ? ' plein' : ''), pose || 'déposer ici');
+    s.type = 'button'; s.dataset.i = String(i); s.draggable = !!pose;
+    s.setAttribute('aria-label', pose
+      ? 'Repère ' + (i + 1) + ' : ' + pose + '. Activer pour reprendre l\u2019étiquette.'
+      : 'Repère ' + (i + 1) + ', vide. Activer pour y poser l\u2019étiquette sélectionnée.');
+    const why = el('p', 'why'); why.hidden = true;
+    fld.append(s, why); row.append(fld); bocal.append(row);
+  });
+}
+function matchRows() { return Array.from(document.querySelectorAll('#match .mrow')); }
+
+function poser(i, nom) {
+  const ailleurs = PLACE.indexOf(nom);
+  if (ailleurs >= 0) PLACE[ailleurs] = null;   /* l'étiquette ne peut être qu'à un endroit */
+  PLACE[i] = nom;                              /* l'occupant précédent repart en banque */
+  PRIS = null;
+  dessine();
+}
+function reprendre(i) {
+  PRIS = PLACE[i]; PLACE[i] = null;
+  dessine();
+}
+
+/* --- sélection en deux temps : clic, doigt, clavier --- */
+banque.addEventListener('click', e => {
+  const b = e.target.closest('.etq');
+  if (!b) return;
+  PRIS = (PRIS === b.dataset.nom) ? null : b.dataset.nom;
+  dessine();
+});
+bocal.addEventListener('click', e => {
+  const s = e.target.closest('.slot');
+  if (!s) return;
+  const i = Number(s.dataset.i);
+  if (PRIS) poser(i, PRIS);
+  else if (PLACE[i]) reprendre(i);
+});
+
+/* --- glisser-déposer natif : souris et pavé tactile --- */
+function nomTraine(e) {
+  const b = e.target.closest('.etq');
+  if (b) return b.dataset.nom;
+  const s = e.target.closest('.slot.plein');
+  return s ? PLACE[Number(s.dataset.i)] : null;
+}
+[banque, bocal].forEach(zone => {
+  zone.addEventListener('dragstart', e => {
+    const nom = nomTraine(e);
+    if (!nom) { e.preventDefault(); return; }
+    PRIS = nom;
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', nom);
+    const src = e.target.closest('.etq');
+    if (src) src.classList.add('vole');
+  });
+  zone.addEventListener('dragend', () => {
+    document.querySelectorAll('.vole').forEach(n => n.classList.remove('vole'));
+    document.querySelectorAll('.over').forEach(n => n.classList.remove('over'));
+  });
+});
+bocal.addEventListener('dragover', e => {
+  const s = e.target.closest('.slot');
+  if (!s || !PRIS) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  s.classList.add('over');
+});
+bocal.addEventListener('dragleave', e => {
+  const s = e.target.closest('.slot');
+  if (s) s.classList.remove('over');
+});
+bocal.addEventListener('drop', e => {
+  const s = e.target.closest('.slot');
+  if (!s) return;
+  e.preventDefault();
+  const nom = e.dataTransfer.getData('text/plain') || PRIS;
+  if (nom) poser(Number(s.dataset.i), nom);
+});
+banque.addEventListener('dragover', e => {
+  if (!PRIS) return;
+  e.preventDefault(); e.dataTransfer.dropEffect = 'move';
+  banque.classList.add('over');
+});
+banque.addEventListener('dragleave', () => banque.classList.remove('over'));
+banque.addEventListener('drop', e => {
+  e.preventDefault();
+  banque.classList.remove('over');
+  const nom = e.dataTransfer.getData('text/plain') || PRIS;
+  const ailleurs = PLACE.indexOf(nom);
+  if (ailleurs >= 0) PLACE[ailleurs] = null;   /* retour en banque */
+  PRIS = null;
+  dessine();
+});
+
+/* --- vérification --- */
+document.getElementById('m-check').addEventListener('click', () => {
+  const rep = D.rep[ROBOT]; let bons = 0;
+  matchRows().forEach((row, i) => {
+    const why = row.querySelector('.why');
+    const juste = PLACE[i] === rep[i].nom;
+    row.classList.toggle('ok', juste); row.classList.toggle('ko', !juste);
+    if (juste) bons++;
+    why.hidden = false;
+    why.textContent = juste ? rep[i].role
+      : PLACE[i] ? 'À revoir — ce repère désigne autre chose.'
+                 : 'Rien n\u2019a été posé sur ce repère.';
+  });
+  const s = document.getElementById('m-score'); s.hidden = false;
+  s.textContent = bons + ' / ' + rep.length + ' repères identifiés';
+  s.className = 'score ' + (bons === rep.length ? 'ok' : bons >= 7 ? 'mid' : 'ko');
+});
+document.getElementById('m-reset').addEventListener('click', renderMatch);
+document.getElementById('m-show').addEventListener('click', () => {
+  const rep = D.rep[ROBOT];
+  PLACE = rep.map(r => r.nom);
+  PRIS = null;
+  dessine();
+  matchRows().forEach((row, i) => {
+    row.classList.add('ok'); row.classList.remove('ko');
+    const why = row.querySelector('.why'); why.hidden = false; why.textContent = rep[i].role;
+  });
+  const s = document.getElementById('m-score'); s.hidden = false;
+  s.textContent = 'Corrigé affiché'; s.className = 'score mid';
+});
+
+/* ---------------- 3. questions orales ---------------- */
+function renderOral() {
+  const box = document.getElementById('open');
+  box.textContent = '';
+  D.oral[ROBOT].forEach((item, i) => {
+    box.append(el('p', 'oq', 'O' + (i + 1) + '. ' + item.q));
+  });
+}
+
+/* ---------------- 4. comparatif ---------------- */
+function renderCmp() {
+  const b = document.getElementById('cmp');
+  b.textContent = '';
+  D.cmp.forEach(([k, v1, v2]) => {
+    const tr = el('tr');
+    const th = el('th', null, k); th.scope = 'row';
+    const a = el('td', null, v1), c = el('td', null, v2);
+    if (/relever|calculer|mesurer/.test(v1)) a.classList.add('fill');
+    if (/relever|calculer|mesurer/.test(v2)) c.classList.add('fill');
+    (ROBOT === 'ur5' ? a : c).classList.add('here');
+    tr.append(th, a, c); b.append(tr);
+  });
+  document.getElementById('th140').classList.toggle('here', ROBOT === 'ur5');
+  document.getElementById('th6620').classList.toggle('here', ROBOT === 'ur10');
+}
+
+/* ---------------- 5. feu vert ---------------- */
+function majGate() {
+  const gos = Array.from(document.querySelectorAll('#golist .go'));
+  const n = gos.filter(c => c.checked).length, tout = n === gos.length;
+  const g = document.getElementById('gate');
+  g.textContent = n + ' / ' + gos.length +
+    (tout ? ' — manipulation autorisée sous supervision' : ' — manipulation non autorisée');
+  g.classList.toggle('go', tout);
+}
+function renderGo() {
+  const box = document.getElementById('golist');
+  box.textContent = '';
+  D.go[ROBOT].forEach((t, i) => {
+    const lab = el('label', 'check');
+    const inp = el('input'); inp.type = 'checkbox'; inp.className = 'go';
+    inp.id = ROBOT + '-go' + i;
+    lab.append(inp, el('span', null, t));
+    inp.addEventListener('change', majGate);
+    box.append(lab);
+  });
+  majGate();
+}
+
+/* ---------------- bascule ---------------- */
+function setRobot(r) {
+  ROBOT = r;
+  document.getElementById('lede').textContent = D.lede[r];
+  document.getElementById('t1').textContent = 'Repérer les dispositifs sur le poste ' + D.nom[r];
+  document.getElementById('figcap').innerHTML = D.figcap[r];
+  document.getElementById('apres').innerHTML = D.apres[r];
+  document.getElementById('fig140').hidden = r !== 'ur5';
+  document.getElementById('fig6620').hidden = r !== 'ur10';
+  ['b140', 'b6620'].forEach(id => {
+    const on = (id === 'b140') === (r === 'ur5');
+    document.getElementById(id).classList.toggle('on', on);
+    document.getElementById(id).setAttribute('aria-pressed', String(on));
+  });
+  renderSpecs(); renderMatch(); renderOral(); renderCmp(); renderGo();
+}
+document.getElementById('b140').addEventListener('click', () => setRobot('ur5'));
+document.getElementById('b6620').addEventListener('click', () => setRobot('ur10'));
+setRobot('ur5');
+</script>
+</body>
+</html>
