@@ -11,7 +11,7 @@
   --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
   --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
   --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
-  --robot:#F07C00; --metal:#8B949E; --dark:#3B4149;
+  --robot:#C2CAD2; --metal:#8B949E; --dark:#3B4149;
   --fieldstop:rgba(210,35,42,.46); --fieldwarn:rgba(200,126,0,.44);
   --okbg:rgba(23,160,94,.10); --kobg:rgba(210,35,42,.09);
   --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
@@ -21,7 +21,7 @@
     --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
     --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
     --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
-    --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+    --robot:#AEB8C2; --metal:#98A2AD; --dark:#59626D;
     --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
     --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
     --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
@@ -31,7 +31,7 @@
   --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
   --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
   --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
-  --robot:#FF9426; --metal:#98A2AD; --dark:#59626D;
+  --robot:#AEB8C2; --metal:#98A2AD; --dark:#59626D;
   --fieldstop:rgba(241,86,79,.38); --fieldwarn:rgba(240,169,59,.34);
   --okbg:rgba(51,193,131,.13); --kobg:rgba(241,86,79,.13);
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
@@ -217,7 +217,7 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
       doigt.</p>
     <div class="figure">
       <div class="svgbox" id="fig140"><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
-     aria-label="Schéma d'un poste collaboratif Universal Robots : le bras est boulonné sur un établi, sans aucun protecteur, et un opérateur se tient à côté. Le boîtier de commande est sous l'établi, le pupitre PolyScope sur un support à droite. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
+     aria-label="Schéma d'un poste collaboratif Universal Robots tel qu'il est installé en salle : le bras est boulonné sur la platine d'un socle en profilé aluminium, qui abrite le boîtier de commande. Aucun protecteur ne sépare l'opérateur du robot. Une table voisine porte le pupitre PolyScope, avec son arrêt d'urgence. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
   <defs>
     <pattern id="ccollab" width="13" height="13" patternTransform="rotate(45)"
              patternUnits="userSpaceOnUse">
@@ -228,100 +228,127 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
   <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
   <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
 
-  <!-- espace de collaboration au sol -->
-  <rect x="200" y="480" width="460" height="13" fill="url(#ccollab)"
+  <!-- espace de collaboration, matérialisé au sol -->
+  <rect x="150" y="478" width="560" height="13" fill="url(#ccollab)"
         stroke="var(--amber)" stroke-width="1"/>
   <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
-    <rect x="690" y="502" width="26" height="12" fill="url(#ccollab)"
+    <rect x="740" y="478" width="26" height="12" fill="url(#ccollab)"
           stroke="var(--amber)" stroke-width="1"/>
-    <text x="726" y="512">Espace de collaboration</text>
-    <text x="690" y="534">Aucun protecteur matériel</text>
+    <text x="776" y="488">Espace de collaboration</text>
+    <text x="740" y="510">Aucun protecteur matériel</text>
   </g>
 
-  <!-- espace maximal : arc en pointillés -->
-  <circle cx="300" cy="322" r="150" fill="none" stroke="var(--blue)" stroke-width="1.6"
+  <!-- espace maximal : le bras plus son outil -->
+  <circle cx="266" cy="300" r="150" fill="none" stroke="var(--blue)" stroke-width="1.6"
           stroke-dasharray="7 6" opacity=".85"/>
-  <text x="300" y="162" font-size="12" fill="var(--blue)" text-anchor="middle"
+  <text x="266" y="138" font-size="12" fill="var(--blue)" text-anchor="middle"
         font-family="IBM Plex Sans, sans-serif">espace maximal (UR5 + outil)</text>
 
-  <!-- plan de sécurité configuré -->
-  <line x1="548" y1="150" x2="548" y2="366" stroke="var(--red)" stroke-width="2.2"
+  <!-- plan de sécurité : il n'existe que dans la configuration -->
+  <line x1="500" y1="160" x2="500" y2="430" stroke="var(--red)" stroke-width="2.2"
         stroke-dasharray="9 7"/>
-  <text x="556" y="204" font-size="12" fill="var(--red)"
+  <text x="510" y="142" font-size="12" fill="var(--red)"
         font-family="IBM Plex Sans, sans-serif">plan de sécurité</text>
-  <text x="556" y="221" font-size="11" fill="var(--muted)"
+  <text x="510" y="158" font-size="11" fill="var(--muted)"
         font-family="IBM Plex Sans, sans-serif">configuré dans PolyScope,</text>
-  <text x="556" y="236" font-size="11" fill="var(--muted)"
+  <text x="510" y="173" font-size="11" fill="var(--muted)"
         font-family="IBM Plex Sans, sans-serif">invisible sur le poste</text>
 
-  <!-- établi -->
-  <rect x="170" y="352" width="360" height="15" rx="3" fill="var(--metal)"/>
-  <rect x="182" y="367" width="14" height="103" fill="var(--metal)"/>
-  <rect x="504" y="367" width="14" height="103" fill="var(--metal)"/>
+  <!-- socle en profilé aluminium : platine, montants, traverse, pieds réglables -->
+  <rect x="186" y="330" width="240" height="10" fill="var(--metal)" opacity=".55"/>
+  <rect x="190" y="340" width="10" height="112" fill="var(--metal)" opacity=".55"/>
+  <rect x="412" y="340" width="10" height="112" fill="var(--metal)" opacity=".55"/>
+  <rect x="150" y="318" width="290" height="14" fill="var(--surface-2)"
+        stroke="var(--metal)" stroke-width="1.4"/>
+  <line x1="150" y1="325" x2="440" y2="325" stroke="var(--metal)" stroke-width="1"
+        opacity=".7"/>
+  <rect x="158" y="332" width="15" height="130" fill="var(--metal)"/>
+  <line x1="165.5" y1="336" x2="165.5" y2="458" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="417" y="332" width="15" height="130" fill="var(--metal)"/>
+  <line x1="424.5" y1="336" x2="424.5" y2="458" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="173" y="440" width="244" height="11" fill="var(--metal)"/>
+  <line x1="177" y1="445.5" x2="413" y2="445.5" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="154" y="462" width="22" height="8" rx="2" fill="var(--dark)"/>
+  <rect x="414" y="462" width="22" height="8" rx="2" fill="var(--dark)"/>
 
-  <!-- boîtier de commande sous l'établi -->
-  <rect x="196" y="384" width="92" height="80" rx="4" fill="var(--surface)"
+  <!-- boîtier de commande, logé dans le socle -->
+  <rect x="204" y="348" width="140" height="86" rx="3" fill="var(--metal)"
         stroke="var(--dark)" stroke-width="2.2"/>
-  <circle cx="218" cy="402" r="8" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
-  <circle cx="242" cy="402" r="5" fill="var(--amber)"/>
-  <g stroke="var(--line)" stroke-width="2">
-    <line x1="208" y1="428" x2="276" y2="428"/><line x1="208" y1="440" x2="276" y2="440"/>
+  <rect x="204" y="348" width="140" height="14" rx="3" fill="var(--dark)"/>
+  <g stroke="var(--surface)" stroke-width="2.4" opacity=".75">
+    <line x1="218" y1="378" x2="278" y2="378"/><line x1="218" y1="390" x2="278" y2="390"/>
+    <line x1="218" y1="402" x2="278" y2="402"/><line x1="218" y1="414" x2="278" y2="414"/>
   </g>
+  <circle cx="320" cy="380" r="5" fill="var(--amber)"/>
+  <rect x="300" y="398" width="34" height="20" rx="2" fill="var(--dark)" opacity=".5"/>
+  <path d="M286 348 q-8 -12 -18 -16" fill="none" stroke="var(--dark)" stroke-width="3"/>
 
-  <!-- bras UR -->
-  <rect x="272" y="330" width="56" height="22" rx="4" fill="var(--dark)"/>
-  <circle cx="300" cy="320" r="17" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <!-- bras : tubes aluminium, carters d'articulation sombres -->
+  <path d="M240 318 L250 298 L282 298 L292 318 Z" fill="var(--dark)"/>
+  <g fill="var(--dark)"><circle cx="232" cy="323" r="3"/><circle cx="300" cy="323" r="3"/></g>
+  <circle cx="266" cy="292" r="19" fill="var(--dark)"/>
   <g stroke-linecap="round">
-    <line x1="300" y1="320" x2="352" y2="236" stroke="var(--robot)" stroke-width="26"/>
-    <line x1="352" y1="236" x2="424" y2="290" stroke="var(--robot)" stroke-width="22"/>
+    <line x1="266" y1="288" x2="336" y2="190" stroke="var(--robot)" stroke-width="28"/>
+    <line x1="336" y1="190" x2="452" y2="216" stroke="var(--robot)" stroke-width="24"/>
+    <line x1="452" y1="216" x2="470" y2="248" stroke="var(--robot)" stroke-width="20"/>
   </g>
-  <circle cx="352" cy="236" r="15" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
-  <circle cx="424" cy="290" r="13" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
-  <circle cx="444" cy="304" r="10" fill="var(--metal)" stroke="var(--dark)" stroke-width="1.2"/>
-  <path d="M452 312 L470 324 M452 320 L470 332" stroke="var(--metal)" stroke-width="7"
-        stroke-linecap="round" fill="none"/>
-  <text x="178" y="316" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">UR5</text>
+  <circle cx="336" cy="190" r="17" fill="var(--dark)"/>
+  <circle cx="452" cy="216" r="15" fill="var(--dark)"/>
+  <circle cx="470" cy="248" r="13" fill="var(--dark)"/>
+  <text x="392" y="314" font-size="13" fill="var(--muted)"
+        font-family="IBM Plex Mono, monospace">UR5</text>
 
-  <!-- montage + pièce sur l'établi, et zone de coincement -->
-  <rect x="398" y="334" width="44" height="18" rx="2" fill="var(--metal)"/>
-  <circle cx="410" cy="318" r="17" fill="none" stroke="var(--red)" stroke-width="1.6"
-          stroke-dasharray="4 4"/>
-  <text x="378" y="292" font-size="11" fill="var(--red)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">zone de</text>
-  <text x="378" y="304" font-size="11" fill="var(--red)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">coincement</text>
-
-  <!-- opérateur -->
-  <circle cx="606" cy="268" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
-  <path d="M606 289 L606 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
-  <path d="M606 316 L556 336" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
-  <path d="M606 316 L646 344" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
-  <path d="M606 396 L586 470 M606 396 L630 470" stroke="var(--dark)" stroke-width="12"
-        stroke-linecap="round" fill="none"/>
-
-  <!-- pupitre PolyScope -->
-  <rect x="806" y="400" width="14" height="70" fill="var(--dark)"/>
-  <rect x="752" y="234" width="122" height="168" rx="12" fill="var(--surface)"
-        stroke="var(--dark)" stroke-width="2.4"/>
-  <rect x="764" y="248" width="98" height="104" rx="3" fill="var(--metal)"
+  <!-- bride outil et préhenseur -->
+  <rect x="456" y="258" width="28" height="11" rx="2" fill="var(--metal)"
         stroke="var(--dark)" stroke-width="1.1"/>
-  <text x="813" y="288" font-size="11" fill="var(--ground)" text-anchor="middle"
+  <rect x="450" y="269" width="40" height="24" rx="3" fill="var(--dark)"/>
+  <path d="M458 293 L456 310 M482 293 L484 310" stroke="var(--metal)" stroke-width="7"
+        stroke-linecap="round" fill="none"/>
+
+  <!-- opérateur : il partage l'espace, rien ne l'en empêche -->
+  <circle cx="545" cy="300" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
+  <path d="M545 321 L545 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M545 342 L504 364" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M545 342 L588 360" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M545 396 L526 470 M545 396 L568 470" fill="none" stroke="var(--dark)"
+        stroke-width="12" stroke-linecap="round"/>
+
+  <!-- table voisine : c'est là qu'est posé le pupitre -->
+  <rect x="592" y="380" width="300" height="13" rx="2" fill="var(--surface-2)"
+        stroke="var(--metal)" stroke-width="1.2"/>
+  <rect x="604" y="393" width="12" height="77" fill="var(--dark)"/>
+  <rect x="868" y="393" width="12" height="77" fill="var(--dark)"/>
+
+  <!-- pupitre PolyScope, agrandi pour que ses organes soient repérables -->
+  <rect x="600" y="248" width="264" height="132" rx="14" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.4"/>
+  <rect x="616" y="266" width="172" height="98" rx="4" fill="var(--metal)"
+        stroke="var(--dark)" stroke-width="1.1"/>
+  <circle cx="650" cy="300" r="15" fill="var(--surface)" stroke="var(--dark)" stroke-width="1.6"/>
+  <text x="650" y="305" font-size="11" fill="var(--ink)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">ON</text>
+  <text x="650" y="334" font-size="10" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">freins</text>
+  <text x="736" y="292" font-size="11" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">SAFETY</text>
-  <text x="813" y="306" font-size="11" fill="var(--ground)" text-anchor="middle"
+  <text x="736" y="308" font-size="11" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">CHECKSUM</text>
-  <text x="813" y="326" font-size="13" fill="var(--ground)" text-anchor="middle"
+  <text x="736" y="330" font-size="14" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">4F2C</text>
-  <circle cx="776" cy="378" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
-  <circle cx="776" cy="378" r="8" fill="var(--red)"/>
-  <path d="M874 296 q18 0 18 16 q0 16 -18 16" fill="none" stroke="var(--ink)"
+  <circle cx="828" cy="292" r="17" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+  <circle cx="828" cy="292" r="11" fill="var(--red)"/>
+  <circle cx="828" cy="344" r="11" fill="none" stroke="var(--dark)" stroke-width="1.6"
+          stroke-dasharray="3 3"/>
+  <text x="828" y="368" font-size="10" fill="var(--muted)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">au dos</text>
+  <path d="M600 300 q-18 0 -18 16 q0 16 18 16" fill="none" stroke="var(--ink)"
         stroke-width="4" stroke-linecap="round"/>
-  <text x="813" y="424" font-size="12" fill="var(--muted)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">pupitre PolyScope</text>
-  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="166" y1="446" x2="192" y2="434"/><line x1="164" y1="402" x2="194" y2="402"/><line x1="734" y1="248" x2="752" y2="244"/><line x1="734" y1="378" x2="760" y2="378"/><line x1="888" y1="312" x2="874" y2="312"/><line x1="492" y1="306" x2="470" y2="316"/><line x1="254" y1="338" x2="272" y2="340"/><line x1="604" y1="494" x2="604" y2="486"/><line x1="560" y1="162" x2="552" y2="192"/><line x1="812" y1="220" x2="812" y2="232"/></g>
-  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="152" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="152" y="457" fill="var(--ink)">1</text></g><g><circle cx="150" cy="402" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="150" y="407" fill="var(--ink)">2</text></g><g><circle cx="720" cy="248" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="253" fill="var(--ink)">3</text></g><g><circle cx="720" cy="378" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="383" fill="var(--ink)">4</text></g><g><circle cx="902" cy="312" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="902" y="317" fill="var(--ink)">5</text></g><g><circle cx="506" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="506" y="305" fill="var(--ink)">6</text></g><g><circle cx="240" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="240" y="341" fill="var(--ink)">7</text></g><g><circle cx="604" cy="500" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="604" y="505" fill="var(--ink)">8</text></g><g><circle cx="560" cy="148" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="560" y="153" fill="var(--ink)">9</text></g><g><circle cx="812" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="812" y="211" fill="var(--ink)">10</text></g></g>
+  <path d="M864 380 q28 10 40 -6" fill="none" stroke="var(--dark)" stroke-width="3"/>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="126" y1="392" x2="202" y2="394"/><line x1="584" y1="224" x2="640" y2="284"/><line x1="900" y1="268" x2="866" y2="280"/><line x1="900" y1="332" x2="846" y2="300"/><line x1="902" y1="402" x2="856" y2="358"/><line x1="462" y1="246" x2="492" y2="272"/><line x1="180" y1="276" x2="244" y2="306"/><line x1="300" y1="508" x2="300" y2="492"/><line x1="500" y1="110" x2="500" y2="158"/><line x1="706" y1="220" x2="728" y2="270"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="112" cy="392" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="112" y="397" fill="var(--ink)">1</text></g><g><circle cx="578" cy="212" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="578" y="217" fill="var(--ink)">2</text></g><g><circle cx="912" cy="262" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="267" fill="var(--ink)">3</text></g><g><circle cx="912" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="341" fill="var(--ink)">4</text></g><g><circle cx="912" cy="410" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="415" fill="var(--ink)">5</text></g><g><circle cx="452" cy="240" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="452" y="245" fill="var(--ink)">6</text></g><g><circle cx="166" cy="270" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="166" y="275" fill="var(--ink)">7</text></g><g><circle cx="300" cy="522" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="300" y="527" fill="var(--ink)">8</text></g><g><circle cx="500" cy="96" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="500" y="101" fill="var(--ink)">9</text></g><g><circle cx="706" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="706" y="211" fill="var(--ink)">10</text></g></g>
 </svg></div>
       <div class="svgbox" id="fig6620" hidden><svg viewBox="0 0 980 560" role="img" xmlns="http://www.w3.org/2000/svg"
-     aria-label="Schéma d'un poste collaboratif Universal Robots : le bras est boulonné sur un établi, sans aucun protecteur, et un opérateur se tient à côté. Le boîtier de commande est sous l'établi, le pupitre PolyScope sur un support à droite. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
+     aria-label="Schéma d'un poste collaboratif Universal Robots tel qu'il est installé en salle : le bras est boulonné sur la platine d'un socle en profilé aluminium, qui abrite le boîtier de commande. Aucun protecteur ne sépare l'opérateur du robot. Une table voisine porte le pupitre PolyScope, avec son arrêt d'urgence. Un plan de sécurité configuré dans le logiciel est figuré en pointillés, l'espace de collaboration est matérialisé au sol. Dix repères numérotés désignent les dispositifs de sécurité.">
   <defs>
     <pattern id="dcollab" width="13" height="13" patternTransform="rotate(45)"
              patternUnits="userSpaceOnUse">
@@ -332,97 +359,124 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
   <rect x="0" y="470" width="980" height="90" fill="var(--surface-2)"/>
   <line x1="0" y1="470" x2="980" y2="470" stroke="var(--line)" stroke-width="2"/>
 
-  <!-- espace de collaboration au sol -->
-  <rect x="200" y="480" width="460" height="13" fill="url(#dcollab)"
+  <!-- espace de collaboration, matérialisé au sol -->
+  <rect x="150" y="478" width="560" height="13" fill="url(#dcollab)"
         stroke="var(--amber)" stroke-width="1"/>
   <g font-family="IBM Plex Sans, sans-serif" font-size="13" fill="var(--muted)">
-    <rect x="690" y="502" width="26" height="12" fill="url(#dcollab)"
+    <rect x="740" y="478" width="26" height="12" fill="url(#dcollab)"
           stroke="var(--amber)" stroke-width="1"/>
-    <text x="726" y="512">Espace de collaboration</text>
-    <text x="690" y="534">Aucun protecteur matériel</text>
+    <text x="776" y="488">Espace de collaboration</text>
+    <text x="740" y="510">Aucun protecteur matériel</text>
   </g>
 
-  <!-- espace maximal : arc en pointillés -->
-  <circle cx="300" cy="322" r="210" fill="none" stroke="var(--blue)" stroke-width="1.6"
+  <!-- espace maximal : le bras plus son outil -->
+  <circle cx="266" cy="300" r="210" fill="none" stroke="var(--blue)" stroke-width="1.6"
           stroke-dasharray="7 6" opacity=".85"/>
-  <text x="300" y="102" font-size="12" fill="var(--blue)" text-anchor="middle"
+  <text x="266" y="78" font-size="12" fill="var(--blue)" text-anchor="middle"
         font-family="IBM Plex Sans, sans-serif">espace maximal (UR10 + outil)</text>
 
-  <!-- plan de sécurité configuré -->
-  <line x1="548" y1="150" x2="548" y2="366" stroke="var(--red)" stroke-width="2.2"
+  <!-- plan de sécurité : il n'existe que dans la configuration -->
+  <line x1="500" y1="160" x2="500" y2="430" stroke="var(--red)" stroke-width="2.2"
         stroke-dasharray="9 7"/>
-  <text x="556" y="204" font-size="12" fill="var(--red)"
+  <text x="510" y="142" font-size="12" fill="var(--red)"
         font-family="IBM Plex Sans, sans-serif">plan de sécurité</text>
-  <text x="556" y="221" font-size="11" fill="var(--muted)"
+  <text x="510" y="158" font-size="11" fill="var(--muted)"
         font-family="IBM Plex Sans, sans-serif">configuré dans PolyScope,</text>
-  <text x="556" y="236" font-size="11" fill="var(--muted)"
+  <text x="510" y="173" font-size="11" fill="var(--muted)"
         font-family="IBM Plex Sans, sans-serif">invisible sur le poste</text>
 
-  <!-- établi -->
-  <rect x="170" y="352" width="360" height="15" rx="3" fill="var(--metal)"/>
-  <rect x="182" y="367" width="14" height="103" fill="var(--metal)"/>
-  <rect x="504" y="367" width="14" height="103" fill="var(--metal)"/>
+  <!-- socle en profilé aluminium : platine, montants, traverse, pieds réglables -->
+  <rect x="186" y="330" width="240" height="10" fill="var(--metal)" opacity=".55"/>
+  <rect x="190" y="340" width="10" height="112" fill="var(--metal)" opacity=".55"/>
+  <rect x="412" y="340" width="10" height="112" fill="var(--metal)" opacity=".55"/>
+  <rect x="150" y="318" width="290" height="14" fill="var(--surface-2)"
+        stroke="var(--metal)" stroke-width="1.4"/>
+  <line x1="150" y1="325" x2="440" y2="325" stroke="var(--metal)" stroke-width="1"
+        opacity=".7"/>
+  <rect x="158" y="332" width="15" height="130" fill="var(--metal)"/>
+  <line x1="165.5" y1="336" x2="165.5" y2="458" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="417" y="332" width="15" height="130" fill="var(--metal)"/>
+  <line x1="424.5" y1="336" x2="424.5" y2="458" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="173" y="440" width="244" height="11" fill="var(--metal)"/>
+  <line x1="177" y1="445.5" x2="413" y2="445.5" stroke="var(--surface-2)" stroke-width="3"/>
+  <rect x="154" y="462" width="22" height="8" rx="2" fill="var(--dark)"/>
+  <rect x="414" y="462" width="22" height="8" rx="2" fill="var(--dark)"/>
 
-  <!-- boîtier de commande sous l'établi -->
-  <rect x="196" y="384" width="92" height="80" rx="4" fill="var(--surface)"
+  <!-- boîtier de commande, logé dans le socle -->
+  <rect x="204" y="348" width="140" height="86" rx="3" fill="var(--metal)"
         stroke="var(--dark)" stroke-width="2.2"/>
-  <circle cx="218" cy="402" r="8" fill="var(--surface)" stroke="var(--dark)" stroke-width="2"/>
-  <circle cx="242" cy="402" r="5" fill="var(--amber)"/>
-  <g stroke="var(--line)" stroke-width="2">
-    <line x1="208" y1="428" x2="276" y2="428"/><line x1="208" y1="440" x2="276" y2="440"/>
+  <rect x="204" y="348" width="140" height="14" rx="3" fill="var(--dark)"/>
+  <g stroke="var(--surface)" stroke-width="2.4" opacity=".75">
+    <line x1="218" y1="378" x2="278" y2="378"/><line x1="218" y1="390" x2="278" y2="390"/>
+    <line x1="218" y1="402" x2="278" y2="402"/><line x1="218" y1="414" x2="278" y2="414"/>
   </g>
+  <circle cx="320" cy="380" r="5" fill="var(--amber)"/>
+  <rect x="300" y="398" width="34" height="20" rx="2" fill="var(--dark)" opacity=".5"/>
+  <path d="M286 348 q-8 -12 -18 -16" fill="none" stroke="var(--dark)" stroke-width="3"/>
 
-  <!-- bras UR -->
-  <rect x="272" y="330" width="56" height="22" rx="4" fill="var(--dark)"/>
-  <circle cx="300" cy="320" r="17" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
+  <!-- bras : tubes aluminium, carters d'articulation sombres -->
+  <path d="M240 318 L250 298 L282 298 L292 318 Z" fill="var(--dark)"/>
+  <g fill="var(--dark)"><circle cx="232" cy="323" r="3"/><circle cx="300" cy="323" r="3"/></g>
+  <circle cx="266" cy="292" r="19" fill="var(--dark)"/>
   <g stroke-linecap="round">
-    <line x1="300" y1="320" x2="352" y2="236" stroke="var(--robot)" stroke-width="26"/>
-    <line x1="352" y1="236" x2="424" y2="290" stroke="var(--robot)" stroke-width="22"/>
+    <line x1="266" y1="288" x2="336" y2="190" stroke="var(--robot)" stroke-width="28"/>
+    <line x1="336" y1="190" x2="452" y2="216" stroke="var(--robot)" stroke-width="24"/>
+    <line x1="452" y1="216" x2="470" y2="248" stroke="var(--robot)" stroke-width="20"/>
   </g>
-  <circle cx="352" cy="236" r="15" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
-  <circle cx="424" cy="290" r="13" fill="var(--robot)" stroke="var(--dark)" stroke-width="1.4"/>
-  <circle cx="444" cy="304" r="10" fill="var(--metal)" stroke="var(--dark)" stroke-width="1.2"/>
-  <path d="M452 312 L470 324 M452 320 L470 332" stroke="var(--metal)" stroke-width="7"
-        stroke-linecap="round" fill="none"/>
-  <text x="178" y="316" font-size="13" fill="var(--muted)" font-family="IBM Plex Mono, monospace">UR10</text>
+  <circle cx="336" cy="190" r="17" fill="var(--dark)"/>
+  <circle cx="452" cy="216" r="15" fill="var(--dark)"/>
+  <circle cx="470" cy="248" r="13" fill="var(--dark)"/>
+  <text x="392" y="314" font-size="13" fill="var(--muted)"
+        font-family="IBM Plex Mono, monospace">UR10</text>
 
-  <!-- montage + pièce sur l'établi, et zone de coincement -->
-  <rect x="398" y="334" width="44" height="18" rx="2" fill="var(--metal)"/>
-  <circle cx="410" cy="318" r="17" fill="none" stroke="var(--red)" stroke-width="1.6"
-          stroke-dasharray="4 4"/>
-  <text x="378" y="292" font-size="11" fill="var(--red)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">zone de</text>
-  <text x="378" y="304" font-size="11" fill="var(--red)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">coincement</text>
-
-  <!-- opérateur -->
-  <circle cx="606" cy="268" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
-  <path d="M606 289 L606 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
-  <path d="M606 316 L556 336" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
-  <path d="M606 316 L646 344" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
-  <path d="M606 396 L586 470 M606 396 L630 470" stroke="var(--dark)" stroke-width="12"
-        stroke-linecap="round" fill="none"/>
-
-  <!-- pupitre PolyScope -->
-  <rect x="806" y="400" width="14" height="70" fill="var(--dark)"/>
-  <rect x="752" y="234" width="122" height="168" rx="12" fill="var(--surface)"
-        stroke="var(--dark)" stroke-width="2.4"/>
-  <rect x="764" y="248" width="98" height="104" rx="3" fill="var(--metal)"
+  <!-- bride outil et préhenseur -->
+  <rect x="456" y="258" width="28" height="11" rx="2" fill="var(--metal)"
         stroke="var(--dark)" stroke-width="1.1"/>
-  <text x="813" y="288" font-size="11" fill="var(--ground)" text-anchor="middle"
+  <rect x="450" y="269" width="40" height="24" rx="3" fill="var(--dark)"/>
+  <path d="M458 293 L456 310 M482 293 L484 310" stroke="var(--metal)" stroke-width="7"
+        stroke-linecap="round" fill="none"/>
+
+  <!-- opérateur : il partage l'espace, rien ne l'en empêche -->
+  <circle cx="545" cy="300" r="21" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/>
+  <path d="M545 321 L545 396" stroke="var(--dark)" stroke-width="16" stroke-linecap="round"/>
+  <path d="M545 342 L504 364" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M545 342 L588 360" stroke="var(--dark)" stroke-width="11" stroke-linecap="round"/>
+  <path d="M545 396 L526 470 M545 396 L568 470" fill="none" stroke="var(--dark)"
+        stroke-width="12" stroke-linecap="round"/>
+
+  <!-- table voisine : c'est là qu'est posé le pupitre -->
+  <rect x="592" y="380" width="300" height="13" rx="2" fill="var(--surface-2)"
+        stroke="var(--metal)" stroke-width="1.2"/>
+  <rect x="604" y="393" width="12" height="77" fill="var(--dark)"/>
+  <rect x="868" y="393" width="12" height="77" fill="var(--dark)"/>
+
+  <!-- pupitre PolyScope, agrandi pour que ses organes soient repérables -->
+  <rect x="600" y="248" width="264" height="132" rx="14" fill="var(--surface)"
+        stroke="var(--dark)" stroke-width="2.4"/>
+  <rect x="616" y="266" width="172" height="98" rx="4" fill="var(--metal)"
+        stroke="var(--dark)" stroke-width="1.1"/>
+  <circle cx="650" cy="300" r="15" fill="var(--surface)" stroke="var(--dark)" stroke-width="1.6"/>
+  <text x="650" y="305" font-size="11" fill="var(--ink)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">ON</text>
+  <text x="650" y="334" font-size="10" fill="var(--ground)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">freins</text>
+  <text x="736" y="292" font-size="11" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">SAFETY</text>
-  <text x="813" y="306" font-size="11" fill="var(--ground)" text-anchor="middle"
+  <text x="736" y="308" font-size="11" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">CHECKSUM</text>
-  <text x="813" y="326" font-size="13" fill="var(--ground)" text-anchor="middle"
+  <text x="736" y="330" font-size="14" fill="var(--ground)" text-anchor="middle"
         font-family="IBM Plex Mono, monospace">4F2C</text>
-  <circle cx="776" cy="378" r="13" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
-  <circle cx="776" cy="378" r="8" fill="var(--red)"/>
-  <path d="M874 296 q18 0 18 16 q0 16 -18 16" fill="none" stroke="var(--ink)"
+  <circle cx="828" cy="292" r="17" fill="var(--amber)" stroke="var(--ink)" stroke-width="1.2"/>
+  <circle cx="828" cy="292" r="11" fill="var(--red)"/>
+  <circle cx="828" cy="344" r="11" fill="none" stroke="var(--dark)" stroke-width="1.6"
+          stroke-dasharray="3 3"/>
+  <text x="828" y="368" font-size="10" fill="var(--muted)" text-anchor="middle"
+        font-family="IBM Plex Sans, sans-serif">au dos</text>
+  <path d="M600 300 q-18 0 -18 16 q0 16 18 16" fill="none" stroke="var(--ink)"
         stroke-width="4" stroke-linecap="round"/>
-  <text x="813" y="424" font-size="12" fill="var(--muted)" text-anchor="middle"
-        font-family="IBM Plex Sans, sans-serif">pupitre PolyScope</text>
-  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="166" y1="446" x2="192" y2="434"/><line x1="164" y1="402" x2="194" y2="402"/><line x1="734" y1="248" x2="752" y2="244"/><line x1="734" y1="378" x2="760" y2="378"/><line x1="888" y1="312" x2="874" y2="312"/><line x1="492" y1="306" x2="470" y2="316"/><line x1="254" y1="338" x2="272" y2="340"/><line x1="604" y1="494" x2="604" y2="486"/><line x1="560" y1="162" x2="552" y2="192"/><line x1="812" y1="220" x2="812" y2="232"/></g>
-  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="152" cy="452" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="152" y="457" fill="var(--ink)">1</text></g><g><circle cx="150" cy="402" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="150" y="407" fill="var(--ink)">2</text></g><g><circle cx="720" cy="248" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="253" fill="var(--ink)">3</text></g><g><circle cx="720" cy="378" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="720" y="383" fill="var(--ink)">4</text></g><g><circle cx="902" cy="312" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="902" y="317" fill="var(--ink)">5</text></g><g><circle cx="506" cy="300" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="506" y="305" fill="var(--ink)">6</text></g><g><circle cx="240" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="240" y="341" fill="var(--ink)">7</text></g><g><circle cx="604" cy="500" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="604" y="505" fill="var(--ink)">8</text></g><g><circle cx="560" cy="148" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="560" y="153" fill="var(--ink)">9</text></g><g><circle cx="812" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="812" y="211" fill="var(--ink)">10</text></g></g>
+  <path d="M864 380 q28 10 40 -6" fill="none" stroke="var(--dark)" stroke-width="3"/>
+  <g stroke="var(--accent)" stroke-width="1.4" opacity=".6"><line x1="126" y1="392" x2="202" y2="394"/><line x1="584" y1="224" x2="640" y2="284"/><line x1="900" y1="268" x2="866" y2="280"/><line x1="900" y1="332" x2="846" y2="300"/><line x1="902" y1="402" x2="856" y2="358"/><line x1="462" y1="246" x2="492" y2="272"/><line x1="180" y1="276" x2="244" y2="306"/><line x1="300" y1="508" x2="300" y2="492"/><line x1="500" y1="110" x2="500" y2="158"/><line x1="706" y1="220" x2="728" y2="270"/></g>
+  <g font-family="IBM Plex Mono, monospace" font-size="14" font-weight="500" text-anchor="middle"><g><circle cx="112" cy="392" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="112" y="397" fill="var(--ink)">1</text></g><g><circle cx="578" cy="212" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="578" y="217" fill="var(--ink)">2</text></g><g><circle cx="912" cy="262" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="267" fill="var(--ink)">3</text></g><g><circle cx="912" cy="336" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="341" fill="var(--ink)">4</text></g><g><circle cx="912" cy="410" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="912" y="415" fill="var(--ink)">5</text></g><g><circle cx="452" cy="240" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="452" y="245" fill="var(--ink)">6</text></g><g><circle cx="166" cy="270" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="166" y="275" fill="var(--ink)">7</text></g><g><circle cx="300" cy="522" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="300" y="527" fill="var(--ink)">8</text></g><g><circle cx="500" cy="96" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="500" y="101" fill="var(--ink)">9</text></g><g><circle cx="706" cy="206" r="14" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/><text x="706" y="211" fill="var(--ink)">10</text></g></g>
 </svg></div>
       <p class="figcap" id="figcap"></p>
     </div>
