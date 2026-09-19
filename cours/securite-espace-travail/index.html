@@ -3483,10 +3483,10 @@ function setupModes(S) {
       $('#f-l').value = Math.round(st.l * 1000);
     }
 
-    // Pendant la démonstration, la vue 3D reste sur une configuration fixe :
-    // ce qui bouge, c'est le diagramme. En manuel, elle suit les trois curseurs.
-    const REF = { m: 100, z: 0.36, l: 0.18 };
-    const vue = () => (st.auto ? REF : st);
+    // La masse, Z et L sont exactement ce qu'on déclare au contrôleur. Les trois
+    // représentations en dépendent et bougent donc ensemble : l'outil dans la scène,
+    // le point sur le diagramme de charge, et le schéma de déclaration.
+    const vue = () => st;
 
     function place() {
       const V0 = vue();
@@ -3571,13 +3571,11 @@ function setupModes(S) {
     // donc le cadrage reste juste quelle que soit la pose du poignet.
     const ex = new THREE.Vector3(), ey = new THREE.Vector3(), ez = new THREE.Vector3();
     const centre = new THREE.Vector3();
-    function frame() {
-      const V0 = vue();
-      const big = Math.max(V0.z, Math.abs(V0.l) * 0.9);
+    function frameOn(l, z, big) {
       tool.updateWorldMatrix(true, false);
       tool.matrixWorld.extractBasis(ex, ey, ez);
       ex.normalize(); ey.normalize(); ez.normalize();
-      centre.set(V0.l / 2, V0.z * 0.55, 0);
+      centre.set(l / 2, z * 0.55, 0);
       tool.localToWorld(centre);
       V.target.copy(centre);
       const dist = 0.70 + 1.15 * big;
@@ -3586,6 +3584,16 @@ function setupModes(S) {
         .addScaledVector(ey, dist * 0.26)      // un peu au-dessus
         .addScaledVector(ex, dist * 0.18);     // et légèrement de trois quarts
       V.camera.lookAt(V.target);
+    }
+    function frame() {
+      const V0 = vue();
+      frameOn(V0.l, V0.z, Math.max(V0.z, Math.abs(V0.l) * 0.9));
+    }
+    // Pendant le balayage, la caméra ne bouge plus : elle est calée une fois pour la
+    // plus grande extension, et c'est l'outil qui s'éloigne dans un cadre stable.
+    function frameAuto() {
+      const dm = SWEEP.dmin + (SWEEP.dmax - SWEEP.dmin) * 0.58;
+      frameOn(dm * Math.sin(SWEEP.ang), dm * Math.cos(SWEEP.ang), SWEEP.dmax * 1.04);
     }
 
     // ---- diagramme de charge --------------------------------------------
@@ -3748,16 +3756,19 @@ function setupModes(S) {
       drawCurves();
       drawPoint(ok);
       drawDecl();
-      // en démonstration la scène 3D est figée : on ne la reconstruit qu'une fois
+      // l'outil suit toujours les valeurs déclarées ; seule la caméra se fige pendant
+      // le balayage, pour que l'œil compare des positions et non des cadrages
+      place();
       if (!st.auto) {
         st.fige = false;
-        place(); frame(); chips(ok);
+        frame();
       } else if (!st.fige) {
         st.fige = true;
-        place(); frame(); chips(REF.m <= massAt(REF.l, REF.z) + 0.01);
+        frameAuto();
       }
+      chips(ok);
       $('#f-ahint').textContent = st.auto
-        ? 'Pendant la démonstration, la vue 3D reste sur un exemple fixe — c’est le diagramme qui bouge. Décochez pour piloter les trois curseurs.'
+        ? 'Le centre de gravité s’éloigne de la bride : l’outil, le point sur le diagramme et le schéma de déclaration bougent ensemble. Décochez pour piloter les trois curseurs.'
         : 'Les trois curseurs pilotent la vue 3D, le diagramme et le schéma de déclaration.';
     }
 
@@ -3777,8 +3788,8 @@ function setupModes(S) {
         '<div class="chip" style="left:' + clamp(a.x + 13, 12, 88).toFixed(1) +
         '%;top:' + clamp(a.y - 6, 8, 92).toFixed(1) + '%">' +
         '<div class="hd">Centre de gravité</div>' +
-        (st.auto ? '' : '<div class="' + (ok ? 'ok' : 'ko') + '">' +
-          Math.round(V0.m) + ' kg à ' + Math.round(d * 1000) + ' mm</div>') + '</div>' +
+        '<div class="' + (ok ? 'ok' : 'ko') + '">' +
+          Math.round(V0.m) + ' kg à ' + Math.round(d * 1000) + ' mm</div></div>' +
         '<div class="chip tag-only" style="left:' + clamp(c.x - 1, 10, 90).toFixed(1) +
         '%;top:' + clamp(c.y + 13, 8, 92).toFixed(1) + '%">' +
         '<div class="hd">Bride</div></div>';
