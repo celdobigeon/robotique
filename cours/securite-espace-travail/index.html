@@ -1574,13 +1574,6 @@ function setupZones(S) {
     scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), new THREE.LineBasicMaterial({ color: c })));
   });
 
-  // scanner laser
-  const sc = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.2, 18),
-    new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
-  sc.position.set(0.62, 0.1, 0.62); sc.castShadow = true;
-  scene.add(sc);
-  S.scanner = sc;
-
   S.operator = buildOperator(THREE);
   scene.add(S.operator.root);
 
@@ -2472,11 +2465,6 @@ function setupModes(S) {
       $('#z-warn').hidden = !(Z.stop < REACH);
       $('#z-reach').textContent = fmtMm(REACH);
     }
-
-    const scanner = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.09, 0.2, 18),
-      new THREE.MeshStandardMaterial({ color: 0x33383f, roughness: 0.5 }));
-    scanner.position.set(0.62, 0.1, 0.62); scanner.castShadow = true;
-    V.scene.add(scanner);
 
     const op = buildOperator(THREE);
     V.scene.add(op.root);
