@@ -3359,8 +3359,6 @@ function setupModes(S) {
 
     const POSE = { q1: 26, q2: 55, q3: 25, q5: 0 };
     V.robot.setPose(POSE.q1, POSE.q2, POSE.q3, POSE.q5);
-    const aw = d2r(POSE.q1);
-    const side = d2r(POSE.q1 + 82);
 
     // l'outil conique du modèle laisse la place à l'effecteur détaillé
     V.robot.wrist.children.forEach((o) => {
@@ -3374,9 +3372,15 @@ function setupModes(S) {
     tool.scale.setScalar(1 / SC);                 // les enfants sont en mètres réels
     V.robot.wrist.add(tool);
 
-    const steel = new THREE.MeshStandardMaterial({ color: 0xc3cad2, roughness: 0.55, metalness: 0.15 });
+    // Matières : trois valeurs de gris étagées, pour que la structure, les mors et la
+    // pièce se distinguent au premier coup d'œil sans sortir du gris « charge utile ».
+    const acier = new THREE.MeshStandardMaterial({ color: 0xb3bcc6, roughness: 0.5, metalness: 0.22 });
+    const acierF = new THREE.MeshStandardMaterial({ color: 0x8a95a2, roughness: 0.55, metalness: 0.2 });
+    const anod = new THREE.MeshStandardMaterial({ color: 0x6f7b88, roughness: 0.42, metalness: 0.35 });
+    const morsMat = new THREE.MeshStandardMaterial({ color: 0x4d5864, roughness: 0.45, metalness: 0.3 });
     const dark = new THREE.MeshStandardMaterial({ color: 0x6b7683, roughness: 0.6, metalness: 0.1 });
 
+    // bride ISO 9409-1 : plateau bleu, couronne de vis, pion de centrage
     const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.026, 30),
       new THREE.MeshStandardMaterial({ color: 0x2f7bd4, roughness: 0.45, metalness: 0.1 }));
     flange.position.y = 0.013; tool.add(flange);
@@ -3386,24 +3390,35 @@ function setupModes(S) {
       b.position.set(Math.cos(t) * 0.072, 0.022, Math.sin(t) * 0.072);
       tool.add(b);
     }
+    const pion = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.026, 0.012, 16), acierF);
+    pion.position.y = 0.032; tool.add(pion);
 
-    const body = new THREE.Mesh(new THREE.BoxGeometry(0.17, 1, 0.14), steel);
-    tool.add(body);
-    // mors : plus sombres que la pièce, pour qu'on voie ce qui serre et ce qui est serré
-    const jawMat = new THREE.MeshStandardMaterial({ color: 0x46505b, roughness: 0.5, metalness: 0.2 });
-    const fingerL = new THREE.Mesh(new THREE.BoxGeometry(0.036, 1, 0.09), jawMat);
-    const fingerR = new THREE.Mesh(new THREE.BoxGeometry(0.036, 1, 0.09), jawMat);
-    tool.add(fingerL, fingerR);
+    // moyeu boulonné sur la bride : le départ de la potence
+    const moyeu = new THREE.Mesh(new THREE.CylinderGeometry(0.058, 0.066, 0.05, 20), acier);
+    tool.add(moyeu);
+
+    // potence en L : un montant sur l'axe de la bride, une traverse qui porte l'outil
+    // au bout du déport, et un gousset dans l'angle — c'est ce coude qui fabrique L.
+    const montant = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1, 0.062), acier);
+    const traverse = new THREE.Mesh(new THREE.BoxGeometry(1, 0.052, 0.062), acier);
+    const gousset = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.012, 0.05), acierF);
+
+    // préhenseur : un corps sombre, deux mors qui descendent le long de la pièce et
+    // deux patins qui se referment sur l'extrémité. On voit ce qui serre et ce qui est serré.
+    const corps = new THREE.Mesh(new THREE.BoxGeometry(1, 0.05, 1), anod);
+    const rail = new THREE.Mesh(new THREE.BoxGeometry(1, 0.014, 1), acierF);
+    const morsG = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1, 1), morsMat);
+    const morsD = new THREE.Mesh(new THREE.BoxGeometry(0.03, 1, 1), morsMat);
+    const patinG = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.018, 1), morsMat);
+    const patinD = new THREE.Mesh(new THREE.BoxGeometry(0.036, 0.018, 1), morsMat);
+
+    // la pièce : le gris le plus clair, pour qu'elle ressorte des mors qui la tiennent
     const part = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: 0x8d99a6, roughness: 0.75, metalness: 0.1 }));
-    tool.add(part);
-    // support des mors : la traverse sur laquelle les deux mors sont montés
-    const yoke = new THREE.Mesh(new THREE.BoxGeometry(1, 0.05, 0.12), steel);
-    tool.add(yoke);
-    // liaison mécanique : c'est elle qui crée le déport du centre de gravité
-    const link = new THREE.Mesh(new THREE.BoxGeometry(1, 0.055, 0.055), steel);
-    tool.add(link);
-    [body, fingerL, fingerR, part, link, yoke].forEach((m) => { m.castShadow = true; });
+      new THREE.MeshStandardMaterial({ color: 0xe3e9ee, roughness: 0.8, metalness: 0.05 }));
+
+    tool.add(moyeu, montant, traverse, gousset, corps, rail, morsG, morsD, patinG, patinD, part);
+    [moyeu, montant, traverse, gousset, corps, rail, morsG, morsD, patinG, patinD, part]
+      .forEach((m) => { m.castShadow = true; });
 
     // carter : coque translucide autour de l'outil
     const carter = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1),
@@ -3417,18 +3432,18 @@ function setupModes(S) {
     // repère du centre de gravité : sphère + croix 3D
     const cdg = new THREE.Group();
     tool.add(cdg);
-    const cdgBall = new THREE.Mesh(new THREE.SphereGeometry(0.042, 18, 14),
+    const cdgBall = new THREE.Mesh(new THREE.SphereGeometry(0.026, 18, 14),
       new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false }));
     cdgBall.renderOrder = 14; cdg.add(cdgBall);
     const crossMat = new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false });
     [[0, 0, 0], [0, 0, Math.PI / 2], [Math.PI / 2, 0, 0]].forEach((r) => {
-      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.007, 0.007, 0.15, 8), crossMat);
+      const c = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.095, 8), crossMat);
       c.rotation.set(r[0], r[1], r[2]);
       c.renderOrder = 14;
       cdg.add(c);
     });
 
-    const tcpDot = new THREE.Mesh(new THREE.SphereGeometry(0.028, 14, 10),
+    const tcpDot = new THREE.Mesh(new THREE.SphereGeometry(0.02, 14, 10),
       new THREE.MeshBasicMaterial({ color: 0x17a05e, depthTest: false, depthWrite: false }));
     tcpDot.renderOrder = 14; tool.add(tcpDot);
 
@@ -3444,9 +3459,12 @@ function setupModes(S) {
     // arêtes dangereuses, quand l'outil n'est ni sûr ni cartérisé
     const danger = new THREE.Group();
     tool.add(danger);
+    // deux flèches qui désignent le pincement, au lieu de deux triangles posés là
     for (let i = 0; i < 2; i++) {
-      danger.add(new THREE.Mesh(new THREE.ConeGeometry(0.026, 0.06, 14),
-        new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.9 })));
+      const f = new THREE.Mesh(new THREE.ConeGeometry(0.015, 0.038, 16),
+        new THREE.MeshBasicMaterial({ color: 0xd2232a, transparent: true, opacity: 0.92 }));
+      f.rotation.z = i === 0 ? -Math.PI / 2 : Math.PI / 2;   // pointe vers le pincement
+      danger.add(f);
     }
 
     const st = { m: 100, z: 0.30, l: 0.12, safe: false, carter: false,
@@ -3473,35 +3491,62 @@ function setupModes(S) {
     function place() {
       const V0 = vue();
       const Z = V0.z, L = V0.l;
-      const s = 0.18 * Math.cbrt(Math.max(10, V0.m) / 100);   // côté de la pièce
-      const jawT = 0.034;                                     // épaisseur d'un mors
+      // pièce volontairement compacte : à 180 mm elle avalait le déport, qui est
+      // pourtant ce que la vue doit montrer
+      const s = 0.15 * Math.cbrt(Math.max(10, V0.m) / 100);   // côté de la pièce
+      const jawT = 0.03;                                      // épaisseur d'un mors
+      const prof = clamp(s * 0.62, 0.06, 0.12);               // profondeur des mors
+      const yFl = 0.026;                                      // face avant de la bride
 
-      // corps du préhenseur, monté sur la bride
-      const bH = clamp(Z * 0.30, 0.10, 0.30);
-      body.scale.y = bH; body.position.y = 0.026 + bH / 2;
-      const ay = 0.026 + bH;
+      moyeu.position.y = yFl + 0.025;
+      const yBase = yFl + 0.05;
 
-      // la pièce, serrée entre les deux mors : les faces intérieures des mors
-      // viennent exactement au contact de la pièce, sans la traverser
+      // le préhenseur se cale juste en retrait de la pièce, la traverse encore en retrait
+      const yCorps = Math.max(yBase + 0.045, Z - s / 2 - 0.055);
+      const yTrav = Math.max(yBase + 0.02, yCorps - 0.055);
+
+      // montant sur l'axe de la bride
+      const hMont = Math.max(0.02, yTrav - yBase);
+      montant.scale.y = hMont;
+      montant.position.set(0, yBase + hMont / 2, 0);
+
+      // traverse jusqu'au déport
+      const lTrav = Math.abs(L) + 0.09;
+      traverse.scale.x = lTrav;
+      traverse.position.set(L / 2, yTrav, 0);
+
+      // gousset dans l'angle, seulement quand l'angle existe vraiment
+      const gros = Math.abs(L) > 0.1 && hMont > 0.07;
+      gousset.visible = gros;
+      if (gros) {
+        gousset.position.set(Math.sign(L) * 0.045, yTrav - 0.045, 0);
+        gousset.rotation.z = Math.sign(L) * (Math.PI / 4);
+      }
+
+      // corps du préhenseur et son rail, au bout de la traverse
+      const lCorps = s + 2 * jawT + 0.025;     // le préhenseur serre dans le plan du déport
+      corps.scale.set(lCorps, 1, prof + 0.025);
+      corps.position.set(L, yCorps, 0);
+      rail.scale.set(lCorps * 0.78, 1, prof);
+      rail.position.set(L, yCorps + 0.032, 0);
+
+      // les mors longent la pièce, les patins se referment sur son extrémité
+      const hMors = (Z + s / 2) - (yCorps + 0.025);
+      morsG.scale.set(1, Math.max(0.02, hMors), prof);
+      morsD.scale.set(1, Math.max(0.02, hMors), prof);
+      const xMors = s / 2 + jawT / 2;
+      const yMors = yCorps + 0.025 + Math.max(0.02, hMors) / 2;
+      morsG.position.set(L - xMors, yMors, 0);
+      morsD.position.set(L + xMors, yMors, 0);
+      patinG.scale.set(1, 1, prof);
+      patinD.scale.set(1, 1, prof);
+      const yPat = Z + s / 2 - 0.009;
+      patinG.position.set(L - (s / 2 - 0.013), yPat, 0);
+      patinD.position.set(L + (s / 2 - 0.013), yPat, 0);
+
+      // la pièce, tenue entre les mors : son centre est le centre de gravité affiché
       part.scale.set(s, s, s);
       part.position.set(L, Z, 0);
-      const jawD = clamp((s * 0.85) / 0.09, 0.8, 1.8);
-      fingerL.scale.set(1, s * 1.15, jawD);       // les mors débordent la pièce
-      fingerR.scale.set(1, s * 1.15, jawD);
-      fingerL.position.set(L - (s / 2 + jawT / 2), Z, 0);
-      fingerR.position.set(L + (s / 2 + jawT / 2), Z, 0);
-
-      // traverse : elle porte les deux mors et reçoit la pièce en appui
-      const yy = Z - s / 2 - 0.025;
-      yoke.scale.set(s + 2 * jawT + 0.02, 1, clamp((s * 0.9) / 0.12, 0.8, 1.6));
-      yoke.position.set(L, yy, 0);
-
-      // bras rigide entre le corps et la traverse : c'est lui qui crée le déport
-      const hx = L, hy = (yy - 0.025) - ay, len = Math.hypot(hx, hy);
-      link.scale.x = Math.max(0.02, len);
-      link.position.set(L / 2, (ay + yy - 0.025) / 2, 0);
-      link.rotation.z = Math.atan2(hy, hx);
-      link.visible = len > 0.05;
 
       tcpDot.position.set(L, Z + s / 2 + 0.03, 0);
       cdg.position.set(L, Z, 0);
@@ -3511,23 +3556,35 @@ function setupModes(S) {
       const xmin = Math.min(-0.09, L - s / 2 - jawT) - 0.05;
       const xmax = Math.max(0.09, L + s / 2 + jawT) + 0.05;
       const top = Z + s / 2 + 0.07;
-      carter.scale.set(xmax - xmin, top - 0.026, Math.max(0.34, s + 0.16));
-      carter.position.set((xmin + xmax) / 2, 0.026 + (top - 0.026) / 2, 0);
+      carter.scale.set(xmax - xmin, top - yFl, Math.max(0.34, prof + 0.18));
+      carter.position.set((xmin + xmax) / 2, yFl + (top - yFl) / 2, 0);
       carterEdge.scale.copy(carter.scale);
       carterEdge.position.copy(carter.position);
-      // les arêtes vives : le haut des mors, là où se trouve la zone de pincement
-      danger.children[0].position.set(L - (s / 2 + jawT / 2), Z + s / 2 + 0.035, 0);
-      danger.children[1].position.set(L + (s / 2 + jawT / 2), Z + s / 2 + 0.035, 0);
+
+      // les deux zones de pincement : entre chaque mors et la pièce
+      danger.children[0].position.set(L - (s / 2 + jawT + 0.03), Z, 0);
+      danger.children[1].position.set(L + (s / 2 + jawT + 0.03), Z, 0);
     }
 
+    // Cadrage : on se place face au plan du déport — L à l'horizontale, Z à la
+    // verticale — plutôt que sur un azimut fixe. Les axes viennent de l'outil lui-même,
+    // donc le cadrage reste juste quelle que soit la pose du poignet.
+    const ex = new THREE.Vector3(), ey = new THREE.Vector3(), ez = new THREE.Vector3();
+    const centre = new THREE.Vector3();
     function frame() {
       const V0 = vue();
       const big = Math.max(V0.z, Math.abs(V0.l) * 0.9);
-      const fc = fk(POSE.q2, POSE.q3, (FLANGE_Y + big * 0.55) / SC);
-      V.target.set(Math.cos(aw) * fc.r * SC, fc.y * SC, Math.sin(aw) * fc.r * SC);
-      const dist = 0.80 + 1.35 * big;
-      V.camera.position.set(V.target.x + Math.cos(side) * dist, V.target.y + 0.30 + big * 0.3,
-                            V.target.z + Math.sin(side) * dist);
+      tool.updateWorldMatrix(true, false);
+      tool.matrixWorld.extractBasis(ex, ey, ez);
+      ex.normalize(); ey.normalize(); ez.normalize();
+      centre.set(V0.l / 2, V0.z * 0.55, 0);
+      tool.localToWorld(centre);
+      V.target.copy(centre);
+      const dist = 0.70 + 1.15 * big;
+      V.camera.position.copy(centre)
+        .addScaledVector(ez, dist * 0.90)      // de face
+        .addScaledVector(ey, dist * 0.26)      // un peu au-dessus
+        .addScaledVector(ex, dist * 0.18);     // et légèrement de trois quarts
       V.camera.lookAt(V.target);
     }
 
@@ -3679,7 +3736,7 @@ function setupModes(S) {
         b.textContent = 'Contact interdit — à cartériser';
       }
       $('#f-chint').innerHTML = collab === 'safe'
-        ? 'Bords arrondis, pas de zone de pincement accessible, surfaces de contact suffisantes, pièce maintenue à la coupure d’énergie : le préhenseur peut entrer dans l’espace collaboratif tel quel.'
+        ? 'Bords arrondis, pas de zone de pincement accessible, surfaces de contact suffisantes, <b>effort de serrage piloté et borné à une valeur qui ne peut pas blesser</b>, pièce maintenue à la coupure d’énergie : c’est le cas des pinces collaboratives, qui entrent dans l’espace partagé telles quelles.'
         : collab === 'carter'
           ? 'L’outil n’est pas conçu pour le contact, mais son carter l’est : c’est le carter qui touche l’opérateur. Les limites de l’ISO/TS 15066 se vérifient alors sur le carter, pièce comprise.'
           : 'Un robot collaboratif ne rend pas l’application collaborative : tant que l’outil présente des arêtes vives ou une zone de pincement, il faut le <b>cartériser</b> — ou renoncer au mode collaboratif et séparer.';
