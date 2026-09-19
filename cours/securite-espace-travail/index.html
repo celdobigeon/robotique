@@ -719,6 +719,7 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
             <input type="range" id="f-z" min="0" max="900" step="10" value="300"></div>
           <div class="ctl"><label for="f-l">Centre de gravité — déport L <span class="val" id="f-lv">120 mm</span></label>
             <input type="range" id="f-l" min="0" max="600" step="10" value="120"></div>
+          <p class="hint" id="f-zhint"></p>
           <div class="rows">
             <div class="row"><span>Distance au centre de bride</span><span id="f-d">—</span></div>
             <div class="row"><span>Moment sur la bride</span><span id="f-mom">—</span></div>
@@ -3472,7 +3473,7 @@ function setupModes(S) {
 
     // balayage : on éloigne le centre de gravité le long d'une même direction et
     // on prend à chaque fois la masse maximale que le diagramme autorise
-    const SWEEP = { ang: d2r(38), dmin: 0.12, dmax: 0.70 };
+    const SWEEP = { ang: d2r(38), dmin: 0.34, dmax: 0.70 };
     function balayer() {
       const d = lerp(SWEEP.dmin, SWEEP.dmax, 0.5 - 0.5 * Math.cos(st.u * Math.PI * 2));
       st.l = d * Math.sin(SWEEP.ang);
@@ -3488,34 +3489,46 @@ function setupModes(S) {
     // le point sur le diagramme de charge, et le schéma de déclaration.
     const vue = () => st;
 
+    // Épaisseurs et sections découlent toutes de la taille de la pièce, et la section
+    // de la potence de la masse : une pince de 20 kg et une de 170 kg ne se dessinent
+    // pas pareil. Les cotes sont enchaînées pour qu'aucune pièce n'en traverse une autre.
+    function cotes(m) {
+      const s = 0.15 * Math.cbrt(Math.max(10, m) / 100);   // côté de la pièce
+      const jawT = clamp(s * 0.22, 0.022, 0.05);           // épaisseur d'un mors
+      const prof = clamp(s * 0.72, 0.06, 0.14);            // profondeur des mors
+      const hCorps = clamp(s * 0.36, 0.042, 0.08);         // épaisseur du corps
+      const yFl = 0.026;                                   // face avant de la bride
+      const yBase = yFl + 0.05;                            // sommet du moyeu
+      const garde = 0.02;                                  // jeu corps / pièce
+      // Z minimal réalisable : sous cette valeur, le centre de gravité tomberait dans
+      // la bride ou dans le moyeu, et le dessin ne représenterait plus rien.
+      const zMin = yBase + hCorps + garde + s / 2;
+      return { s, jawT, prof, hCorps, yFl, yBase, garde, zMin };
+    }
+    const zMini = (m) => cotes(m).zMin;
+
     function place() {
       const V0 = vue();
-      const Z = V0.z, L = V0.l;
-      // pièce volontairement compacte : à 180 mm elle avalait le déport, qui est
-      // pourtant ce que la vue doit montrer
-      const s = 0.15 * Math.cbrt(Math.max(10, V0.m) / 100);   // côté de la pièce
-      const jawT = 0.03;                                      // épaisseur d'un mors
-      const prof = clamp(s * 0.62, 0.06, 0.12);               // profondeur des mors
-      const yFl = 0.026;                                      // face avant de la bride
+      const L = V0.l;
+      const C = cotes(V0.m);
+      const Z = Math.max(V0.z, C.zMin);       // jamais en deçà du réalisable
+      const s = C.s, jawT = C.jawT, prof = C.prof, hCorps = C.hCorps;
 
-      moyeu.position.y = yFl + 0.025;
-      const yBase = yFl + 0.05;
+      moyeu.position.y = C.yFl + 0.025;
 
-      // le préhenseur se cale juste en retrait de la pièce, la traverse encore en retrait
-      const yCorps = Math.max(yBase + 0.045, Z - s / 2 - 0.055);
-      const yTrav = Math.max(yBase + 0.02, yCorps - 0.055);
+      // corps du préhenseur : calé sous la pièce, avec sa garde
+      const yCorps = Z - s / 2 - C.garde - hCorps / 2;
+      const hautCorps = yCorps + hCorps / 2;
+      const yTrav = Math.max(C.yBase + 0.026, yCorps - hCorps / 2 - 0.03);
 
-      // montant sur l'axe de la bride
-      const hMont = Math.max(0.02, yTrav - yBase);
-      montant.scale.y = hMont;
-      montant.position.set(0, yBase + hMont / 2, 0);
-
-      // traverse jusqu'au déport
-      const lTrav = Math.abs(L) + 0.09;
-      traverse.scale.x = lTrav;
+      // potence : section proportionnée à la masse portée
+      const k = clamp(Math.cbrt(Math.max(10, V0.m) / 100), 0.75, 1.3);
+      const hMont = Math.max(0.02, yTrav - C.yBase);
+      montant.scale.set(k, hMont, k);
+      montant.position.set(0, C.yBase + hMont / 2, 0);
+      traverse.scale.set(Math.abs(L) + 0.09, k, k);
       traverse.position.set(L / 2, yTrav, 0);
 
-      // gousset dans l'angle, seulement quand l'angle existe vraiment
       const gros = Math.abs(L) > 0.1 && hMont > 0.07;
       gousset.visible = gros;
       if (gros) {
@@ -3523,28 +3536,32 @@ function setupModes(S) {
         gousset.rotation.z = Math.sign(L) * (Math.PI / 4);
       }
 
-      // corps du préhenseur et son rail, au bout de la traverse
-      const lCorps = s + 2 * jawT + 0.025;     // le préhenseur serre dans le plan du déport
-      corps.scale.set(lCorps, 1, prof + 0.025);
+      const lCorps = s + 2 * jawT + 0.025;
+      corps.scale.set(lCorps, hCorps / 0.05, prof + 0.025);
       corps.position.set(L, yCorps, 0);
+      const hRail = 0.014;
       rail.scale.set(lCorps * 0.78, 1, prof);
-      rail.position.set(L, yCorps + 0.032, 0);
+      rail.position.set(L, hautCorps + hRail / 2, 0);
 
-      // les mors longent la pièce, les patins se referment sur son extrémité
-      const hMors = (Z + s / 2) - (yCorps + 0.025);
-      morsG.scale.set(1, Math.max(0.02, hMors), prof);
-      morsD.scale.set(1, Math.max(0.02, hMors), prof);
+      // mors : du dessus du corps jusqu'au bout de la pièce, épaisseur et profondeur
+      // proportionnées à ce qu'ils tiennent
+      const hMors = Math.max(0.02, (Z + s / 2) - (hautCorps + hRail));
+      morsG.scale.set(jawT / 0.03, hMors, prof);
+      morsD.scale.set(jawT / 0.03, hMors, prof);
       const xMors = s / 2 + jawT / 2;
-      const yMors = yCorps + 0.025 + Math.max(0.02, hMors) / 2;
+      const yMors = hautCorps + hRail + hMors / 2;
       morsG.position.set(L - xMors, yMors, 0);
       morsD.position.set(L + xMors, yMors, 0);
-      patinG.scale.set(1, 1, prof);
-      patinD.scale.set(1, 1, prof);
-      const yPat = Z + s / 2 - 0.009;
-      patinG.position.set(L - (s / 2 - 0.013), yPat, 0);
-      patinD.position.set(L + (s / 2 - 0.013), yPat, 0);
 
-      // la pièce, tenue entre les mors : son centre est le centre de gravité affiché
+      // patins : ils se referment sur l'extrémité, sans entrer dans la pièce
+      const wPat = clamp(s * 0.26, 0.026, 0.06);
+      const hPat = clamp(s * 0.12, 0.014, 0.028);
+      patinG.scale.set(wPat / 0.036, hPat / 0.018, prof);
+      patinD.scale.set(wPat / 0.036, hPat / 0.018, prof);
+      const yPat = Z + s / 2 - hPat / 2;
+      patinG.position.set(L - (s / 2 - wPat / 2), yPat, 0);
+      patinD.position.set(L + (s / 2 - wPat / 2), yPat, 0);
+
       part.scale.set(s, s, s);
       part.position.set(L, Z, 0);
 
@@ -3556,44 +3573,53 @@ function setupModes(S) {
       const xmin = Math.min(-0.09, L - s / 2 - jawT) - 0.05;
       const xmax = Math.max(0.09, L + s / 2 + jawT) + 0.05;
       const top = Z + s / 2 + 0.07;
-      carter.scale.set(xmax - xmin, top - yFl, Math.max(0.34, prof + 0.18));
-      carter.position.set((xmin + xmax) / 2, yFl + (top - yFl) / 2, 0);
+      carter.scale.set(xmax - xmin, top - C.yFl, Math.max(0.34, prof + 0.18));
+      carter.position.set((xmin + xmax) / 2, C.yFl + (top - C.yFl) / 2, 0);
       carterEdge.scale.copy(carter.scale);
       carterEdge.position.copy(carter.position);
 
-      // les deux zones de pincement : entre chaque mors et la pièce
       danger.children[0].position.set(L - (s / 2 + jawT + 0.03), Z, 0);
       danger.children[1].position.set(L + (s / 2 + jawT + 0.03), Z, 0);
     }
 
     // Cadrage : on se place face au plan du déport — L à l'horizontale, Z à la
-    // verticale — plutôt que sur un azimut fixe. Les axes viennent de l'outil lui-même,
-    // donc le cadrage reste juste quelle que soit la pose du poignet.
+    // verticale. Les axes viennent de l'outil lui-même, donc le cadrage reste juste
+    // quelle que soit la pose du poignet. La distance, elle, se déduit de la boîte
+    // englobante des pièces visibles : aucune formule à deviner, rien ne sort du cadre.
     const ex = new THREE.Vector3(), ey = new THREE.Vector3(), ez = new THREE.Vector3();
-    const centre = new THREE.Vector3();
-    function frameOn(l, z, big) {
-      tool.updateWorldMatrix(true, false);
+    const centre = new THREE.Vector3(), taille = new THREE.Vector3();
+    const boite = new THREE.Box3();
+    // le carter en fait partie quand il est montré : c'est lui qui déborde le plus
+    const CORPS_OUTIL = [flange, moyeu, montant, traverse, gousset, corps, rail,
+                         morsG, morsD, patinG, patinD, part, carter];
+    function frame() {
+      tool.updateWorldMatrix(true, true);
+      boite.makeEmpty();
+      CORPS_OUTIL.forEach((m) => { if (m.visible) boite.expandByObject(m); });
+      if (boite.isEmpty()) return;
+      boite.getCenter(centre);
+      const r = boite.getSize(taille).length() / 2;
       tool.matrixWorld.extractBasis(ex, ey, ez);
       ex.normalize(); ey.normalize(); ez.normalize();
-      centre.set(l / 2, z * 0.55, 0);
-      tool.localToWorld(centre);
       V.target.copy(centre);
-      const dist = 0.70 + 1.15 * big;
+      const dist = Math.max(0.55, r / Math.sin(d2r(17)) * 0.94);   // 34° de champ vertical
       V.camera.position.copy(centre)
         .addScaledVector(ez, dist * 0.90)      // de face
         .addScaledVector(ey, dist * 0.26)      // un peu au-dessus
         .addScaledVector(ex, dist * 0.18);     // et légèrement de trois quarts
       V.camera.lookAt(V.target);
     }
-    function frame() {
-      const V0 = vue();
-      frameOn(V0.l, V0.z, Math.max(V0.z, Math.abs(V0.l) * 0.9));
-    }
-    // Pendant le balayage, la caméra ne bouge plus : elle est calée une fois pour la
-    // plus grande extension, et c'est l'outil qui s'éloigne dans un cadre stable.
+    // Pendant le balayage la caméra ne bouge plus : on la cale sur la configuration la
+    // plus étendue, puis c'est l'outil qui s'éloigne et revient dans un cadre stable.
     function frameAuto() {
-      const dm = SWEEP.dmin + (SWEEP.dmax - SWEEP.dmin) * 0.58;
-      frameOn(dm * Math.sin(SWEEP.ang), dm * Math.cos(SWEEP.ang), SWEEP.dmax * 1.04);
+      const sav = { m: st.m, z: st.z, l: st.l };
+      const d = SWEEP.dmax;
+      st.l = d * Math.sin(SWEEP.ang);
+      st.z = d * Math.cos(SWEEP.ang);
+      st.m = Math.max(20, massAt(st.l, st.z));
+      place(); frame();
+      st.m = sav.m; st.z = sav.z; st.l = sav.l;
+      place();
     }
 
     // ---- diagramme de charge --------------------------------------------
@@ -3758,6 +3784,16 @@ function setupModes(S) {
       drawDecl();
       // l'outil suit toujours les valeurs déclarées ; seule la caméra se fige pendant
       // le balayage, pour que l'œil compare des positions et non des cadrages
+      // Le curseur Z ne descend pas sous le Z réalisable : plus bas, le centre de
+      // gravité serait dans la bride et le schéma ne voudrait plus rien dire.
+      const zm = Math.ceil(zMini(st.m) * 100) / 100;
+      const zIn = $('#f-z');
+      zIn.min = Math.round(zm * 1000);
+      if (st.z < zm) { st.z = zm; zIn.value = Math.round(zm * 1000); $('#f-zv').textContent = Math.round(zm * 1000) + ' mm'; }
+      $('#f-zhint').textContent = 'À ' + Math.round(st.m) + ' kg, la pièce et le corps de la '
+        + 'pince occupent déjà ' + Math.round(zm * 1000) + ' mm devant la bride : un centre de '
+        + 'gravité plus proche ne correspondrait à aucun montage possible.';
+
       place();
       if (!st.auto) {
         st.fige = false;
