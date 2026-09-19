@@ -2801,7 +2801,7 @@ function setupModes(S) {
       $('#u-go').disabled = st.s !== 'armed';
       const H = {
         run: 'Le robot exécute son programme. Déclenchez l’arrêt d’urgence : le bouton ci-dessous, ou le champignon rouge directement dans la scène.',
-        stop: 'Mouvements figés, puissance coupée — mais la pince tient toujours sa pièce. Rien ne repartira tant que le bouton est verrouillé.',
+        stop: 'Mouvements figés, puissance coupée — mais la pince tient toujours sa pièce. Rien ne repartira tant que le bouton est verrouillé : déverrouillez-le, sur le champignon lui-même ou par le bouton ci-dessous.',
         unlocked: 'Déverrouiller n’a rien remis en marche : cela autorise seulement le réarmement.',
         armed: 'La puissance est rétablie, mais le programme ne redémarre pas tout seul : il faut le relancer.',
       };
@@ -2837,7 +2837,7 @@ function setupModes(S) {
         if (u >= 1) { relache = -1; cap.rotation.y = 0; }
       }
 
-      capMat.emissive.setHex(survol && st.s === 'run' ? 0x6a1410 : capTeinte);
+      capMat.emissive.setHex(survol && (st.s === 'run' || st.s === 'stop') ? 0x6a1410 : capTeinte);
 
       st.blink += dtr;
       halo.visible = enfonce;
@@ -2849,8 +2849,19 @@ function setupModes(S) {
       st.s = 'stop';
       refresh();
     }
+    function deverrouiller() {
+      if (st.s !== 'stop') return;
+      st.s = 'unlocked';
+      relache = 0;                      // lance le quart de tour
+      refresh();
+    }
+    // le champignon n'accepte que deux gestes : l'appui, puis le déverrouillage
+    function gesteSurChampignon() {
+      if (st.s === 'run') declencher();
+      else if (st.s === 'stop') deverrouiller();
+    }
     $('#u-press').addEventListener('click', declencher);
-    $('#u-unlock').addEventListener('click', () => { st.s = 'unlocked'; relache = 0; refresh(); });
+    $('#u-unlock').addEventListener('click', deverrouiller);
     $('#u-arm').addEventListener('click', () => { st.s = 'armed'; refresh(); });
     $('#u-go').addEventListener('click', () => { st.s = 'run'; refresh(); });
 
@@ -2868,10 +2879,10 @@ function setupModes(S) {
     }
     canvas.addEventListener('pointermove', (ev) => {
       survol = surLeChampignon(ev);
-      canvas.style.cursor = (survol && st.s === 'run') ? 'pointer' : '';
+      canvas.style.cursor = (survol && (st.s === 'run' || st.s === 'stop')) ? 'pointer' : '';
     });
     canvas.addEventListener('pointerleave', () => { survol = false; canvas.style.cursor = ''; });
-    canvas.addEventListener('click', (ev) => { if (surLeChampignon(ev)) declencher(); });
+    canvas.addEventListener('click', (ev) => { if (surLeChampignon(ev)) gesteSurChampignon(); });
 
     refresh();
     return V;
