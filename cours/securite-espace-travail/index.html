@@ -378,8 +378,9 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
         <span>Ici le point piloté est la <b>pointe de l’outil</b>, pas le poignet</span>
       </div>
       <div class="legend pane" data-view="urgence" hidden>
-        <span>Le bouton coup-de-poing est à gauche. Suivez les quatre étapes : appuyer,
-          déverrouiller, réarmer, relancer.</span>
+        <span>Le bouton coup-de-poing est à gauche : cliquez-le dans la scène, ou servez-vous
+          des boutons du panneau. Suivez les quatre étapes : appuyer, déverrouiller, réarmer,
+          relancer.</span>
       </div>
       <div class="legend pane" data-view="collab" hidden>
         <span><i style="background:var(--green)"></i><b>Espace de collaboration</b> — partagé
@@ -2763,6 +2764,16 @@ function setupModes(S) {
     part.castShadow = true;
     V.scene.add(part);
 
+    // Le champignon s'enfonce et remonte pour de bon, et se laisse cliquer dans la scène :
+    // c'est la seconde façon de déclencher l'arrêt, l'autre étant le bouton du panneau.
+    const CAP_HAUT = 1.17, CAP_BAS = 1.121;
+    const capMat = cap.material;
+    const capTeinte = capMat.emissive.getHex();
+    let capY = CAP_HAUT;      // hauteur animée du champignon
+    let survol = false;       // la souris est sur le champignon
+    let relache = -1;         // chrono du quart de tour de déverrouillage, en secondes
+    let tPrec = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+
     // machine d'états : run -> stop -> unlocked -> armed -> run
     const st = { s: 'run', ph: 0, blink: 0 };
     const STATES = {
@@ -2789,7 +2800,7 @@ function setupModes(S) {
       $('#u-arm').disabled = st.s !== 'unlocked';
       $('#u-go').disabled = st.s !== 'armed';
       const H = {
-        run: 'Le robot exécute son programme. Appuyez sur l’arrêt d’urgence pour voir ce que cela déclenche.',
+        run: 'Le robot exécute son programme. Déclenchez l’arrêt d’urgence : le bouton ci-dessous, ou le champignon rouge directement dans la scène.',
         stop: 'Mouvements figés, puissance coupée — mais la pince tient toujours sa pièce. Rien ne repartira tant que le bouton est verrouillé.',
         unlocked: 'Déverrouiller n’a rien remis en marche : cela autorise seulement le réarmement.',
         armed: 'La puissance est rétablie, mais le programme ne redémarre pas tout seul : il faut le relancer.',
@@ -2809,17 +2820,59 @@ function setupModes(S) {
       part.position.set(Math.cos(ang) * f.r, f.y + 0.02, Math.sin(ang) * f.r);
       part.rotation.y = ang;
 
-      const pressed = st.s === 'stop';
-      cap.position.y = pressed ? 1.125 : 1.17;
-      st.blink += dt;
-      halo.visible = pressed;
+      // horloge réelle : le champignon reste vivant même si la démonstration est en pause
+      const maintenant = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+      const dtr = Math.min(0.05, Math.max(0, maintenant - tPrec));
+      tPrec = maintenant;
+
+      const enfonce = st.s === 'stop';
+      // descente franche, remontée plus molle : c'est ainsi que réagit un coup-de-poing
+      capY += ((enfonce ? CAP_BAS : CAP_HAUT) - capY) * Math.min(1, (enfonce ? 30 : 13) * dtr);
+      cap.position.y = capY;
+
+      if (relache >= 0) {                 // le déverrouillage se fait par rotation
+        relache += dtr;
+        const u = Math.min(1, relache / 0.5);
+        cap.rotation.y = Math.sin(u * Math.PI) * (Math.PI / 2);
+        if (u >= 1) { relache = -1; cap.rotation.y = 0; }
+      }
+
+      capMat.emissive.setHex(survol && st.s === 'run' ? 0x6a1410 : capTeinte);
+
+      st.blink += dtr;
+      halo.visible = enfonce;
       halo.material.opacity = 0.26 + 0.24 * Math.abs(Math.sin(st.blink * 6));
     };
 
-    $('#u-press').addEventListener('click', () => { st.s = 'stop'; refresh(); });
-    $('#u-unlock').addEventListener('click', () => { st.s = 'unlocked'; refresh(); });
+    function declencher() {
+      if (st.s !== 'run') return;       // la séquence reste la séquence
+      st.s = 'stop';
+      refresh();
+    }
+    $('#u-press').addEventListener('click', declencher);
+    $('#u-unlock').addEventListener('click', () => { st.s = 'unlocked'; relache = 0; refresh(); });
     $('#u-arm').addEventListener('click', () => { st.s = 'armed'; refresh(); });
     $('#u-go').addEventListener('click', () => { st.s = 'run'; refresh(); });
+
+    // Clic direct sur le champignon. Le lancer de rayon vise la seule tête du bouton :
+    // ni le socle, ni la platine jaune ne déclenchent quoi que ce soit.
+    const rayon = new THREE.Raycaster();
+    const ndc = new THREE.Vector2();
+    function surLeChampignon(ev) {
+      const r = canvas.getBoundingClientRect();
+      if (!r.width || !r.height) return false;
+      ndc.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+      ndc.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+      rayon.setFromCamera(ndc, V.camera);
+      return rayon.intersectObject(cap, false).length > 0;
+    }
+    canvas.addEventListener('pointermove', (ev) => {
+      survol = surLeChampignon(ev);
+      canvas.style.cursor = (survol && st.s === 'run') ? 'pointer' : '';
+    });
+    canvas.addEventListener('pointerleave', () => { survol = false; canvas.style.cursor = ''; });
+    canvas.addEventListener('click', (ev) => { if (surLeChampignon(ev)) declencher(); });
+
     refresh();
     return V;
   }
