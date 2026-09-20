@@ -68,7 +68,17 @@ h1{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,38p
 .viewport{background:var(--surface);border:1px solid var(--line);border-radius:11px;
   overflow:hidden;box-shadow:var(--shadow)}
 .frame{position:relative;aspect-ratio:16/9;max-width:100%}
-.frame canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.frame canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
+  cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.frame canvas:active{cursor:grabbing}
+.frame canvas:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.pivot{position:absolute;right:10px;top:10px;z-index:3;display:none;align-items:center;
+  gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:5px 9px;font-size:12.5px;color:var(--muted);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.pivot.on{display:flex}
+.pivot button{font:inherit;font-size:12.5px;background:none;border:0;padding:0;
+  color:var(--accent);font-weight:600;cursor:pointer}
+.pivot button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
 .badge{position:absolute;right:14px;bottom:14px;padding:8px 14px;border-radius:7px;
   font-family:Archivo,sans-serif;font-weight:600;font-size:14px;color:#fff;background:var(--muted)}
 .badge[data-state="ok"]{background:var(--green)}
@@ -2199,8 +2209,91 @@ function setupModes(S) {
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
       },
-      render() { renderer.render(scene, camera); },
+      // Pose effective de la caméra : celle que la vue demande, tournée de l'orbite.
+      // À appeler avant toute projection à l'écran, sinon les étiquettes visent une
+      // caméra qui n'est pas celle du rendu.
+      cadrer() {
+        // La vue a pu replacer la caméra depuis le dernier rendu : dans ce cas sa
+        // position devient la nouvelle référence, et l'orbite se réapplique dessus.
+        if (!camera.position.equals(V._pose)) V._ref.copy(camera.position);
+        const p = V._tmp.copy(V._ref).sub(V.target);
+        const r = p.length();
+        if (r > 1e-4 && (V.orbite.az || V.orbite.el)) {
+          const theta = Math.atan2(p.x, p.z) + V.orbite.az;
+          const phi = clamp(Math.acos(clamp(p.y / r, -1, 1)) - V.orbite.el,
+                            0.16, Math.PI / 2 - 0.03);
+          p.set(r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi),
+                r * Math.sin(phi) * Math.cos(theta));
+          camera.position.copy(V.target).add(p);
+          camera.lookAt(V.target);
+        }
+        V._pose.copy(camera.position);
+        camera.updateMatrixWorld(true);
+      },
+      render() { V.cadrer(); renderer.render(scene, camera); },
     };
+
+    // ---- rotation du point de vue ---------------------------------------
+    V.orbite = { az: 0, el: 0 };
+    V._ref = new THREE.Vector3();     // position voulue par la vue
+    V._pose = new THREE.Vector3();    // dernière position écrite par le rendu
+    V._tmp = new THREE.Vector3();
+    V.aTourne = false;                // vrai si le geste en cours est un pivotement
+
+    const pivot = document.createElement('div');
+    pivot.className = 'pivot';
+    pivot.innerHTML = '<span>Vue pivotée</span>';
+    const razBtn = document.createElement('button');
+    razBtn.type = 'button';
+    razBtn.textContent = 'Réinitialiser';
+    pivot.appendChild(razBtn);
+    if (canvas.parentElement) canvas.parentElement.appendChild(pivot);
+
+    function majPivot() {
+      pivot.classList.toggle('on', !!(V.orbite.az || V.orbite.el));
+    }
+    function tourner(dx, dy) {
+      V.orbite.az = clamp(V.orbite.az - dx * 0.006, -Math.PI, Math.PI);
+      V.orbite.el = clamp(V.orbite.el + dy * 0.005, -0.9, 0.9);
+      majPivot();
+    }
+    V.raz = function () { V.orbite.az = 0; V.orbite.el = 0; majPivot(); };
+    razBtn.addEventListener('click', V.raz);
+
+    let glisse = null;
+    canvas.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      glisse = { x: e.clientX, y: e.clientY, d: 0 };
+      V.aTourne = false;
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!glisse) return;
+      const dx = e.clientX - glisse.x, dy = e.clientY - glisse.y;
+      glisse.d += Math.abs(dx) + Math.abs(dy);
+      if (glisse.d > 4) V.aTourne = true;      // au-delà, ce n'est plus un clic
+      tourner(dx, dy);
+      glisse.x = e.clientX; glisse.y = e.clientY;
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach((t) => {
+      canvas.addEventListener(t, () => { glisse = null; });
+    });
+    // au clavier : flèches pour pivoter, Échap pour revenir à la vue d'origine
+    canvas.tabIndex = 0;
+    canvas.setAttribute('aria-label',
+      'Vue 3D. Flèches pour changer l\u2019angle de vue, Échap pour revenir à la vue initiale.');
+    canvas.addEventListener('keydown', (e) => {
+      const pas = 26;
+      if (e.key === 'ArrowLeft') tourner(pas, 0);
+      else if (e.key === 'ArrowRight') tourner(-pas, 0);
+      else if (e.key === 'ArrowUp') tourner(0, -pas);
+      else if (e.key === 'ArrowDown') tourner(0, pas);
+      else if (e.key === 'Escape') V.raz();
+      else return;
+      e.preventDefault();
+    });
+    canvas.addEventListener('dblclick', V.raz);
+
     V.applyTheme();
     return V;
   }
@@ -2698,6 +2791,7 @@ function setupModes(S) {
         : blocked ? 'Limite de zone — arrêt' : 'Dans la zone';
 
       // étiquette posée sur le point piloté
+      V.cadrer();
       V.scene.updateMatrixWorld(true);
       const pv = new THREE.Vector3(tp.x, tp.y, tp.z).project(V.camera);
       const cx = ((pv.x + 1) / 2) * 100, cy = ((1 - pv.y) / 2) * 100;
@@ -2883,7 +2977,10 @@ function setupModes(S) {
       canvas.style.cursor = (survol && (st.s === 'run' || st.s === 'stop')) ? 'pointer' : '';
     });
     canvas.addEventListener('pointerleave', () => { survol = false; canvas.style.cursor = ''; });
-    canvas.addEventListener('click', (ev) => { if (surLeChampignon(ev)) gesteSurChampignon(); });
+    canvas.addEventListener('click', (ev) => {
+      if (V.aTourne) return;            // c'était un pivotement, pas un appui
+      if (surLeChampignon(ev)) gesteSurChampignon();
+    });
 
     refresh();
     return V;
@@ -3812,6 +3909,7 @@ function setupModes(S) {
     function chips(ok) {
       const V0 = vue();
       const d = Math.hypot(V0.l, V0.z);
+      V.cadrer();
       V.scene.updateMatrixWorld(true);
       V.camera.updateMatrixWorld(true);
       V.camera.updateProjectionMatrix();
