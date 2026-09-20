@@ -12,8 +12,9 @@
 <body>
 <div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>TP 4 — Programmation de trajectoires sur cobot</b></div></div>
 <div class="wrap">
-<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 4</span> · Programmation de trajectoires sur cobot</h1><p class="lede">Le pendant du TP 1, côté collaboratif. On reprend les mêmes questions — repère outil, types de déplacement, singularité, motif — mais sur une machine sans clôture, où la mise en service commence par identifier les éléments de sécurité et les zones. La déclaration du TCP, de la charge et du centre de gravité y prend tout son sens.</p><div class="meta"><span class="tag">Cobots Universal Robots — UR5 et UR10e</span><span class="tag">Seul, en binôme ou en trinôme</span></div></header>
+<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 4</span> · Programmation de trajectoires sur cobot</h1><p class="lede">Le pendant du TP 1, côté collaboratif. On reprend les mêmes questions — repère outil, types de déplacement, singularité, motif — mais sur une machine sans clôture, où la mise en service commence par identifier les éléments de sécurité et les zones. La déclaration du TCP, de la charge et du centre de gravité y prend tout son sens.</p><div class="meta"><span class="tag">Cobots Universal Robots — UR5 et UR10e</span><span class="tag">Groupe de 2 à 4 étudiants</span></div></header>
 <nav class="serie" aria-label="Les quatre TP de programmation"><a href="../trajectoires-abb/index.html"><b>TP 1</b>Programmation de trajectoires</a><a href="../pick-and-place-abb/index.html"><b>TP 2</b>Pick and Place</a><a href="../pick-and-place-camera-ur/index.html"><b>TP 3</b>Pick and Place avec reconnaissance par caméra</a><span class="ici"><b>TP 4</b>Programmation de trajectoires sur cobot</span></nav>
+<p class="note">Les TP se font par groupe de <b>2 à 4 étudiants</b> : la manipulation d'un robot ne se réalise jamais seul.</p>
 <p class="note"><b>Avant de commencer :</b> La partie sécurité doit être validée avant de débuter la prise en main du robot.</p>
 <p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
 <p class="note">Les vidéos e-learning doivent être lancées sous <b>Microsoft Edge</b>, et non Firefox.</p>
@@ -50,7 +51,7 @@
 <section><h2>4 — Exemple de mouvements</h2>
 <p>Créer un programme <code>S1_FI_GR…</code>, puis saisir les instructions qui correspondent aux mouvements et positions permettant de réaliser une ligne. Pour cela vous déplacerez le robot aux positions souhaitées manuellement et enregistrerez au fur et à mesure les différentes instructions.</p>
 <ul><li>Un premier mouvement de p1 vers p2 sera réalisé en <b>Déplacement L</b></li><li>Un second mouvement de p2 vers p1 sera exécuté en <b>Déplacement A</b></li></ul>
-<p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine. Le programme sera exécuté en présence de l'enseignant.</p>
+<p class="note">Le programme sera exécuté en présence de l'enseignant.</p>
 <div class="q"><span class="pic">Q3</span><p>Expliquer les différences de mouvements entre Déplacement L et Déplacement J.</p></div>
 <p>Modifier les points de la trajectoire afin de passer par une singularité du robot.</p>
 <div class="q"><span class="pic">Q4</span><p>Qu'observez-vous au passage de la singularité ?</p></div>
