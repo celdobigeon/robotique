@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TP 2 — Pick and Place — Robotique industrielle</title>
+<meta name="description" content="Pince, sorties digitales, zonedata, empilement et palettisation">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/fiche.css">
+</head>
+<body>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>TP 2 — Pick and Place</b></div></div>
+<div class="wrap">
+<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 2</span> · Pick and Place</h1><p class="lede">On passe de la trajectoire à la manipulation : saisir une pièce, la déposer, puis recommencer. Le TP introduit les sorties digitales qui commandent la pince, le paramètre de lissage qui décide de la forme réelle de la trajectoire, et enfin le calcul de positions dans le programme — c'est ce qui permet d'empiler cinq cubes sans apprendre cinq fois les mêmes points.</p><div class="meta"><span class="tag">Robots ABB — IRB 140 et IRB 6620</span><span class="tag">Seul, en binôme ou en trinôme</span></div></header>
+<nav class="serie" aria-label="Les quatre TP de programmation"><a href="../trajectoires-abb/index.html"><b>TP 1</b>Programmation de trajectoires</a><span class="ici"><b>TP 2</b>Pick and Place</span><a href="../pick-and-place-camera-ur/index.html"><b>TP 3</b>Pick and Place avec reconnaissance par caméra</a><a href="../trajectoires-ur/index.html"><b>TP 4</b>Programmation de trajectoires sur cobot</a></nav>
+<p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
+<section><h2>Documentation</h2><div class="liens">
+<h3>Documentation des machines</h3>
+<a href="https://library.e.abb.com/public/7a17951ba995b324c12578b20037d221/2010%20Fiche%20IRB%20140%20FR.pdf" target="_blank" rel="noopener"><span class="fl">↗</span><span>Fiche technique IRB 140 (PDF, ABB)</span></a>
+<a href="https://new.abb.com/products/robotics/robots/articulated-robots/irb-6620" target="_blank" rel="noopener"><span class="fl">↗</span><span>IRB 6620 — page produit ABB</span></a>
+</div></section>
+<p class="pel">Le manuel de programmation ABB et le tutoriel PEL sont distribués en séance.</p>
+<section><h2>Objectif du TP</h2>
+<p>On cherchera dans ce TP à construire une tour à l'aide de cubes.</p>
+</section>
+<section><h2>1 — Prise en main et repères</h2>
+<p>Les référentiels robot sont le <b>Tool0</b> pour le repère de la bride du robot, et le <b>Wobj0</b> pour le repère de base du robot.</p>
+<p>Piloter le robot manuellement en mode articulaire et cartésien, afin de prendre connaissance des différents axes du robot. En mode cartésien, le robot peut être piloté suivant différents référentiels (world, base, outil, objet). Vous déplacerez le robot suivant les référentiels base (Wobj0) et outil (Pince_PZN).</p>
+<p class="pel">Cf Tutoriel PEL</p>
+<div class="q"><span class="pic">Q1</span><p>Quel est l'intérêt de pouvoir déplacer le robot dans différents référentiels ?</p></div>
+</section>
+<section><h2>2 — Les fonctions de mouvement</h2>
+<figure><img src="img/pick-place.png" alt="Pick and Place d&#x27;un cube" loading="lazy"><figcaption>Pick and Place d&#x27;un cube</figcaption></figure>
+<pre><code>PROC Pick_Place()
+    MoveJ P1, v1000, z0, Pince_PGN\WObj:= WobjPrise ;
+    MoveL P2, v100,  z0, Pince_PGN\WObj:= WobjPrise ;
+    Set DO_Fermer_Pince ;
+    WaitTime 0.5;
+    Reset DO_Fermer_Pince ;
+    MoveL P1, v100, Z10, Pince_PGN\WObj:= WobjPrise ;
+    ……
+    MoveAbsJ Home, v1000, z50, tool0\WObj:= WobjPrise ;
+ENDPROC</code></pre>
+<p>Chaque cible est définie dans le programme par un astérisque. Les valeurs définies sont différentes d'une ligne à l'autre.</p>
+<div class="q"><span class="pic">Q2</span><p>Dans quels cas utilise-t-on les déplacements en MoveAbsJ ?</p></div>
+</section>
+<section><h2>3 — Saisir un cube</h2>
+<p>Créer un programme dans le dossier de votre groupe.</p>
+<p class="pel">Cf Tutoriel PEL — 3.3.3 Créer une nouvelle routine</p>
+<p>Puis saisir les différentes instructions qui correspondent aux mouvements et positions permettant de saisir un cube. Pour cela vous déplacerez le robot aux positions souhaitées manuellement et enregistrerez au fur et à mesure les instructions. On définira un point situé au-dessus du point d'entrée ainsi qu'au-dessus du point de sortie, ainsi qu'un point Home.</p>
+<p class="pel">Cf Tutoriel PEL — 3.3.4 Créer une nouvelle instruction</p>
+<p class="note">Chaque sortie digitale compte deux états, « 0 » et « 1 ». <b>Set</b> met la sortie à 1 — par exemple <code>Set DO_FermerPince ;</code>. <b>Reset</b> la remet à son état initial — <code>Reset DO_FermerPince ;</code>. <b>WaitTime</b> correspond à une temporisation, ici de 0,5 s.</p>
+<p>Compléter le programme afin de réaliser la dépose du cube. Il faudra déclarer le repère WobjDepose comme repère de programmation actif.</p>
+<div class="q"><span class="pic">Q3</span><p>Quel est l'intérêt de créer différents repères de programmation ?</p></div>
+</section>
+<section><h2>4 — Signaux et influence du lissage</h2>
+<p>Configurer les différents signaux listés, et lancer la simulation afin de visualiser les différentes courbes.</p>
+<figure><img src="img/signaux-sorties.png" alt="Sorties digitales à configurer" loading="lazy"><figcaption>Sorties digitales à configurer</figcaption></figure>
+<figure><img src="img/signaux-entrees.png" alt="Entrées digitales de la baie de commande" loading="lazy"><figcaption>Entrées digitales de la baie de commande</figcaption></figure>
+<figure><img src="img/signaux-mesures.png" alt="Grandeurs à tracer pendant la simulation" loading="lazy"><figcaption>Grandeurs à tracer pendant la simulation</figcaption></figure>
+<div class="q"><span class="pic">Q4</span><p>À partir des tracés, décrire en vous appuyant d'un schéma l'influence du paramètre <b>zonedata</b> sur la trajectoire et le comportement du robot.</p></div>
+<p>Modifier la ligne ci-dessous et en tirer les conclusions quant à son influence sur le programme.</p>
+<pre><code>MoveL P2, v100, fine, Pince_PGN\WObj:=WobjPrise;</code></pre>
+</section>
+<section><h2>5 — Empilement</h2>
+<p>On dispose maintenant plusieurs cubes les uns à côté des autres, dont l'objectif est de les empiler.</p>
+<figure><img src="img/empilement.png" alt="Empilement de cubes" loading="lazy"><figcaption>Empilement de cubes</figcaption></figure>
+<p>En se basant sur l'exemple précédent, créer un programme qui va récupérer les 5 pièces alignées en pPrise et les déposer en formant une tour en pPose. Les pièces doivent être alignées au départ et empilées à la fin.</p>
+<ol><li>Créer deux autres variables de type robtarget appelées <b>pPriseT</b> et <b>pPoseT</b>. On y affectera la valeur de pPrise et pPose au début du module. Ces deux targets permettront d'initialiser les valeurs de pPrise et pPose, qui évolueront au cours de l'exécution du programme.</li><li>Le paramètre robtarget qui définit pPrise et pPose contient la position (x, y, z) et l'orientation (q1, q2, q3, q4). On peut donc modifier les coordonnées du target, par exemple sur l'axe x de 30 mm : <code>pPrise.trans.x := pPrise.trans.x + 30 ;</code></li><li>Pour être sûr que le robot ne percute pas les pièces en se déplaçant, on appliquera pour chaque déplacement d'une pièce le code correspondant. On définira un point situé au-dessus de P1 et de P2. Réécrire le code demandé en créant un décalage de ces points : dans le code précédent, les points P1 et P3 ne doivent donc plus exister.</li></ol>
+<p class="note"><code>MoveL Offs(P2, 0, 0, 100), v100, Z0, Pince_PGN\WObj:=WobjPrise;</code> renvoie au point situé à 100 mm au-dessus de P2.</p>
+</section>
+<section><h2>6 — Palettisation</h2>
+<p>Modifier le programme afin de créer un compteur. Deux variables permettront de définir le nombre de colonnes et de lignes. Ces dernières seront incrémentées jusqu'aux valeurs définies.</p>
+</section>
+<section class="rendre"><h2>À rendre</h2><p>Les questions posées au fil du TP, dans l'ordre :</p><ol>
+<li>Quel est l'intérêt de pouvoir déplacer le robot dans différents référentiels ?</li>
+<li>Dans quels cas utilise-t-on les déplacements en MoveAbsJ ?</li>
+<li>Quel est l'intérêt de créer différents repères de programmation ?</li>
+<li>À partir des tracés, décrire en vous appuyant d'un schéma l'influence du paramètre <b>zonedata</b> sur la trajectoire et le comportement du robot.</li>
+</ol></section>
+<footer>Céline Dobigeon — IUT, Université de Bordeaux. Fiche établie d'après le document « TP Programmation Robot ». Les manipulations se font sur les machines du laboratoire : c'est leur configuration réelle qui fait foi.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>TP 3 — Pick and Place avec reconnaissance par caméra — Robotique industrielle</title>
+<meta name="description" content="Ventouse, pince, caméra de poignet et e-learning Robotiq">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../../assets/fiche.css">
+</head>
+<body>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>TP 3 — Pick and Place avec reconnaissance par caméra</b></div></div>
+<div class="wrap">
+<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 3</span> · Pick and Place avec reconnaissance par caméra</h1><p class="lede">Le cobot ne sait pas seul où sont les pièces : c'est la caméra de poignet qui les lui indique. Ce TP enchaîne la prise en main des préhenseurs — ventouse et pince deux doigts —, la calibration d'une nouvelle position de caméra, l'apprentissage de la pièce à reconnaître, puis l'écriture du programme de pick and place qui s'appuie dessus.</p><div class="meta"><span class="tag">Cobots Universal Robots — UR5 et UR10e</span><span class="tag">Seul, en binôme ou en trinôme</span></div></header>
+<nav class="serie" aria-label="Les quatre TP de programmation"><a href="../trajectoires-abb/index.html"><b>TP 1</b>Programmation de trajectoires</a><a href="../pick-and-place-abb/index.html"><b>TP 2</b>Pick and Place</a><span class="ici"><b>TP 3</b>Pick and Place avec reconnaissance par caméra</span><a href="../trajectoires-ur/index.html"><b>TP 4</b>Programmation de trajectoires sur cobot</a></nav>
+<p class="note"><b>Avant de commencer :</b> La partie sécurité doit être validée avant de débuter la prise en main du robot.</p>
+<p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
+<p class="note">Les vidéos e-learning doivent être lancées sous <b>Microsoft Edge</b>, et non Firefox.</p>
+<section><h2>Documentation</h2><div class="liens">
+<h3>Les machines et la formation Universal Robots</h3>
+<a href="https://www.universal-robots.com/products/cb3/" target="_blank" rel="noopener"><span class="fl">↗</span><span>UR5 — gamme CB3</span></a>
+<a href="https://www.universal-robots.com/fr/produits/robot-ur10/" target="_blank" rel="noopener"><span class="fl">↗</span><span>UR10e — page produit</span></a>
+<a href="https://academy.universal-robots.com/fr/formation-en-ligne-gratuite/" target="_blank" rel="noopener"><span class="fl">↗</span><span>Universal Robots Academy — formation en ligne gratuite (FR)</span></a>
+<a href="https://academy.universal-robots.com/free-e-learning/" target="_blank" rel="noopener"><span class="fl">↗</span><span>Universal Robots Academy — free e-learning (EN)</span></a>
+<h3>Formation Robotiq — préhenseurs</h3>
+<a href="https://elearning.robotiq.com/" target="_blank" rel="noopener"><span class="fl">↗</span><span>Formation Robotiq — accueil</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=6&amp;section=3" target="_blank" rel="noopener"><span class="fl">↗</span><span>Vacuum gripper — Lesson 3 : Programming Basics with the Vacuum Grippers</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=3&amp;section=1" target="_blank" rel="noopener"><span class="fl">↗</span><span>Adaptive Grippers — Lesson 1 : Introduction to Robotiq Adaptive Grippers</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=3&amp;section=3" target="_blank" rel="noopener"><span class="fl">↗</span><span>Adaptive Grippers — Lesson 3 : Basic Programming with Single Gripper</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=3&amp;section=4" target="_blank" rel="noopener"><span class="fl">↗</span><span>Adaptive Grippers — Lesson 4 : Pro Touch — Program a Pick &amp; Place</span></a>
+<h3>Formation Robotiq — caméra de poignet</h3>
+<a href="https://elearning.robotiq.com/course/view.php?id=5&amp;section=1" target="_blank" rel="noopener"><span class="fl">↗</span><span>Camera — Lesson 1 : Wrist Camera Introduction</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=5&amp;section=3" target="_blank" rel="noopener"><span class="fl">↗</span><span>Camera — Lesson 3 : Wrist Camera Calibration</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=5&amp;section=13" target="_blank" rel="noopener"><span class="fl">↗</span><span>Camera — Lesson 13 : Simple Pick &amp; Place Using the Wrist Camera</span></a>
+<a href="https://elearning.robotiq.com/course/view.php?id=5&amp;section=9" target="_blank" rel="noopener"><span class="fl">↗</span><span>Camera — Lesson 9 : Wrist Camera Advanced Parameters</span></a>
+</div></section>
+<section><h2>Objectif du TP</h2>
+<p>On cherchera dans ce TP à réaliser un pick and place avec reconnaissance des pièces par caméra.</p>
+<p>Les robots UR sont équipés d'un capteur d'effort, d'une caméra, d'une pince 2 doigts ou d'un préhenseur à ventouse, et d'une interface I/O.</p>
+<figure><img src="img/robotiq-equipement.png" alt="Préhenseur, caméra et capteur d&#x27;effort Robotiq" loading="lazy"><figcaption>Préhenseur, caméra et capteur d&#x27;effort Robotiq</figcaption></figure>
+<figure><img src="img/robotiq-elearning.png" alt="Les catégories de la plateforme e-learning Robotiq" loading="lazy"><figcaption>Les catégories de la plateforme e-learning Robotiq</figcaption></figure>
+</section>
+<section><h2>1 — Prise en main</h2>
+<p>Piloter le robot manuellement en mode articulaire et cartésien, afin de prendre connaissance des différents axes du robot. En mode cartésien, le robot peut être piloté suivant différents référentiels (world, base, outil, objet). Dans un premier temps, vous déplacerez le robot suivant les référentiels base et outil.</p>
+<ul><li>Le robot est équipé d'un système de ventouse : piloter manuellement les sorties afin d'aspirer et relâcher une pièce.</li><li>Le robot est équipé d'une pince : piloter manuellement les sorties afin d'ouvrir et fermer les mors.</li></ul>
+</section>
+<section><h2>2 — Programmer la caméra</h2>
+<ol><li>Réaliser les e-learning liés à la caméra.</li><li>Réaliser la calibration d'une nouvelle position. La configuration complète de la caméra est déjà réalisée.</li><li>Programmer la caméra pour la pièce à prendre.</li></ol>
+<figure><img src="img/detection.png" alt="Pick and Place avec détection" loading="lazy"><figcaption>Pick and Place avec détection</figcaption></figure>
+</section>
+<section><h2>3 — Programmation du pick and place</h2>
+<ol><li>Réaliser le e-learning et le quiz associé : <b>4. Création d'un programme</b>.</li><li>Réaliser le programme afin d'effectuer le pick and place.</li></ol>
+<p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
+</section>
+<section><h2>4 — Réglage des paramètres caméra</h2>
+<p>Affiner le comportement de la détection à l'aide des paramètres avancés de la caméra de poignet.</p>
+</section>
+<footer>Céline Dobigeon — IUT, Université de Bordeaux. Fiche établie d'après le document « TP Programmation Robot ». Les manipulations se font sur les machines du laboratoire : c'est leur configuration réelle qui fait foi.</footer>
+</div>
+</body>
+</html>
