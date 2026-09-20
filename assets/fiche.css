@@ -4,6 +4,7 @@
   --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
   --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
   --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --red:#D2232A;
+  --robot:#F07C00; --dark:#3B4149;
   --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
 }
 @media (prefers-color-scheme:dark){
@@ -11,8 +12,12 @@
     --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
     --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
     --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --red:#F1564F;
+    --robot:#FF9426; --dark:#59626D;
   }
+  :root:not([data-theme="light"]) body.ur{--robot:#AEB8C2}
 }
+/* les UR sont en aluminium poli, les ABB en orange */
+body.ur{--robot:#C2CAD2}
 *{box-sizing:border-box}
 body{margin:0;background:var(--ground);color:var(--ink);
   font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:15.5px;line-height:1.6;
@@ -88,6 +93,24 @@ figcaption{font-size:13px;color:var(--muted);margin-top:9px;text-align:center}
 .liens h3{margin:14px 0 8px;color:var(--muted);font-size:13px;
   font-family:"IBM Plex Mono",monospace;letter-spacing:.05em;text-transform:uppercase}
 .liens h3:first-child{margin-top:0}
+
+/* schéma d'anatomie du bras */
+.schema{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+  padding:10px;margin:0 0 14px;box-shadow:var(--shadow);overflow-x:auto}
+/* plutôt que de réduire le schéma jusqu'à l'illisible sur téléphone, on le fait
+   défiler : les étiquettes gardent une taille lisible */
+.schema svg{display:block;width:100%;min-width:540px;height:auto}
+.schema figcaption{min-width:0}
+.schema .rep text{font-family:"IBM Plex Sans",system-ui,sans-serif}
+.arts{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(238px,1fr));
+  margin:0 0 14px}
+.arts div{display:flex;gap:10px;align-items:baseline;background:var(--surface);
+  border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:14px}
+.arts .pic{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:700;
+  color:#fff;background:var(--accent);border-radius:50%;width:21px;height:21px;flex:none;
+  display:inline-flex;align-items:center;justify-content:center}
+.arts b{font-weight:600}
+.arts span.r{color:var(--muted);font-size:13.5px}
 
 .rendre ol{counter-reset:none}
 .rendre li{margin:8px 0}
