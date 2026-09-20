@@ -52,7 +52,7 @@ window.CATALOGUE = {
     {
       slug: 'trajectoires-abb',
       titre: 'TP 1 — Programmation de trajectoires',
-      sous: 'Robots ABB — IRB 140 et IRB 6620',
+      sous: 'Robot ABB IRB 6620',
       texte: 'Repères outil et objet définis par apprentissage, MoveL contre MoveJ, passage par une singularité, puis un motif répété ailleurs dans l’espace par changement de repère.',
       tags: ['TP', 'ABB', 'RAPID'],
       maj: '2026-09-20',
@@ -61,7 +61,7 @@ window.CATALOGUE = {
     {
       slug: 'pick-and-place-abb',
       titre: 'TP 2 — Pick and Place',
-      sous: 'Robots ABB — IRB 140 et IRB 6620',
+      sous: 'Robot ABB IRB 140',
       texte: 'Commande de la pince par sorties digitales, influence du lissage sur la trajectoire, empilement de cinq cubes et palettisation par compteurs.',
       tags: ['TP', 'ABB', 'RAPID'],
       maj: '2026-09-20',
@@ -70,7 +70,7 @@ window.CATALOGUE = {
     {
       slug: 'pick-and-place-camera-ur',
       titre: 'TP 3 — Pick and Place par caméra',
-      sous: 'Cobots UR — UR5 et UR10e',
+      sous: 'Cobot UR — UR5 ou UR10e',
       texte: 'Ventouse et pince deux doigts, calibration de la caméra de poignet, apprentissage de la pièce à reconnaître et programme de pick and place.',
       tags: ['TP', 'Universal Robots', 'Robotiq'],
       maj: '2026-09-20',
@@ -79,7 +79,7 @@ window.CATALOGUE = {
     {
       slug: 'trajectoires-ur',
       titre: 'TP 4 — Trajectoires sur cobot',
-      sous: 'Cobots UR — UR5 et UR10e',
+      sous: 'Cobot UR — UR5 ou UR10e',
       texte: 'Mise en service et repérage des éléments de sécurité, définition du TCP, de la charge et du centre de gravité, motif carré et effet du lissage.',
       tags: ['TP', 'Universal Robots', 'PolyScope'],
       maj: '2026-09-20',
