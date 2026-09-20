@@ -112,6 +112,26 @@ figcaption{font-size:13px;color:var(--muted);margin-top:9px;text-align:center}
 .arts b{font-weight:600}
 .arts span.r{color:var(--muted);font-size:13.5px}
 
+/* vue 3D : elle remplace le schéma plat à l'écran, le SVG revient à l'impression */
+.vue3d{width:100%}
+.boite3d{position:relative;aspect-ratio:16/9;width:100%}
+.vue3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;
+  cursor:grab;touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.vue3d canvas:active{cursor:grabbing}
+.vue3d canvas:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.vue3d .etiq{position:absolute;inset:0;pointer-events:none}
+.vue3d .puce{position:absolute;transform:translate(-50%,-50%);font-family:"IBM Plex Mono",
+  monospace;font-size:12px;font-weight:700;color:#fff;background:var(--accent);
+  border-radius:50%;width:23px;height:23px;display:flex;align-items:center;
+  justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.28)}
+.vue3d .puce.rep{border-radius:6px;width:auto;height:auto;padding:3px 8px;
+  background:var(--ink);font-size:11.5px;letter-spacing:.02em}
+.aide3d{margin:8px 0 0;text-align:center;font-size:12.5px;color:var(--muted)}
+.aide3d .raz{font:inherit;background:none;border:0;padding:0 0 0 4px;color:var(--accent);
+  font-weight:600;cursor:pointer}
+.aide3d .raz:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.schema.a3d > svg{display:none}          /* la 3D a pris le relais */
+
 .rendre ol{counter-reset:none}
 .rendre li{margin:8px 0}
 
@@ -119,7 +139,8 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);
   padding-top:16px;margin-top:40px}
 
 @media print{
-  .crumb,.serie{display:none}
+  .crumb,.serie,.vue3d{display:none}
+  .schema.a3d > svg{display:block}       /* à l'impression, le trait vaut mieux */
   body{background:#fff;font-size:11pt}
   pre,figure,.q,.liens a{box-shadow:none}
   h2{page-break-after:avoid}
