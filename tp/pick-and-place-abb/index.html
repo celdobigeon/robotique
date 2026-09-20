@@ -17,9 +17,8 @@
 <p class="note">Les TP se font par groupe de <b>2 à 4 étudiants</b> : la manipulation d'un robot ne se réalise jamais seul.</p>
 <p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
 <section><h2>Documentation</h2><div class="liens">
-<h3>La machine du TP, et sa voisine</h3>
+<h3>La machine du TP</h3>
 <a href="https://library.e.abb.com/public/7a17951ba995b324c12578b20037d221/2010%20Fiche%20IRB%20140%20FR.pdf" target="_blank" rel="noopener"><span class="fl">↗</span><span>Fiche technique IRB 140 (PDF, ABB)</span></a>
-<a href="https://new.abb.com/products/robotics/robots/articulated-robots/irb-6620" target="_blank" rel="noopener"><span class="fl">↗</span><span>IRB 6620 — page produit ABB</span></a>
 </div></section>
 <p class="pel">Le manuel de programmation ABB et le tutoriel PEL sont distribués en séance.</p>
 <section><h2>Objectif du TP</h2>
@@ -34,13 +33,14 @@
 </section>
 <section><h2>2 — Les fonctions de mouvement</h2>
 <figure><img src="img/pick-place.png" alt="Pick and Place d&#x27;un cube" loading="lazy"><figcaption>Pick and Place d&#x27;un cube</figcaption></figure>
+<p class="note">Le programme ci-dessous ne réalise que la <b>prise</b>. Les pointillés marquent ce qu'il reste à écrire : c'est à vous de vous en inspirer pour programmer la <b>dépose</b>.</p>
 <pre><code>PROC Pick_Place()
-    MoveJ P1, v1000, z0, Pince_PGN\WObj:= WobjPrise ;
-    MoveL P2, v100,  z0, Pince_PGN\WObj:= WobjPrise ;
+    MoveJ P1, v1000, z50, Pince_PGN\WObj:= WobjPrise ;
+    MoveL P2, v100,  z50, Pince_PGN\WObj:= WobjPrise ;
     Set DO_Fermer_Pince ;
-    WaitTime 0.5;
+    WaitTime 1;
     Reset DO_Fermer_Pince ;
-    MoveL P1, v100, Z10, Pince_PGN\WObj:= WobjPrise ;
+    MoveL P1, v100, z50, Pince_PGN\WObj:= WobjPrise ;
     ……
     MoveAbsJ Home, v1000, z50, tool0\WObj:= WobjPrise ;
 ENDPROC</code></pre>
@@ -52,18 +52,15 @@ ENDPROC</code></pre>
 <p class="pel">Cf Tutoriel PEL — 3.3.3 Créer une nouvelle routine</p>
 <p>Puis saisir les différentes instructions qui correspondent aux mouvements et positions permettant de saisir un cube. Pour cela vous déplacerez le robot aux positions souhaitées manuellement et enregistrerez au fur et à mesure les instructions. On définira un point situé au-dessus du point d'entrée ainsi qu'au-dessus du point de sortie, ainsi qu'un point Home.</p>
 <p class="pel">Cf Tutoriel PEL — 3.3.4 Créer une nouvelle instruction</p>
-<p class="note">Chaque sortie digitale compte deux états, « 0 » et « 1 ». <b>Set</b> met la sortie à 1 — par exemple <code>Set DO_FermerPince ;</code>. <b>Reset</b> la remet à son état initial — <code>Reset DO_FermerPince ;</code>. <b>WaitTime</b> correspond à une temporisation, ici de 0,5 s.</p>
+<p class="note">Chaque sortie digitale compte deux états, « 0 » et « 1 ». <b>Set</b> met la sortie à 1 — par exemple <code>Set DO_FermerPince ;</code>. <b>Reset</b> la remet à son état initial — <code>Reset DO_FermerPince ;</code>. <b>WaitTime</b> correspond à une temporisation, ici de 1 s.</p>
 <p>Compléter le programme afin de réaliser la dépose du cube. Il faudra déclarer le repère WobjDepose comme repère de programmation actif.</p>
 <div class="q"><span class="pic">Q3</span><p>Quel est l'intérêt de créer différents repères de programmation ?</p></div>
 </section>
 <section><h2>4 — Signaux et influence du lissage</h2>
 <p>Configurer les différents signaux listés, et lancer la simulation afin de visualiser les différentes courbes.</p>
-<figure><img src="img/signaux-sorties.png" alt="Sorties digitales à configurer" loading="lazy"><figcaption>Sorties digitales à configurer</figcaption></figure>
-<figure><img src="img/signaux-entrees.png" alt="Entrées digitales de la baie de commande" loading="lazy"><figcaption>Entrées digitales de la baie de commande</figcaption></figure>
-<figure><img src="img/signaux-mesures.png" alt="Grandeurs à tracer pendant la simulation" loading="lazy"><figcaption>Grandeurs à tracer pendant la simulation</figcaption></figure>
+<figure><img src="img/signaux.png" alt="Les signaux à configurer, puis les grandeurs à tracer pendant la simulation" loading="lazy"><figcaption>Les signaux à configurer, puis les grandeurs à tracer pendant la simulation</figcaption></figure>
 <div class="q"><span class="pic">Q4</span><p>À partir des tracés, décrire en vous appuyant d'un schéma l'influence du paramètre <b>zonedata</b> sur la trajectoire et le comportement du robot.</p></div>
-<p>Modifier la ligne ci-dessous et en tirer les conclusions quant à son influence sur le programme.</p>
-<pre><code>MoveL P2, v100, fine, Pince_PGN\WObj:=WobjPrise;</code></pre>
+<div class="q"><span class="pic">Q5</span><p>Dans le programme, remplacer tous les <code>z50</code> par <code>z0</code>, puis par <code>fine</code>. Enregistrer les tracés pour les trois cas, et en déduire un lissage « optimal » pour ce programme.</p></div>
 </section>
 <section><h2>5 — Empilement</h2>
 <p>On dispose maintenant plusieurs cubes les uns à côté des autres, dont l'objectif est de les empiler.</p>
@@ -80,6 +77,7 @@ ENDPROC</code></pre>
 <li>Dans quels cas utilise-t-on les déplacements en MoveAbsJ ?</li>
 <li>Quel est l'intérêt de créer différents repères de programmation ?</li>
 <li>À partir des tracés, décrire en vous appuyant d'un schéma l'influence du paramètre <b>zonedata</b> sur la trajectoire et le comportement du robot.</li>
+<li>Dans le programme, remplacer tous les <code>z50</code> par <code>z0</code>, puis par <code>fine</code>. Enregistrer les tracés pour les trois cas, et en déduire un lissage « optimal » pour ce programme.</li>
 </ol></section>
 <footer>Céline Dobigeon — IUT, Université de Bordeaux. Fiche établie d'après le document « TP Programmation Robot ». Les manipulations se font sur les machines du laboratoire : c'est leur configuration réelle qui fait foi.</footer>
 </div>
