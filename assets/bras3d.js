@@ -110,6 +110,8 @@
     var quoi = fig.getAttribute('data-bras');
     var B = BRAS[quoi];
     if (!B) return;
+    // schéma vierge : le bras seul, l'étudiant place lui-même articulations et repères
+    var vierge = fig.getAttribute('data-vierge') === '1';
 
     var vue = document.createElement('div');
     vue.className = 'vue3d';
@@ -209,13 +211,18 @@
     scene.add(grille);
 
     var pointeOutil = P[5].clone().addScaledVector(axeBride, B.art[5].l / 2 + 0.025);
-    triedre(scene, new THREE.Vector3(0, 0, 0), B.cadre * 0.14);
-    triedre(scene, pointeOutil, B.cadre * 0.09);
+    if (!vierge) {
+      triedre(scene, new THREE.Vector3(0, 0, 0), B.cadre * 0.14);
+      triedre(scene, pointeOutil, B.cadre * 0.09);
+    }
 
     // étiquettes : les six articulations, puis les deux repères
-    var ancres = P.map(function (p, k) { return { p: p, t: String(k + 1), r: false }; });
-    ancres.push({ p: new THREE.Vector3(0, 0, 0), t: B.reperes[0], r: true });
-    ancres.push({ p: pointeOutil, t: B.reperes[1], r: true });
+    var ancres = vierge ? [] :
+      P.map(function (p, k) { return { p: p, t: String(k + 1), r: false }; });
+    if (!vierge) {
+      ancres.push({ p: new THREE.Vector3(0, 0, 0), t: B.reperes[0], r: true });
+      ancres.push({ p: pointeOutil, t: B.reperes[1], r: true });
+    }
     var puces = ancres.map(function (a) {
       var d = document.createElement('span');
       d.className = a.r ? 'puce rep' : 'puce';
@@ -240,6 +247,7 @@
     }
 
     function etiquettes() {
+      if (!ancres.length) return;          // schéma vierge : rien à placer
       var w = canvas.clientWidth, h = canvas.clientHeight;
       var v = new THREE.Vector3();
       var pos = [], cx = 0, cy = 0;
