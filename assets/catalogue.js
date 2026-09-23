@@ -53,7 +53,7 @@ window.CATALOGUE = {
       slug: 'trajectoires-abb',
       titre: 'TP 1 — Programmation de trajectoires',
       sous: 'Robot ABB IRB 140 ou IRB 6620',
-      texte: 'Repères outil et objet définis par apprentissage, MoveL contre MoveJ, passage par une singularité, puis un motif répété ailleurs dans l’espace par changement de repère.',
+      texte: 'Repères outil et objet définis par apprentissage, MoveL contre MoveJ, les trois singularités d’un bras six axes, puis la programmation d’un motif carré ou triangulaire.',
       tags: ['TP', 'ABB', 'RAPID'],
       maj: '2026-09-20',
       icone: 'cle',
