@@ -40,7 +40,7 @@
 <div class="q"><span class="pic">Q2</span><p>Représenter graphiquement le vecteur outil et en donner les valeurs numériques (position et orientation).</p></div>
 <p>Déclarer ensuite au contrôleur la <b>charge</b> portée par la bride : la masse de l'outil, la position de son centre de gravité et son inertie. Sans cette déclaration, le contrôleur calcule ses accélérations sur une charge qu'il croit nulle.</p>
 <div class="q"><span class="pic">Q3</span><p>Que risque-t-on à faire tourner le robot avec une charge mal déclarée ?</p></div>
-<p>L'outil est une pince : piloter manuellement les sorties digitales afin de l'ouvrir et de la fermer, puis vérifier que l'état lu suit bien la commande.</p>
+<p>L'outil est un stylo maintenu dans une pince : piloter manuellement les sorties digitales afin de l'ouvrir et de la fermer, puis vérifier que l'état lu suit bien la commande.</p>
 <p class="note">Chaque sortie digitale compte deux états, « 0 » et « 1 ». <b>Set</b> met la sortie à 1 — par exemple <code>Set DO_FermerPince ;</code>. <b>Reset</b> la remet à son état initial — <code>Reset DO_FermerPince ;</code>. <b>WaitTime</b> correspond à une temporisation. Ces instructions reviendront au TP 2, pour commander la pince depuis le programme.</p>
 </section>
 <section><h2>3 — Définir un repère objet</h2>
