@@ -65,17 +65,11 @@
 <div class="q"><span class="pic">Q6</span><p>Laquelle de ces trois singularités avez-vous traversée, et à quoi l'avez-vous reconnue ?</p></div>
 </section>
 <section><h2>6 — Programmation d&#x27;un motif</h2>
-<p>Créer une nouvelle routine et saisir les instructions afin d'exécuter les motifs représentés.</p>
+<div class="q"><span class="pic">Q7</span><p>Créer une nouvelle routine et créer les instructions de mouvements pour réaliser un profil carré ou triangulaire.</p></div>
 <p>On définira :</p>
 <ul><li>un point d'approche situé au-dessus du point d'entrée,</li><li>un point de retrait situé au-dessus du point de sortie,</li><li>ainsi qu'un point de repli, en faisant appel aux valeurs articulaires du robot.</li></ul>
 <p>Chaque cible est définie dans le programme par un astérisque. Les valeurs définies sont différentes d'une ligne à l'autre.</p>
-<pre><code>PROC Motif()
-    MoveL *, v1000, z50, tool1\WObj:= Wobj1 ;
-    MoveL *, v100,  z50, tool1\WObj:= Wobj1 ;
-    …
-    MoveAbsJ *, v1000, z50, tool0\WObj:= Wobj1 ;
-ENDPROC</code></pre>
-<div class="q"><span class="pic">Q7</span><p>Quel paramètre permet d'obtenir des angles droits ?</p></div>
+<div class="q"><span class="pic">Q8</span><p>Quel paramètre permet d'obtenir des angles droits ?</p></div>
 </section>
 <section><h2>7 — Programmation d&#x27;une boucle</h2>
 <p>Ce motif doit être répété plusieurs fois avec des positions et orientations différentes. Un nouveau repère va être créé à partir de l'apprentissage de 3 points. Une prise en compte de ce nouveau repère sera réalisée dans le programme afin d'exécuter de nouveau le programme.</p>
@@ -102,6 +96,7 @@ ENDMODULE</code></pre>
 <li>Expliquer les différences de mouvements entre MoveL et MoveJ.</li>
 <li>Qu'observez-vous au passage de la singularité ?</li>
 <li>Laquelle de ces trois singularités avez-vous traversée, et à quoi l'avez-vous reconnue ?</li>
+<li>Créer une nouvelle routine et créer les instructions de mouvements pour réaliser un profil carré ou triangulaire.</li>
 <li>Quel paramètre permet d'obtenir des angles droits ?</li>
 </ol></section>
 <footer>Céline Dobigeon — IUT, Université de Bordeaux. Fiche établie d'après le document « TP Programmation Robot ». Les manipulations se font sur les machines du laboratoire : c'est leur configuration réelle qui fait foi.</footer>
