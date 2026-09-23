@@ -110,6 +110,15 @@ figcaption{font-size:13px;color:var(--muted);margin-top:9px;text-align:center}
   color:#fff;background:var(--accent);border-radius:50%;width:21px;height:21px;flex:none;
   display:inline-flex;align-items:center;justify-content:center}
 .arts b{font-weight:600}
+
+/* les trois singularités, côte à côte tant que la place le permet */
+.sings{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));
+  margin:4px 0 16px}
+.sings figure{margin:0;background:var(--surface);border:1px solid var(--line);
+  border-radius:12px;padding:12px 14px 14px}
+.sings h3{font-size:15px;margin:0 0 6px}
+.sings svg{display:block;width:100%;height:auto}
+.sings p{font-size:13.5px;color:var(--muted);margin:8px 0 0}
 .arts span.r{color:var(--muted);font-size:13.5px}
 
 /* vue 3D : elle remplace le schéma plat à l'écran, le SVG revient à l'impression */
