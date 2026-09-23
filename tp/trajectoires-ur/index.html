@@ -3,17 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>TP 4 — Programmation de trajectoires sur cobot — Robotique industrielle</title>
-<meta name="description" content="Mise en service, repère outil, TCP et charge, motif et lissage">
+<title>TP 1 — Programmation de trajectoires (version cobot UR) — Robotique industrielle</title>
+<meta name="description" content="Repères outil et objet, déplacements L et A, motif et boucle">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="../../assets/fiche.css">
 </head>
 <body class="ur">
-<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>TP 4 — Programmation de trajectoires sur cobot</b></div></div>
+<div class="crumb"><div class="in"><a href="../../index.html"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 42h13"/><path d="M16.5 42V33"/><path d="M16.5 33 L27 20"/><path d="M27 20 L38 15"/><circle cx="16.5" cy="33" r="3.2"/><circle cx="27" cy="20" r="3.2"/></svg> Robotique industrielle</a><span class="sep">/</span><a href="../index.html">Travaux pratiques</a><span class="sep">/</span><b>TP 1 — Programmation de trajectoires (version cobot UR)</b></div></div>
 <div class="wrap">
-<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 4</span> · Programmation de trajectoires sur cobot</h1><p class="lede">Le pendant du TP 1, côté collaboratif. On reprend les mêmes questions — repère outil, types de déplacement, singularité, motif — mais sur une machine sans clôture, où la mise en service commence par identifier les éléments de sécurité et les zones. La déclaration du TCP, de la charge et du centre de gravité y prend tout son sens.</p><div class="meta"><span class="tag">Cobot Universal Robots — UR5 ou UR10e</span><span class="tag">Groupe de 2 à 4 étudiants</span></div></header>
-<nav class="serie" aria-label="Les quatre TP de programmation"><a href="../trajectoires-abb/index.html"><b>TP 1</b>Programmation de trajectoires</a><a href="../pick-and-place-abb/index.html"><b>TP 2</b>Pick and Place</a><a href="../pick-and-place-camera-ur/index.html"><b>TP 3</b>Pick and Place avec reconnaissance par caméra</a><span class="ici"><b>TP 4</b>Programmation de trajectoires sur cobot</span></nav>
+<header><p class="eyebrow">Travaux pratiques — programmation</p><h1><span class="n">TP 1</span> · Programmation de trajectoires (version cobot UR)</h1><p class="lede">Le même TP que sur les robots ABB, conduit cette fois sur un cobot. Les questions sont identiques — repère outil, repère objet, types de déplacement, singularité, motif répété ailleurs dans l'espace — mais on les traite dans Polyscope, sur une machine sans clôture où la déclaration du TCP, de la charge et du centre de gravité prend tout son sens.</p><div class="meta"><span class="tag">Cobot Universal Robots — UR5 ou UR10e</span><span class="tag">Groupe de 2 à 4 étudiants</span></div></header>
+<nav class="serie" aria-label="Les quatre TP de programmation"><a href="../trajectoires-abb/index.html"><b>TP 1</b>Programmation de trajectoires</a><span class="ici"><b>TP 1</b>Programmation de trajectoires (version cobot UR)</span><a href="../pick-and-place-abb/index.html"><b>TP 2</b>Pick and Place</a><a href="../pick-and-place-camera-ur/index.html"><b>TP 3</b>Pick and Place avec reconnaissance par caméra</a></nav>
 <p class="note">Les TP se font par groupe de <b>2 à 4 étudiants</b> : la manipulation d'un robot ne se réalise jamais seul.</p>
 <p class="note"><b>Avant de commencer :</b> La partie sécurité doit être validée avant de débuter la prise en main du robot.</p>
 <p class="note">Le code doit être <b>validé par l'enseignant avant</b> toute exécution du programme sur la machine.</p>
@@ -32,36 +32,51 @@
 <a href="https://elearning.robotiq.com/course/view.php?id=3&amp;section=4" target="_blank" rel="noopener"><span class="fl">↗</span><span>Adaptive Grippers — Lesson 4 : Pro Touch — Program a Pick &amp; Place</span></a>
 </div></section>
 <section><h2>Objectif du TP</h2>
+<p>On cherchera dans ce TP à étudier les trajectoires afin de réaliser un motif, et de répéter ces trajectoires avec des positions et orientations différentes.</p>
 <p>Les robots UR sont équipés d'un capteur d'effort, d'une caméra, d'une pince 2 doigts ou d'un préhenseur à ventouse, et d'une interface I/O.</p>
 <figure><img src="img/robotiq-equipement.png" alt="Préhenseur, caméra et capteur d&#x27;effort Robotiq" loading="lazy"><figcaption>Préhenseur, caméra et capteur d&#x27;effort Robotiq</figcaption></figure>
 </section>
-<section><h2>1 — Prise en main</h2>
+<section><h2>1 — Prise en main et repères</h2>
 <figure class="schema" data-bras="ur" data-vierge="1"><svg viewBox="0 0 780 580" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Schéma d'un cobot Universal Robots vu de côté, sans aucune annotation : les articulations et les repères sont à identifier."><defs><marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--red)"/></marker><marker id="py" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--green)"/></marker><marker id="pz" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--blue)"/></marker></defs><line x1="60" y1="462" x2="720" y2="462" stroke="var(--line)" stroke-width="2"/><rect x="150" y="450" width="112" height="12" rx="2" fill="var(--dark)"/><path d="M170 450 L178 414 L234 414 L242 450 Z" fill="var(--robot)"/><circle cx="206" cy="406" r="24" fill="var(--dark)"/><circle cx="206" cy="370" r="25" fill="var(--dark)"/><line x1="206" y1="370" x2="318" y2="196" stroke="var(--robot)" stroke-width="40" stroke-linecap="round"/><circle cx="318" cy="196" r="22" fill="var(--dark)"/><line x1="318" y1="196" x2="472" y2="232" stroke="var(--robot)" stroke-width="32" stroke-linecap="round"/><circle cx="472" cy="232" r="18" fill="var(--dark)"/><line x1="472" y1="232" x2="518" y2="252" stroke="var(--robot)" stroke-width="26" stroke-linecap="round"/><circle cx="518" cy="252" r="16" fill="var(--dark)"/><line x1="518" y1="252" x2="552" y2="262" stroke="var(--robot)" stroke-width="22" stroke-linecap="round"/><circle cx="552" cy="262" r="13" fill="var(--dark)"/><rect x="561" y="246" width="12" height="33" rx="3" fill="var(--blue)"/></svg><figcaption>Le bras seul. À vous d'y placer les six articulations, puis le repère de base et le repère outil avec l'orientation de leurs axes.</figcaption></figure>
 <div class="q"><span class="pic">Q1</span><p>Identifier les différentes articulations, ainsi que l'orientation des repères base et outil.</p></div>
 <p>Piloter le robot manuellement en mode articulaire et cartésien, afin de prendre connaissance des différents axes du robot. En mode cartésien, le robot peut être piloté suivant différents référentiels (world, base, outil, objet). Dans un premier temps, vous déplacerez le robot suivant les référentiels base et outil.</p>
 <p>Le robot est équipé d'une pince : piloter manuellement les sorties afin de l'ouvrir et de la fermer.</p>
 </section>
-<section><h2>2 — Réglage de l&#x27;outil</h2>
+<section><h2>2 — Définir un repère outil</h2>
 <p>Créer un nouvel outil et définir les valeurs de position et d'orientation par apprentissage. Pour cela vous viendrez mettre en contact la pointe de l'outil sur un comparateur, qui servira de référence.</p>
 <ol><li>Réaliser le e-learning et le quiz associé : <b>3. Mise en place d'un outil</b>.</li><li>Définir le TCP, le payload et le centre de gravité.</li></ol>
-<div class="q"><span class="pic">Q2</span><p>Représenter graphiquement le vecteur outil et en donner les valeurs numériques (position et rotation).</p></div>
+<div class="q"><span class="pic">Q2</span><p>Représenter graphiquement le vecteur outil et en donner les valeurs numériques (position et orientation).</p></div>
 </section>
-<section><h2>3 — Exemple de mouvements</h2>
+<section><h2>3 — Définir un repère objet</h2>
+<p>Créer un nouveau plan dans l'installation du robot, et définir sa position et son orientation par apprentissage. Pour cela vous viendrez apprendre 3 points :</p>
+<ul><li>P1 — origine</li><li>P2 — définition de l'axe x</li><li>P3 — définition de l'axe y</li></ul>
+<p>Le repère étant orthonormé, l'axe z sera créé automatiquement en fonction des axes x et y définis.</p>
+<p>Valider la définition de ce nouveau repère en vous déplaçant manuellement en mode cartésien dans ce référentiel.</p>
+<div class="q"><span class="pic">Q3</span><p>Quel est l'intérêt de pouvoir déplacer le robot dans différents référentiels ?</p></div>
+</section>
+<section><h2>4 — Exemple de mouvements</h2>
 <p>Créer un programme <code>S1_FI_GR…</code>, puis saisir les instructions qui correspondent aux mouvements et positions permettant de réaliser une ligne. Pour cela vous déplacerez le robot aux positions souhaitées manuellement et enregistrerez au fur et à mesure les différentes instructions.</p>
 <ul><li>Un premier mouvement du <b>point de passage 1</b> vers le <b>point de passage 2</b> sera réalisé en <b>Déplacement L</b></li><li>Un second mouvement du <b>point de passage 2</b> vers le <b>point de passage 1</b> sera exécuté en <b>Déplacement A</b></li></ul>
 <p class="note">Le programme sera exécuté en présence de l'enseignant.</p>
-<div class="q"><span class="pic">Q3</span><p>Expliquer les différences de mouvements entre Déplacement L et Déplacement J.</p></div>
+<div class="q"><span class="pic">Q4</span><p>Expliquer les différences de mouvements entre Déplacement L et Déplacement J.</p></div>
 <p>Modifier les points de la trajectoire afin de passer par une singularité du robot.</p>
-<div class="q"><span class="pic">Q4</span><p>Qu'observez-vous au passage de la singularité ?</p></div>
+<div class="q"><span class="pic">Q5</span><p>Qu'observez-vous au passage de la singularité ?</p></div>
 </section>
-<section><h2>4 — Programmation d&#x27;un motif</h2>
-<p>Créer un nouveau programme et saisir les instructions afin d'exécuter un motif carré. On définira un point situé au-dessus du point d'entrée ainsi qu'au-dessus du point de sortie, ainsi qu'un point de repli en faisant appel aux valeurs articulaires du robot.</p>
+<section><h2>5 — Programmation d&#x27;un motif</h2>
+<p>Créer un nouveau programme et saisir les instructions afin d'exécuter un motif carré.</p>
+<p>On définira :</p>
+<ul><li>un point d'approche situé au-dessus du point d'entrée,</li><li>un point de retrait situé au-dessus du point de sortie,</li><li>ainsi qu'un point de repli, en faisant appel aux valeurs articulaires du robot.</li></ul>
 <p>Modifier le paramètre « arrêt au point » par un lissage (50 par exemple).</p>
-<div class="q"><span class="pic">Q5</span><p>Qu'observez-vous en remplaçant l'arrêt au point par un lissage ?</p></div>
+<div class="q"><span class="pic">Q6</span><p>Qu'observez-vous en remplaçant l'arrêt au point par un lissage ?</p></div>
+</section>
+<section><h2>6 — Programmation d&#x27;une boucle</h2>
+<p>Ce motif doit être répété plusieurs fois avec des positions et orientations différentes. Un second plan va être créé à partir de l'apprentissage de 3 points, et le motif sera rejoué en s'y référant.</p>
+<p>Placer les déplacements du motif dans une boucle, et exprimer leurs points de passage par rapport au plan choisi : changer le plan de référence suffit alors à rejouer le motif ailleurs, sans réapprendre un seul point.</p>
 </section>
 <section class="rendre"><h2>À rendre</h2><p>Les questions posées au fil du TP, dans l'ordre :</p><ol>
 <li>Identifier les différentes articulations, ainsi que l'orientation des repères base et outil.</li>
-<li>Représenter graphiquement le vecteur outil et en donner les valeurs numériques (position et rotation).</li>
+<li>Représenter graphiquement le vecteur outil et en donner les valeurs numériques (position et orientation).</li>
+<li>Quel est l'intérêt de pouvoir déplacer le robot dans différents référentiels ?</li>
 <li>Expliquer les différences de mouvements entre Déplacement L et Déplacement J.</li>
 <li>Qu'observez-vous au passage de la singularité ?</li>
 <li>Qu'observez-vous en remplaçant l'arrêt au point par un lissage ?</li>
