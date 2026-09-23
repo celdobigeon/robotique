@@ -62,7 +62,7 @@ window.CATALOGUE = {
       slug: 'trajectoires-ur',
       titre: 'TP 1 — Programmation de trajectoires (version cobot UR)',
       sous: 'Cobot UR — UR5 ou UR10e',
-      texte: 'Le même TP que sur les robots ABB, conduit dans Polyscope : repères outil et objet appris sur la machine, déplacements L et A, passage par une singularité, motif carré et lissage, puis répétition du motif sur un second plan.',
+      texte: 'Le même TP que sur les robots ABB, conduit dans Polyscope : repères outil et objet appris sur la machine, déplacements L et A, les trois singularités d’un bras six axes, puis la programmation d’un motif carré et l’effet du lissage.',
       tags: ['TP', 'Universal Robots', 'PolyScope'],
       maj: '2026-09-23',
       icone: 'cle',
