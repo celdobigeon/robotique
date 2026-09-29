@@ -58,6 +58,7 @@ h1{font-family:Archivo,sans-serif;font-weight:700;font-size:clamp(26px,4.4vw,38p
 .seg button:hover{color:var(--ink)}
 .seg button.on{background:var(--accent);color:#fff}
 .seg button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.switch .docs{display:inline-flex;align-items:center;gap:6px 16px;flex-wrap:wrap}
 .switch .doc{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;
   color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
 .switch .doc:hover{border-bottom-color:var(--accent)}
@@ -210,7 +211,7 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padd
         <button type="button" id="b140" aria-pressed="true">IRB 140</button>
         <button type="button" id="b6620" aria-pressed="false">IRB 6620</button>
       </div>
-      <a class="doc" id="doc" target="_blank" rel="noopener"><span class="fl">↗</span><span id="docl"></span></a>
+      <span class="docs" id="docs"></span>
     </div>
   </header>
 
@@ -495,8 +496,8 @@ const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 let ROBOT = 'irb140';
 const DOC = {
-  irb140:  ['IRB 140 — page produit ABB',  'https://one.robotics.abb.com/en/p/IRB-140'],
-  irb6620: ['IRB 6620 — page produit ABB', 'https://one.robotics.abb.com/en/sp/IRB-6620'],
+  irb140:  [['IRB 140 — page produit ABB',  'https://one.robotics.abb.com/en/p/IRB-140']],
+  irb6620: [['IRB 6620 — page produit ABB', 'https://one.robotics.abb.com/en/sp/IRB-6620']],
 };
 
 /* ---------------- fiche technique ---------------- */
@@ -732,8 +733,18 @@ function setRobot(r) {
   document.getElementById('t1').textContent = 'Repérer les dispositifs sur la cellule ' + D.nom[r];
   document.getElementById('figcap').innerHTML = D.figcap[r];
   document.getElementById('apres').innerHTML = D.apres[r];
-  document.getElementById('doc').href = DOC[r][1];
-  document.getElementById('docl').textContent = DOC[r][0];
+  const boite = document.getElementById('docs');
+  boite.textContent = '';
+  DOC[r].forEach(([libelle, url]) => {
+    const a = document.createElement('a');
+    a.className = 'doc'; a.href = url;
+    // un PDF local s'ouvre dans l'onglet courant, un site externe à côté
+    if (!/^doc\//.test(url)) { a.target = '_blank'; a.rel = 'noopener'; }
+    const f = document.createElement('span'); f.className = 'fl';
+    f.textContent = /^doc\//.test(url) ? '\u2193' : '\u2197';
+    const t = document.createElement('span'); t.textContent = libelle;
+    a.append(f, t); boite.append(a);
+  });
   document.getElementById('fig140').hidden = r !== 'irb140';
   document.getElementById('fig6620').hidden = r !== 'irb6620';
   ['b140', 'b6620'].forEach(id => {
