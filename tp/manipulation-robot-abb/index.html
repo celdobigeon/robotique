@@ -496,8 +496,10 @@ const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
   const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 let ROBOT = 'irb140';
 const DOC = {
-  irb140:  [['IRB 140 — page produit ABB',  'https://one.robotics.abb.com/en/p/IRB-140']],
-  irb6620: [['IRB 6620 — page produit ABB', 'https://one.robotics.abb.com/en/sp/IRB-6620']],
+  irb140:  [['IRB 140 — page produit ABB', 'https://one.robotics.abb.com/en/p/IRB-140'],
+            ['Fiche technique IRB 140 (PDF, 2 p.)', 'doc/irb140-fiche-technique.pdf']],
+  irb6620: [['IRB 6620 — page produit ABB', 'https://one.robotics.abb.com/en/sp/IRB-6620'],
+            ['Fiche technique IRB 6620 (PDF, 2 p.)', 'doc/irb6620-fiche-technique.pdf']],
 };
 
 /* ---------------- fiche technique ---------------- */
