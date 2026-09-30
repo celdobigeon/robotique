@@ -556,9 +556,9 @@ const shuffled = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) {
 let ROBOT = 'ur5';
 const DOC = {
   ur5:  [['UR5 — page produit', 'https://www.universal-robots.com/fr/produits/robot-ur5/'],
-            ['Fiche technique UR5 (PDF, 2 p.)', 'doc/ur5-fiche-technique.pdf']],
+            ['Fiche technique UR5 (PDF, 2 p.)', '../../doc/ur5-fiche-technique.pdf']],
   ur10: [['UR10 — page produit', 'https://www.universal-robots.com/fr/produits/robot-ur10/'],
-            ['Fiche technique UR10 (PDF, 2 p.)', 'doc/ur10-fiche-technique.pdf']],
+            ['Fiche technique UR10 (PDF, 2 p.)', '../../doc/ur10-fiche-technique.pdf']],
 };
 
 /* ---------------- fiche technique ---------------- */
@@ -799,10 +799,11 @@ function setRobot(r) {
   DOC[r].forEach(([libelle, url]) => {
     const a = document.createElement('a');
     a.className = 'doc'; a.href = url;
-    // un PDF local s'ouvre dans l'onglet courant, un site externe à côté
-    if (!/^doc\//.test(url)) { a.target = '_blank'; a.rel = 'noopener'; }
+    // un document du site s'ouvre dans l'onglet courant, un site externe à côté
+    const dehors = /^https?:/.test(url);
+    if (dehors) { a.target = '_blank'; a.rel = 'noopener'; }
     const f = document.createElement('span'); f.className = 'fl';
-    f.textContent = /^doc\//.test(url) ? '\u2193' : '\u2197';
+    f.textContent = dehors ? '\u2197' : '\u2193';
     const t = document.createElement('span'); t.textContent = libelle;
     a.append(f, t); boite.append(a);
   });
