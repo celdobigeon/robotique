@@ -61,7 +61,7 @@ window.CATALOGUE = {
     {
       slug: 'trajectoires-ur',
       titre: 'TP 1 — Programmation de trajectoires (version cobot UR)',
-      sous: 'Cobot UR — UR5 ou UR10e',
+      sous: 'Cobot UR — UR5 ou UR10',
       texte: 'Le même TP que sur les robots ABB, conduit dans Polyscope : repères outil et objet appris sur la machine, déplacements L et A, les trois singularités d’un bras six axes, puis la programmation d’un motif carré et l’effet du lissage.',
       tags: ['TP', 'Universal Robots', 'PolyScope'],
       maj: '2026-09-23',
@@ -79,7 +79,7 @@ window.CATALOGUE = {
     {
       slug: 'pick-and-place-camera-ur',
       titre: 'TP 3 — Pick and Place par caméra',
-      sous: 'Cobot UR — UR5 ou UR10e',
+      sous: 'Cobot UR — UR5 ou UR10',
       texte: 'Ventouse et pince deux doigts, calibration de la caméra de poignet, apprentissage de la pièce à reconnaître et programme de pick and place.',
       tags: ['TP', 'Universal Robots', 'Robotiq'],
       maj: '2026-09-20',
