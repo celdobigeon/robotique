@@ -154,4 +154,16 @@ footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);
   pre,figure,.q,.liens a{box-shadow:none}
   h2{page-break-after:avoid}
   figure,.q,pre{page-break-inside:avoid}
+  /* le schéma n'a pas besoin de toute la page : il sert à être annoté */
+  .schema{padding:6px}
+  .schema svg{min-width:0;max-height:78mm;margin:0 auto}
+  .schema figcaption{margin-top:4px}
+  /* les trois singularités se lisent côte à côte, sinon elles coûtent deux rangées */
+  .sings{grid-template-columns:repeat(3,1fr);gap:7px}
+  .sings figure{padding:8px 9px 10px}
+  .sings h3{font-size:12.5px;margin-bottom:4px}
+  .sings svg{max-height:46mm}
+  .sings p{font-size:10.5px;margin-top:5px}
+  section{margin-bottom:14px}
+  figure{margin-bottom:12px}
 }
