@@ -14,6 +14,17 @@
 window.CATALOGUE = {
   cours: [
     {
+      slug: 'robotique-industrielle',
+      titre: 'La robotique industrielle',
+      sous: 'Le cours en 30 diapositives',
+      texte: 'Origines et définitions, ce que dit le marché mondial, les architectures et ' +
+             'les critères de choix, la sécurité et le cadre normatif, le collaboratif, ' +
+             'la programmation et les modèles géométriques.',
+      tags: ['Cours', 'Diapositives', 'IFR 2026'],
+      maj: '2026-11-01',
+      icone: 'robot',
+    },
+    {
       slug: 'securite-espace-travail',
       titre: 'Espace de travail homme / machine',
       sous: 'Huit démonstrations 3D interactives',
