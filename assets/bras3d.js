@@ -95,13 +95,16 @@
     return m;
   }
 
-  function triedre(scene, origine, taille) {
-    // X rouge, Y vert, Z bleu — la convention que rappelle la légende.
+  function triedre(scene, origine, taille, couleur) {
+    // X rouge, Y vert, Z bleu — la convention que rappelle la légende. Sur la
+    // planche des repères du cours, chaque repère a au contraire sa propre
+    // couleur : c'est ce qui permet de suivre le même d'un axe à l'autre.
     var axes = [[new THREE.Vector3(1, 0, 0), 0xD2232A],
                 [new THREE.Vector3(0, 1, 0), 0x17A05E],
                 [new THREE.Vector3(0, 0, 1), 0x2F7BD4]];
     axes.forEach(function (a) {
-      scene.add(new THREE.ArrowHelper(a[0], origine, taille, a[1],
+      scene.add(new THREE.ArrowHelper(a[0], origine, taille,
+                                      couleur || a[1],
                                       taille * 0.28, taille * 0.16));
     });
   }
@@ -142,6 +145,11 @@
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(32, 16 / 9, 0.05, 60);
     var cible = new THREE.Vector3(B.cible[0], B.cible[1], B.cible[2]);
+    if (fig.getAttribute('data-scene') === 'reperes') {
+      cible.set(B.cible[0] + 0.14, B.cible[1] + 0.06, 0);
+      B = Object.create(B);              // sans toucher au gabarit partagé
+      B.cadre = 2.75;
+    }
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe6ec, 1.5));
     var dir = new THREE.DirectionalLight(0xffffff, 1.1);
@@ -211,28 +219,95 @@
     scene.add(grille);
 
     var pointeOutil = P[5].clone().addScaledVector(axeBride, B.art[5].l / 2 + 0.025);
-    if (!vierge) {
+
+    // la planche des repères du cours : un poste de soudage autour du bras
+    var scenario = fig.getAttribute('data-scene');
+    var REP = null;
+    if (scenario === 'reperes') {
+      var COUL = { base: 0x2E5F82, bride: 0x6E5A8E, outil: 0xB04A4A,
+                   objet: 0x2E9E5B };
+      var matTole = new THREE.MeshStandardMaterial({
+        color: 0x9AA4AE, roughness: 0.55, metalness: 0.35 });
+      var matMontage = new THREE.MeshStandardMaterial({
+        color: B.carter, roughness: 0.7, metalness: 0.1 });
+
+      // la torche, dans l'axe de la bride, et sa pointe : le repère outil
+      var depart = P[5].clone().addScaledVector(axeBride, B.art[5].l / 2);
+      var pointe = depart.clone().addScaledVector(axeBride, 0.17);
+      scene.add(tube(depart, pointe.clone().addScaledVector(axeBride, -0.03),
+                     0.016, matMontage));
+      var buse = new THREE.Mesh(new THREE.ConeGeometry(0.016, 0.05, 20),
+                                matTole);
+      buse.position.copy(pointe).addScaledVector(axeBride, -0.025);
+      buse.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0),
+                                         axeBride);
+      scene.add(buse);
+
+      // la tôle bridée sur son montage, juste devant la torche
+      var xTole = pointe.x + 0.05, hTole = 0.34, lTole = 0.46;
+      var basTole = pointe.y - hTole / 2;
+      var tole = new THREE.Mesh(
+        new THREE.BoxGeometry(0.016, hTole, lTole), matTole);
+      tole.position.set(xTole, basTole + hTole / 2, 0);
+      scene.add(tole);
+      var pied = new THREE.Mesh(
+        new THREE.BoxGeometry(0.13, basTole, lTole * 0.8), matMontage);
+      pied.position.set(xTole, basTole / 2, 0);
+      scene.add(pied);
+
+      // la cible, sur la tôle, là où la torche pointe
+      var cibleP = new THREE.Vector3(xTole - 0.01, pointe.y, pointe.z);
+      var pastille = new THREE.Mesh(new THREE.SphereGeometry(0.018, 18, 12),
+        new THREE.MeshStandardMaterial({ color: 0xD96A00, roughness: 0.4 }));
+      pastille.position.copy(cibleP);
+      scene.add(pastille);
+
+      // le coin de la tôle : c'est lui qui porte le repère objet
+      var coin = new THREE.Vector3(xTole - 0.012, basTole, lTole / 2);
+      var t = B.cadre * 0.095;
+      triedre(scene, new THREE.Vector3(0, 0, 0), t * 2.1, COUL.base);
+      triedre(scene, bride.position.clone(), t, COUL.bride);
+      triedre(scene, pointe.clone(), t, COUL.outil);
+      triedre(scene, coin, t, COUL.objet);
+      REP = [{ p: new THREE.Vector3(0, 0, 0), t: 'repère de base',
+               c: '#2E5F82' },
+             { p: bride.position.clone(), t: 'repère bride', c: '#6E5A8E' },
+             { p: pointe.clone(), t: 'repère outil', c: '#B04A4A' },
+             { p: coin, t: 'repère objet', c: '#2E9E5B' },
+             { p: cibleP, t: 'cible', c: '#D96A00' }];
+    } else if (!vierge) {
       triedre(scene, new THREE.Vector3(0, 0, 0), B.cadre * 0.14);
       triedre(scene, pointeOutil, B.cadre * 0.09);
     }
 
     // étiquettes : les six articulations, puis les deux repères
-    var ancres = vierge ? [] :
-      P.map(function (p, k) { return { p: p, t: String(k + 1), r: false }; });
-    if (!vierge) {
+    var ancres;
+    if (REP) {
+      ancres = REP.map(function (a) {
+        return { p: a.p, t: a.t, r: true, c: a.c };
+      });
+    } else if (vierge) {
+      ancres = [];
+    } else {
+      ancres = P.map(function (p, k) {
+        return { p: p, t: String(k + 1), r: false };
+      });
       ancres.push({ p: new THREE.Vector3(0, 0, 0), t: B.reperes[0], r: true });
       ancres.push({ p: pointeOutil, t: B.reperes[1], r: true });
     }
     var puces = ancres.map(function (a) {
       var d = document.createElement('span');
       d.className = a.r ? 'puce rep' : 'puce';
+      if (a.c) d.style.background = a.c;
       d.textContent = a.t;
       etiq.appendChild(d);
       return d;
     });
 
     // ---- rotation du point de vue ----------------------------------
-    var orbite = { az: 0.62, el: 0.24 };     // vue de trois quarts au départ
+    // sur la scène des repères, on se place là où la tôle ne masque pas
+    // le bras : de face, un peu à droite
+    var orbite = { az: REP ? 0.46 : 0.62, el: REP ? 0.22 : 0.24 };
     var DEPART = { az: orbite.az, el: orbite.el };
 
     function poser() {
@@ -263,8 +338,8 @@
       // l'articulation qu'elle désigne
       pos.forEach(function (p) {
         var dx = p.x - cx, dy = p.y - cy, d = Math.hypot(dx, dy) || 1;
-        p.x += (dx / d) * 30;
-        p.y += (dy / d) * 30;
+        p.x += (dx / d) * (REP ? 44 : 30);
+        p.y += (dy / d) * (REP ? 44 : 30);
       });
 
       // au poignet, trois articulations se suivent de près, plus l'étiquette du
@@ -272,7 +347,7 @@
       for (var passe = 0; passe < 2; passe++) {
         for (var i = 1; i < pos.length; i++) {
           for (var j = 0; j < i; j++) {
-            var mini = (ancres[i].r || ancres[j].r) ? 46 : 30;
+            var mini = REP ? 76 : ((ancres[i].r || ancres[j].r) ? 46 : 30);
             var dx2 = pos[i].x - pos[j].x, dy2 = pos[i].y - pos[j].y;
             var d2 = Math.hypot(dx2, dy2);
             if (d2 < mini) {
