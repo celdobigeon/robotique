@@ -16,21 +16,21 @@
 :root{
   --ground:#F3F6F8; --surface:#FFFFFF; --surface-2:#E9EFF4;
   --ink:#10161C; --muted:#5B6773; --line:#D9E1E8;
-  --accent:#D96A00; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
+  --accent:#2E5F82; --blue:#2F7BD4; --green:#17A05E; --amber:#C87E00; --red:#D2232A;
   --shadow:0 1px 2px rgba(16,22,28,.05),0 8px 24px rgba(16,22,28,.05);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
     --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
-    --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+    --accent:#6AA3C8; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
   }
 }
 :root[data-theme="dark"]{
   --ground:#0D1218; --surface:#151B22; --surface-2:#1D242D;
   --ink:#E8EDF2; --muted:#94A1AE; --line:#29323C;
-  --accent:#FF8C22; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
+  --accent:#6AA3C8; --blue:#63A5EF; --green:#33C183; --amber:#F0A93B; --red:#F1564F;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
@@ -881,8 +881,8 @@ const TOOL_EXT = 0.23;
 const SHOULDER_Y = GEO.baseH + GEO.turretH; // 0.45
 
 const COL = {
-  orange: 0xf07c00,
-  orangeDark: 0xc96500,
+  bras: 0x8793a1,
+  brasFonce: 0x6c7987,
   grey: 0x3b4149,
   lightGrey: 0xb9c0c8,
   steel: 0x8b949e,
@@ -1016,7 +1016,7 @@ function box(THREE, w, h, d, color, ry = 0.02) {
 
 function buildRobot(THREE) {
   const root = new THREE.Group();
-  const matOrange = new THREE.MeshStandardMaterial({ color: COL.orange, roughness: 0.5, metalness: 0.2 });
+  const matBras = new THREE.MeshStandardMaterial({ color: COL.bras, roughness: 0.5, metalness: 0.2 });
   const matGrey = new THREE.MeshStandardMaterial({ color: COL.grey, roughness: 0.6, metalness: 0.3 });
   const matSteel = new THREE.MeshStandardMaterial({ color: COL.steel, roughness: 0.4, metalness: 0.6 });
 
@@ -1029,11 +1029,11 @@ function buildRobot(THREE) {
   const turret = new THREE.Group();
   turret.position.y = GEO.baseH;
   root.add(turret);
-  const tBody = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.27, GEO.turretH, 32), matOrange);
+  const tBody = new THREE.Mesh(new THREE.CylinderGeometry(0.235, 0.27, GEO.turretH, 32), matBras);
   tBody.position.y = GEO.turretH / 2; tBody.castShadow = true;
   turret.add(tBody);
-  const yoke = box(THREE, 0.36, 0.16, 0.30, COL.orange);
-  yoke.material = matOrange;
+  const yoke = box(THREE, 0.36, 0.16, 0.30, COL.bras);
+  yoke.material = matBras;
   yoke.position.set(GEO.a1 * 0.55, GEO.turretH - 0.02, 0);
   turret.add(yoke);
 
@@ -1044,12 +1044,12 @@ function buildRobot(THREE) {
   const shoulderPin = new THREE.Mesh(new THREE.CylinderGeometry(0.105, 0.105, 0.34, 28), matGrey);
   shoulderPin.rotation.x = Math.PI / 2; shoulderPin.castShadow = true;
   upper.add(shoulderPin);
-  const arm = box(THREE, 0.155, GEO.L2, 0.20, COL.orange);
-  arm.material = matOrange;
+  const arm = box(THREE, 0.155, GEO.L2, 0.20, COL.bras);
+  arm.material = matBras;
   arm.position.y = GEO.L2 / 2;
   upper.add(arm);
-  const armRib = box(THREE, 0.05, GEO.L2 * 0.8, 0.245, COL.orangeDark);
-  armRib.material = new THREE.MeshStandardMaterial({ color: COL.orangeDark, roughness: 0.6 });
+  const armRib = box(THREE, 0.05, GEO.L2 * 0.8, 0.245, COL.brasFonce);
+  armRib.material = new THREE.MeshStandardMaterial({ color: COL.brasFonce, roughness: 0.6 });
   armRib.position.y = GEO.L2 / 2;
   upper.add(armRib);
 
@@ -1060,8 +1060,8 @@ function buildRobot(THREE) {
   const elbowPin = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.28, 28), matGrey);
   elbowPin.rotation.x = Math.PI / 2; elbowPin.castShadow = true;
   fore.add(elbowPin);
-  const fa = box(THREE, 0.135, GEO.L3 - 0.03, 0.165, COL.orange);
-  fa.material = matOrange;
+  const fa = box(THREE, 0.135, GEO.L3 - 0.03, 0.165, COL.bras);
+  fa.material = matBras;
   fa.position.y = (GEO.L3 - 0.03) / 2;
   fore.add(fa);
 
@@ -1273,7 +1273,7 @@ function setupEnveloppe(S) {
   scene.add(S.env);
 
   // contour de l'espace maximal : l'outil (et la pièce) s'ajoutent à l'enveloppe
-  S.envTool = buildEnvelope(THREE, LIMITS, 0xd96a00, 0.03, TOOL_EXT);
+  S.envTool = buildEnvelope(THREE, LIMITS, 0x2e5f82, 0.03, TOOL_EXT);
   scene.add(S.envTool);
 
   // trace du centre du poignet
@@ -1739,12 +1739,12 @@ function setupZoneOutil(S) {
 
   // volume de l'outil
   const toolBall = new THREE.Mesh(new THREE.SphereGeometry(TOOL_R, 24, 18),
-    new THREE.MeshStandardMaterial({ color: 0xd96a00, transparent: true, opacity: 0.3,
+    new THREE.MeshStandardMaterial({ color: 0x2e5f82, transparent: true, opacity: 0.3,
       depthWrite: false, roughness: 0.8 }));
   scene.add(toolBall);
   const toolWire = new THREE.LineSegments(
     new THREE.EdgesGeometry(new THREE.SphereGeometry(TOOL_R, 12, 8)),
-    new THREE.LineBasicMaterial({ color: 0xd96a00, transparent: true, opacity: 0.5 }));
+    new THREE.LineBasicMaterial({ color: 0x2e5f82, transparent: true, opacity: 0.5 }));
   scene.add(toolWire);
   S.toolBall = toolBall; S.toolWire = toolWire;
 
@@ -2042,7 +2042,7 @@ function setupModes(S) {
   pend.add(pLamp);
   // gâchette de validation, au dos du boîtier
   const pTrig = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.11, 0.025),
-    new THREE.MeshStandardMaterial({ color: 0xd96a00, roughness: 0.5 }));
+    new THREE.MeshStandardMaterial({ color: 0x2e5f82, roughness: 0.5 }));
   pTrig.position.set(-0.125, 0.02, -0.012);
   pend.add(pTrig);
   S.pend = pend; S.pLamp = pLamp; S.pTrig = pTrig;
@@ -2108,7 +2108,7 @@ function setupModes(S) {
     S.pend.visible = c.key > 0.4;
     S.pLamp.material.color.setHex(c.tenue ? 0x17a05e : 0xd2232a);
     S.pTrig.position.x = c.tenue ? -0.112 : -0.138;
-    S.pTrig.material.color.setHex(c.tenue ? 0xd96a00 : 0x8b949e);
+    S.pTrig.material.color.setHex(c.tenue ? 0x2e5f82 : 0x8b949e);
 
     // vitesse intégrée depuis le début de la boucle
     let ph = 0;
@@ -2309,7 +2309,7 @@ function setupModes(S) {
 
     const env = buildEnvelope(THREE, LIMITS, 0x2f7bd4, 0.085);
     V.scene.add(env);
-    const envTool = buildEnvelope(THREE, LIMITS, 0xd96a00, 0.02, TOOL_EXT);
+    const envTool = buildEnvelope(THREE, LIMITS, 0x2e5f82, 0.02, TOOL_EXT);
     envTool.userData.materials[1].opacity = 0.5;
     V.scene.add(envTool);
     const wristDot = new THREE.Mesh(new THREE.SphereGeometry(0.05, 18, 14),
@@ -2682,12 +2682,12 @@ function setupModes(S) {
     tcpDot.renderOrder = 12;
     V.scene.add(tcpDot);
     const ball = new THREE.Mesh(new THREE.SphereGeometry(TOOL_R, 24, 18),
-      new THREE.MeshStandardMaterial({ color: 0xd96a00, transparent: true, opacity: 0.3,
+      new THREE.MeshStandardMaterial({ color: 0x2e5f82, transparent: true, opacity: 0.3,
         depthWrite: false, roughness: 0.8 }));
     V.scene.add(ball);
     const wire = new THREE.LineSegments(
       new THREE.EdgesGeometry(new THREE.SphereGeometry(TOOL_R, 12, 8)),
-      new THREE.LineBasicMaterial({ color: 0xd96a00, transparent: true, opacity: 0.5 }));
+      new THREE.LineBasicMaterial({ color: 0x2e5f82, transparent: true, opacity: 0.5 }));
     V.scene.add(wire);
 
     // paroi atteinte : surface + contour rouge, pour voir tout de suite laquelle bloque
@@ -3069,7 +3069,7 @@ function setupModes(S) {
       new THREE.MeshBasicMaterial({ color: 0x17a05e }));
     pLamp.position.set(0, -0.09, 0.034); pend.add(pLamp);
     const pTrig = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.11, 0.025),
-      new THREE.MeshStandardMaterial({ color: 0xd96a00, roughness: 0.5 }));
+      new THREE.MeshStandardMaterial({ color: 0x2e5f82, roughness: 0.5 }));
     pTrig.position.set(-0.125, 0.02, -0.012); pend.add(pTrig);
 
     const P_EXT = new THREE.Vector3(1.95, 0, 3.35);
@@ -3159,7 +3159,7 @@ function setupModes(S) {
       // 0 relâchée (sortie), 1 intermédiaire, 2 enfoncée à fond
       const tx = [-0.142, -0.116, -0.098][st.gpos];
       pTrig.position.x += (tx - pTrig.position.x) * Math.min(1, dt * 14);
-      pTrig.material.color.setHex(okGac ? 0xd96a00 : 0x8b949e);
+      pTrig.material.color.setHex(okGac ? 0x2e5f82 : 0x8b949e);
       const p = P_EXT.clone().lerp(P_IN, A.pos);
       op.root.position.copy(p);
       op.root.rotation.y = Math.atan2(p.x, p.z);
@@ -3531,9 +3531,9 @@ function setupModes(S) {
     const cdg = new THREE.Group();
     tool.add(cdg);
     const cdgBall = new THREE.Mesh(new THREE.SphereGeometry(0.026, 18, 14),
-      new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false }));
+      new THREE.MeshBasicMaterial({ color: 0x2e5f82, depthTest: false, depthWrite: false }));
     cdgBall.renderOrder = 14; cdg.add(cdgBall);
-    const crossMat = new THREE.MeshBasicMaterial({ color: 0xd96a00, depthTest: false, depthWrite: false });
+    const crossMat = new THREE.MeshBasicMaterial({ color: 0x2e5f82, depthTest: false, depthWrite: false });
     [[0, 0, 0], [0, 0, Math.PI / 2], [Math.PI / 2, 0, 0]].forEach((r) => {
       const c = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.095, 8), crossMat);
       c.rotation.set(r[0], r[1], r[2]);

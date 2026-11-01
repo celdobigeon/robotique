@@ -29,7 +29,7 @@
     // Portée 2,2 m, 150 kg : socle massif, bras long, et le contrepoids
     // caractéristique derrière l'axe 2.
     irb6620: {
-      robot: 0xF07C00, carter: 0x3B4149, cadre: 4.15, cible: [0.62, 1.02, 0],
+      robot: 0x8793A1, carter: 0x3B4149, cadre: 4.15, cible: [0.62, 1.02, 0],
       socle: { type: 'boite', l: 0.78, p: 0.66, h: 0.30 },
       contrepoids: { r: 0.22, l: 0.42, d: -0.46 },
       art: [
@@ -45,7 +45,7 @@
     },
     // Portée 810 mm, 6 kg : compact, épaule décalée, avant-bras court.
     irb140: {
-      robot: 0xF07C00, carter: 0x3B4149, cadre: 2.25, cible: [0.26, 0.44, 0],
+      robot: 0x8793A1, carter: 0x3B4149, cadre: 2.25, cible: [0.26, 0.44, 0],
       socle: { type: 'boite', l: 0.34, p: 0.30, h: 0.13 },
       art: [
         { p: [0, 0.13, 0],     axe: [0, 1, 0], r: 0.115, l: 0.15 },
