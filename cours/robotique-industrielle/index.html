@@ -198,11 +198,21 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
   outline-offset:2px}
 .anim .scene{position:relative;background:var(--surface);
   border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.anim svg{display:block;width:100%;height:auto;max-height:25vh}
+.anim svg{display:block;width:100%;height:auto;max-height:31vh}
 .anim .lecture{position:absolute;left:14px;top:12px;font-size:13.5px;
   color:var(--muted);line-height:1.5}
 .anim .lecture b{color:var(--ink);font-variant-numeric:tabular-nums}
 .anim .lecture .alerte{color:var(--red);font-weight:600}
+/* les deux lectures d'une même pose, côte à côte */
+.anim-mod .valeurs{display:flex;gap:30px;flex-wrap:wrap}
+.anim-mod .col{display:grid;gap:1px}
+.anim-mod .col b{font-family:"IBM Plex Mono",ui-monospace,monospace;
+  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--muted);font-weight:500;margin-bottom:3px}
+.anim-mod .col span{font-variant-numeric:tabular-nums;color:var(--muted)}
+.anim-mod .col.pilote b{color:var(--accent)}
+.anim-mod .col.pilote span{color:var(--ink);font-weight:600}
+.anim-mod .mot{margin:7px 0 0}
 .anim .regl{display:grid;gap:10px 22px;
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 .anim .regl label{display:grid;grid-template-columns:auto 1fr auto;gap:10px;
@@ -395,7 +405,7 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 </div>
 <figure class="impr"><svg viewBox="0 0 1200 320" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Deux trajectoires en angle : à gauche le robot s'arrête au point et l'angle est net ; à droite il coupe le coin dans un rayon de zone et ne passe pas par la cible."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="300.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Arrêt au point</text><path d="M110 230 L300 230 L300 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="300" cy="230" r="7" fill="var(--accent)"/><text x="314.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">le robot s'arrête ici</text><text x="900.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Lissage</text><path d="M710 230 L838 230 Q900 230 900 168 L900 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="900" cy="230" r="7" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/><line x1="900" y1="230" x2="838" y2="230" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5"/><text x="869.0" y="252.0" font-size="12" fill="var(--accent)" text-anchor="middle">rayon de zone</text><text x="914.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">la cible n'est pas atteinte</text><text x="600.0" y="300.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Position exacte et cycle long, ou mouvement continu et coin coupé.</text></svg></figure><ul><li><b>fine</b> : le point piloté passe exactement sur p20, mais il s'y arrête — et repartir coûte d'autant plus cher que la vitesse est grande. <b>zN</b> : il coupe le coin dans un rayon de N millimètres, sans s'arrêter.</li><li><b>Le creux du profil, c'est le coin.</b> En « fine » il descend jusqu'à zéro ; avec une zone il s'arrête à la vitesse que l'accélération latérale autorise. Arrêt net là où la position compte, lissage large sur les transferts.</li></ul></div></section>
 <section class="dia" data-section="Modèles" aria-label="Diapositive 27 sur 30"><div class="dedans"><p class="eyebrow">Modèles</p><h2>Les modèles géométriques</h2>
-<div class="anim" data-anim>
+<div class="anim anim-mod" data-anim>
   <div class="modes" role="group" aria-label="Modèle étudié">
     <button type="button" data-mode="mgd" aria-pressed="true">
       Direct — <i>x</i> = <i>f</i>(θ)</button>
@@ -578,14 +588,36 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         + ' rx="3" fill="var(--dark)"/>';
 
       let q = null, texte = '';
+
+      // les deux lectures d'une même pose : à gauche les axes, à droite
+      // l'espace. Celle qu'on commande est mise en évidence.
+      function colonnes(ang, car, pilote) {
+        const art = ang
+          ? ['θ₁ = ' + Math.round(ang[0]) + '°',
+             'θ₂ = ' + Math.round(ang[1]) + '°',
+             'θ₃ = ' + Math.round(ang[2]) + '°']
+          : ['θ₁ = —', 'θ₂ = —', 'θ₃ = —'];
+        const esp = ['x = ' + Math.round(car[0]) + ' mm',
+                     'y = ' + Math.round(car[1]) + ' mm',
+                     'φ = ' + Math.round(car[2]) + '°'];
+        const col = (titre, lignes, actif) =>
+          '<div class="col' + (actif ? ' pilote' : '') + '"><b>' + titre
+          + '</b>' + lignes.map(l => '<span>' + l + '</span>').join('')
+          + '</div>';
+        return '<div class="valeurs">'
+          + col('Articulaire' + (pilote === 'art' ? ' — commandé' : ' — calculé'),
+                art, pilote === 'art')
+          + col('Cartésien' + (pilote === 'car' ? ' — commandé' : ' — calculé'),
+                esp, pilote === 'car')
+          + '</div>';
+      }
+
       if (etat.mode === 'mgd') {
         q = [etat.v.q1, etat.v.q2, etat.v.q3];
         const d = direct(q);
         g += bras(q, 1);
-        texte = 'Pose obtenue : <b>x = ' + Math.round(d.p[3][0])
-          + ' mm</b>, <b>y = ' + Math.round(d.p[3][1]) + ' mm</b>, '
-          + '<b>φ = ' + Math.round(d.phi) + '°</b>'
-          + '<br>Une configuration d’axes, une seule pose.';
+        texte = colonnes(q, [d.p[3][0], d.p[3][1], d.phi], 'art')
+          + '<p class="mot">Une configuration d’axes, une seule pose.</p>';
       } else {
         const x = etat.v.x, y = etat.v.y, phi = etat.v.phi;
         const s1 = inverse(x, y, phi, etat.coude);
@@ -599,14 +631,13 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
           + (OY - y * E - 34 * Math.sin(deg(phi)))
           + '" stroke="var(--accent)" stroke-width="2.4"'
           + ' marker-end="url(#animfl)"/></g>';
-        texte = s1
-          ? 'Angles trouvés : <b>θ₁ = ' + Math.round(s1[0]) + '°</b>, '
-            + '<b>θ₂ = ' + Math.round(s1[1]) + '°</b>, '
-            + '<b>θ₃ = ' + Math.round(s1[2]) + '°</b>'
-            + '<br>Deux configurations donnent cette pose — l’autre est en clair.'
-          : '<span class="alerte">Pose hors d’atteinte</span>'
-            + '<br>Aucun jeu d’angles ne la réalise : le modèle inverse n’a '
-            + 'pas toujours de solution.';
+        texte = colonnes(s1, [x, y, phi], 'car')
+          + '<p class="mot">'
+          + (s1
+             ? 'Deux configurations donnent cette pose — l’autre est en clair.'
+             : '<span class="alerte">Pose hors d’atteinte</span> — aucun jeu '
+               + 'd’angles ne la réalise.')
+          + '</p>';
       }
 
       svg.innerHTML = '<defs><marker id="animfl" viewBox="0 0 10 10" refX="9"'
