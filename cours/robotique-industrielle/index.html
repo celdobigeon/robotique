@@ -337,12 +337,6 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
     <button type="button" data-mode="c" aria-pressed="false">MoveC</button>
     <button type="button" data-mode="a" aria-pressed="false">MoveAbsJ</button>
   </div>
-  <div class="outils" role="group" aria-label="Outil monté sur la bride">
-    <span>Outil</span>
-    <button type="button" data-outil="0" aria-pressed="false">bride nue</button>
-    <button type="button" data-outil="1" aria-pressed="true">torche droite</button>
-    <button type="button" data-outil="2" aria-pressed="false">torche coudée</button>
-  </div>
   <div class="scene">
     <svg viewBox="150 70 380 252" role="img"
          aria-label="Un bras plan à trois axes joue les quatre instructions de
@@ -355,7 +349,7 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
            value="100" aria-label="Avancement du mouvement"><output></output></label>
   </div>
 </div>
-<figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point par deux chemins. Et changez d'outil : <b>MoveJ</b> vise une <i>pose</i>, le point piloté arrive sur p20 quel que soit l'outil — ce sont les angles qui s'adaptent ; <b>MoveAbsJ</b> vise des <i>angles</i>, le bras garde la même forme — et c'est la pointe de l'outil qui atterrit ailleurs.</li></ul></div></section>
+<figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point par deux chemins.</li><li><b>C'est l'instruction qui désigne le point piloté.</b> MoveJ, MoveL et MoveC visent une <i>pose</i> : le point piloté est la pointe de l'outil. MoveAbsJ vise des <i>angles</i> : on commande les axes, le point piloté redevient la bride, et la pointe arrive où elle peut.</li></ul></div></section>
 <section class="dia" data-section="Programmer" aria-label="Diapositive 26 sur 30"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Précision et lissage</h2><p class="chapo">Réglez la vitesse et la zone. À gauche le trajet, à droite la vitesse du point piloté au cours du temps.</p>
 <div class="anim anim-liss" data-liss>
   <div class="vues">
@@ -630,10 +624,10 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
   const QR = [95, -125, 30];          // le point de repli, en angles d'axes
   const PAS = 140;
 
-  // l'outil monté sur la bride : une longueur, et un coude
-  const OUTILS = [{nom: 'bride nue', l: 0, a: 0},
-                  {nom: 'torche droite', l: 140, a: 0},
-                  {nom: 'torche coudée', l: 170, a: -40}];
+  // l'outil monté sur la bride : une torche droite, la même pour tout le
+  // monde. Ce qui change le point piloté, c'est l'instruction, pas l'outil.
+  const OUTIL = {nom: 'torche droite', l: 140, a: 0};
+  const NU = {nom: 'bride nue', l: 0, a: 0};
 
   const TEXTE = {
     j: ['MoveJ p20, v1000, z10, tool1;',
@@ -646,9 +640,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     c: ['MoveC p15, p20, v200, z10, tool1;',
         'Un arc, défini par un point de passage (p15) et un point d’arrivée '
         + '(p20). Trois points, un seul cercle.'],
-    a: ['MoveAbsJ jpos10, v1000, fine, tool1;',
-        'La cible n’est pas une pose mais une configuration d’axes : le point '
-        + 'piloté est alors la bride (tool0), pas la pointe de l’outil.']
+    a: ['MoveAbsJ jpos10, v1000, fine, tool1;', '']
   };
 
   document.querySelectorAll('[data-mouv]').forEach(function (bloc) {
@@ -656,7 +648,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     const lect = bloc.querySelector('.lecture');
     const curseur = bloc.querySelector('input[type=range]');
     const sortie = bloc.querySelector('output');
-    const etat = {mode: 'j', outil: 1, t: 1, anim: 0};
+    const etat = {mode: 'j', t: 1, anim: 0};
 
     /* le bras, puis l'outil au bout : p[3] est la bride, tcp la pointe */
     function direct(q, o) {
@@ -692,8 +684,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     }
 
     // p10 et p20 : des poses, fixes dans l'espace, posées à la bride nue
-    const nu = OUTILS[0];
-    const dA = direct(QA, nu), dB = direct(QB, nu);
+    const dA = direct(QA, NU), dB = direct(QB, NU);
     const P10 = {x: dA.tcp[0], y: dA.tcp[1], phi: dA.phiOutil};
     const P20 = {x: dB.tcp[0], y: dB.tcp[1], phi: dB.phiOutil};
     const coude = QA[1] < 0 ? 1 : 0;
@@ -744,7 +735,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       }
       return out;
     }
-    let CH = chemins(OUTILS[etat.outil]);
+    const CH = chemins(OUTIL);
 
     const SX = p => OX + p[0] * E, SY = p => OY - p[1] * E;
 
@@ -800,7 +791,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     }
 
     function dessiner() {
-      const o = OUTILS[etat.outil];
+      const o = OUTIL;
       const ch = CH[etat.mode];
       const k = Math.round(etat.t * PAS);
       const q = ch[k] || ch[ch.length - 1];
@@ -828,15 +819,6 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       if (etat.mode === 'c') { g += pastille(V, 'p15', 'var(--muted)'); }
       if (etat.mode !== 'a') {
         g += pastille([P20.x, P20.y], 'p20', 'var(--muted)');
-      } else {
-        // en absolu, chaque outil pose sa pointe ailleurs : on montre les autres
-        OUTILS.forEach(function (autre, i) {
-          if (i === etat.outil) return;
-          const t = direct(QR, autre).tcp;
-          g += '<circle cx="' + SX(t) + '" cy="' + SY(t) + '" r="5" '
-            + 'fill="none" stroke="var(--muted)" stroke-width="1.8" '
-            + 'stroke-dasharray="3 3"/>';
-        });
       }
 
       if (d) {
@@ -845,16 +827,18 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
           g += '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)   // montre
             + '" r="5.5" fill="none" stroke="var(--blue)" stroke-width="1.8"'
             + ' stroke-dasharray="3 3"/>'
-            + '<text x="' + (SX(d.tcp) + 10) + '" y="' + (SY(d.tcp) + 17)
-            + '" font-size="11.5" fill="var(--blue)">TCP</text>';
+            + '<text x="' + (SX(d.tcp) + 12) + '" y="' + (SY(d.tcp) + 21)
+            + '" font-size="11.5" fill="var(--blue)">pointe de l’outil</text>';
         }
         g += '<circle cx="' + SX(pil) + '" cy="' + SY(pil)
           + '" r="11" fill="none" stroke="var(--accent)" stroke-width="1.6"'
           + ' opacity=".55"/>'
           + '<circle cx="' + SX(pil) + '" cy="' + SY(pil)
           + '" r="6" fill="var(--accent)"/>'
-          + '<text x="' + (SX(pil) + 15) + '" y="' + (SY(pil) + 16)
-          + '" font-size="12" fill="var(--accent)" font-weight="600">'
+          + '<text x="' + (SX(pil) + (surBride ? -14 : 15)) + '" y="'
+          + (SY(pil) + (surBride ? -13 : 16)) + '" font-size="12" '
+          + 'fill="var(--accent)" font-weight="600"'
+          + (surBride ? ' text-anchor="end"' : '') + '>'
           + (surBride ? 'point piloté : la bride' : 'point piloté') + '</text>';
       }
 
@@ -865,17 +849,16 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       const ang = arr ? '[' + arr.map(v => Math.round(v)).join(', ') + ']°' : '—';
       let plus;
       if (etat.mode === 'a') {
-        const tc = direct(QR, o).tcp;
-        plus = '<b>θ = [' + QR.join(', ') + ']°</b> pour tous les outils : '
-          + 'la bride arrive toujours au même point. La pointe, elle, atterrit '
-          + 'en <b>(' + Math.round(tc[0]) + ', ' + Math.round(tc[1])
-          + ') mm</b> — en pointillés, les deux autres outils.';
+        plus = 'Cible : la <b>configuration</b> jpos10, <b>θ = ['
+          + QR.join(', ') + ']°</b>. On commande les axes : le point piloté '
+          + 'est la <b>bride</b>, et la pointe de l’outil arrive où elle peut.';
       } else {
-        plus = 'Cible : la <b>pose</b> p20. Le point piloté y arrive quel que '
-          + 'soit l’outil — ce sont les angles qui s’adaptent : <b>θ = '
-          + ang + '</b>.';
+        plus = 'Cible : la <b>pose</b> p20. On commande une position dans '
+          + 'l’espace : le point piloté est la <b>pointe de l’outil</b>, et '
+          + 'les angles s’en déduisent — <b>θ = ' + ang + '</b>.';
       }
-      lect.innerHTML = '<code>' + t[0] + '</code><br>' + t[1] + '<br>' + plus;
+      lect.innerHTML = '<code>' + t[0] + '</code>'
+        + (t[1] ? t[1] + '<br>' : '') + plus;
       curseur.value = Math.round(etat.t * 100);
       sortie.textContent = Math.round(etat.t * 100) + ' %';
     }
@@ -894,16 +877,6 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       b.addEventListener('click', function () {
         etat.mode = b.dataset.mode;
         bloc.querySelectorAll('.modes button').forEach(function (o) {
-          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
-        });
-        jouer();
-      });
-    });
-    bloc.querySelectorAll('.outils button').forEach(function (b) {
-      b.addEventListener('click', function () {
-        etat.outil = +b.dataset.outil;
-        CH = chemins(OUTILS[etat.outil]);
-        bloc.querySelectorAll('.outils button').forEach(function (o) {
           o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
         });
         jouer();
