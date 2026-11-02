@@ -158,8 +158,11 @@
     etiq.className = 'etiq';
     var aide = document.createElement('p');
     aide.className = 'aide3d';
-    aide.innerHTML = 'Glissez pour tourner autour du bras. ' +
-                     '<button type="button" class="raz">Vue d’origine</button>';
+    aide.innerHTML = (fig.getAttribute('data-scene') === 'reperes'
+      ? 'Attrapez un segment du bras pour le faire tourner ; glissez à côté '
+        + 'pour tourner autour de la scène. '
+      : 'Glissez pour tourner autour du bras. ')
+      + '<button type="button" class="raz">Vue d’origine</button>';
     boite.appendChild(canvas);
     boite.appendChild(etiq);
     vue.appendChild(boite);
@@ -374,31 +377,61 @@
       return d;
     });
 
-    // ---- les six axes, pour bouger le bras -------------------------
+    // ---- le bras se mène à la main ---------------------------------
     // Débattements indicatifs : le but est de voir les repères suivre, pas
     // de reproduire les butées de la machine.
-    var axes6 = [];
-    if (G) {
-      var LIM = [[-165, 165], [-90, 110], [-60, 60], [-180, 180],
-                 [-115, 115], [-180, 180]];
-      var cmd = document.createElement('div');
-      cmd.className = 'axes3d';
-      B.art.forEach(function (a, k) {
-        var axe = new THREE.Vector3(a.axe[0], a.axe[1], a.axe[2]).normalize();
-        var l = document.createElement('label');
-        l.innerHTML = '<b>axe ' + (k + 1) + '</b><input type="range" min="'
-          + LIM[k][0] + '" max="' + LIM[k][1] + '" step="1" value="0"'
-          + ' aria-label="Axe ' + (k + 1) + '"><output>0°</output>';
-        var e = l.querySelector('input'), o = l.querySelector('output');
-        e.addEventListener('input', function () {
-          G[k].quaternion.setFromAxisAngle(axe, +e.value * Math.PI / 180);
-          o.textContent = e.value + '°';
-          dessiner();
-        });
-        axes6.push({ e: e, o: o, g: G[k], a: axe });
-        cmd.appendChild(l);
-      });
-      vue.appendChild(cmd);
+    var LIM = [[-165, 165], [-90, 110], [-60, 60], [-180, 180],
+               [-115, 115], [-180, 180]];
+    var AXE = B.art.map(function (a) {
+      return new THREE.Vector3(a.axe[0], a.axe[1], a.axe[2]).normalize();
+    });
+    var ANG = [0, 0, 0, 0, 0, 0];
+    var rayon = new THREE.Raycaster();
+    var prise = null;
+
+    function ecran(v) {                 // du monde vers les pixels du canevas
+      var p = v.clone().project(camera);
+      return new THREE.Vector2((p.x + 1) / 2 * canvas.clientWidth,
+                               (1 - p.y) / 2 * canvas.clientHeight);
+    }
+
+    /* Quel axe est sous le pointeur ? Les flèches des repères ne comptent
+       pas : elles sont en MeshBasicMaterial, le bras en MeshStandard. */
+    function viser(e) {
+      if (!G) return null;
+      var r = canvas.getBoundingClientRect();
+      rayon.setFromCamera(new THREE.Vector2(
+        (e.clientX - r.left) / r.width * 2 - 1,
+        -((e.clientY - r.top) / r.height) * 2 + 1), camera);
+      var touches = rayon.intersectObject(G[0], true);
+      for (var i = 0; i < touches.length; i++) {
+        var o = touches[i].object;
+        if (o.material && o.material.isMeshBasicMaterial) continue;
+        while (o && G.indexOf(o) < 0) o = o.parent;
+        if (o) return { k: G.indexOf(o), point: touches[i].point.clone() };
+      }
+      return null;
+    }
+
+    /* Le point saisi suit la souris : on mesure sa vitesse à l'écran pour
+       un radian, et on lit le déplacement du pointeur dessus. */
+    function mener(dx, dy) {
+      var k = prise.k, g = G[k];
+      scene.updateMatrixWorld(true);
+      var p = g.localToWorld(prise.local.clone());
+      var c = g.getWorldPosition(new THREE.Vector3());
+      var ax = AXE[k].clone()
+        .applyQuaternion(g.getWorldQuaternion(new THREE.Quaternion()))
+        .normalize();
+      var t = new THREE.Vector3().crossVectors(ax, p.clone().sub(c));
+      if (t.lengthSq() < 1e-9) return;
+      var ts = ecran(p.clone().add(t)).sub(ecran(p));
+      var l2 = ts.lengthSq();
+      if (l2 < 9) return;               // l'axe pointe vers nous : illisible
+      var d = (dx * ts.x + dy * ts.y) / l2 * 180 / Math.PI;
+      ANG[k] = clamp(ANG[k] + d, LIM[k][0], LIM[k][1]);
+      g.quaternion.setFromAxisAngle(AXE[k], ANG[k] * Math.PI / 180);
+      dessiner();
     }
 
     // ---- rotation du point de vue ----------------------------------
@@ -487,21 +520,34 @@
     var glisse = null;
     canvas.addEventListener('pointerdown', function (e) {
       if (e.button !== 0) return;
+      var v = viser(e);
+      if (v) {
+        scene.updateMatrixWorld(true);
+        prise = { k: v.k, local: G[v.k].worldToLocal(v.point) };
+        canvas.style.cursor = 'grabbing';
+      }
       glisse = { x: e.clientX, y: e.clientY };
       if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId);
     });
     canvas.addEventListener('pointermove', function (e) {
-      if (!glisse) return;
-      tourner(e.clientX - glisse.x, e.clientY - glisse.y);
+      if (!glisse) {
+        if (G) canvas.style.cursor = viser(e) ? 'grab' : '';
+        return;
+      }
+      var dx = e.clientX - glisse.x, dy = e.clientY - glisse.y;
+      if (prise) mener(dx, dy); else tourner(dx, dy);
       glisse.x = e.clientX; glisse.y = e.clientY;
     });
     ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (t) {
-      canvas.addEventListener(t, function () { glisse = null; });
+      canvas.addEventListener(t, function () {
+        glisse = null; prise = null; canvas.style.cursor = '';
+      });
     });
     canvas.tabIndex = 0;
     canvas.setAttribute('aria-label', 'Vue 3D du bras. Flèches pour tourner autour, '
-      + 'Échap pour revenir à la vue d’origine. Les articulations et les repères '
-      + 'sont décrits sous la figure.');
+      + 'Échap pour revenir à la vue d’origine. ' + (G
+        ? 'À la souris, on attrape un segment pour faire tourner son axe. ' : '')
+      + 'Les articulations et les repères sont décrits sous la figure.');
     canvas.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft') tourner(26, 0);
       else if (e.key === 'ArrowRight') tourner(-26, 0);
@@ -513,10 +559,11 @@
     });
     function raz() {
       orbite.az = DEPART.az; orbite.el = DEPART.el;
-      axes6.forEach(function (x) {
-        x.e.value = 0; x.o.textContent = '0°';
-        x.g.quaternion.setFromAxisAngle(x.a, 0);
-      });
+      if (G) {
+        G.forEach(function (g, k) {
+          ANG[k] = 0; g.quaternion.setFromAxisAngle(AXE[k], 0);
+        });
+      }
       dessiner();
     }
     aide.querySelector('.raz').addEventListener('click', raz);
