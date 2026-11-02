@@ -219,7 +219,16 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 <style>
 /* ---------- les quatre mouvements ---------- */
 .anim-mouv .regl{grid-template-columns:auto minmax(260px,1fr)}
-.anim-mouv svg{max-height:40vh}
+.anim-mouv svg{max-height:32vh}
+.anim-mouv .outils{display:flex;gap:8px;align-items:center;flex-wrap:wrap;
+  font-size:13.5px;color:var(--muted)}
+.anim-mouv .outils button{font:inherit;font-size:13px;background:var(--surface);
+  color:var(--muted);border:1px solid var(--line);border-radius:9px;
+  padding:5px 11px;cursor:pointer;line-height:1.3}
+.anim-mouv .outils button[aria-pressed="true"]{border-color:var(--blue);
+  color:var(--blue);font-weight:600}
+.anim-mouv .outils button:focus-visible{outline:2px solid var(--accent);
+  outline-offset:2px}
 .anim-mouv .jouer{font:inherit;font-size:13.5px;background:var(--surface);
   color:var(--muted);border:1px solid var(--line);border-radius:9px;
   padding:6px 14px;cursor:pointer;justify-self:start}
@@ -267,6 +276,12 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
     <button type="button" data-mode="c" aria-pressed="false">MoveC</button>
     <button type="button" data-mode="a" aria-pressed="false">MoveAbsJ</button>
   </div>
+  <div class="outils" role="group" aria-label="Outil monté sur la bride">
+    <span>Outil</span>
+    <button type="button" data-outil="0" aria-pressed="false">bride nue</button>
+    <button type="button" data-outil="1" aria-pressed="true">torche droite</button>
+    <button type="button" data-outil="2" aria-pressed="false">torche coudée</button>
+  </div>
   <div class="scene">
     <svg viewBox="150 70 380 252" role="img"
          aria-label="Un bras plan à trois axes joue les quatre instructions de
@@ -279,7 +294,7 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
            value="100" aria-label="Avancement du mouvement"><output></output></label>
   </div>
 </div>
-<figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point, et c'est tout ce qui les sépare qui compte en production.</li></ul></div></section>
+<figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point par deux chemins. Et changez d'outil : <b>MoveJ</b> vise une <i>pose</i>, le point piloté arrive sur p20 quel que soit l'outil — ce sont les angles qui s'adaptent ; <b>MoveAbsJ</b> vise des <i>angles</i>, le bras garde la même forme et c'est le point piloté qui atterrit ailleurs.</li></ul></div></section>
 <section class="dia" data-section="Programmer" aria-label="Diapositive 24 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Précision et lissage</h2><figure><svg viewBox="0 0 1200 320" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Deux trajectoires en angle : à gauche le robot s'arrête au point et l'angle est net ; à droite il coupe le coin dans un rayon de zone et ne passe pas par la cible."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="300.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Arrêt au point</text><path d="M110 230 L300 230 L300 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="300" cy="230" r="7" fill="var(--accent)"/><text x="314.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">le robot s'arrête ici</text><text x="900.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Lissage</text><path d="M710 230 L838 230 Q900 230 900 168 L900 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="900" cy="230" r="7" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/><line x1="900" y1="230" x2="838" y2="230" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5"/><text x="869.0" y="252.0" font-size="12" fill="var(--accent)" text-anchor="middle">rayon de zone</text><text x="914.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">la cible n'est pas atteinte</text><text x="600.0" y="300.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Position exacte et cycle long, ou mouvement continu et coin coupé.</text></svg></figure><ul><li><b>Arrêt au point</b> — le robot atteint la cible et s'immobilise. Position exacte, mouvement saccadé, cycle long.</li><li><b>Lissage</b> — il coupe le coin dans un rayon donné sans s'arrêter. Mouvement continu, cycle court, position approchée.</li><li>Le réglage n'est jamais global : arrêt net là où la position compte — prise, dépose, contour — et lissage large sur les trajets de transfert.</li></ul></div></section>
 <section class="dia" data-section="Modèles" aria-label="Diapositive 25 sur 28"><div class="dedans"><p class="eyebrow">Modèles</p><h2>Les modèles géométriques</h2>
 <div class="anim" data-anim>
@@ -522,15 +537,20 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
   });
 })();
 
-/* ---- les quatre instructions de mouvement ---- */
+/* ---- les quatre instructions de mouvement, outil compris ---- */
 (function () {
-  const L = [400, 350, 150];
+  const L = [400, 350, 150];          // bras, avant-bras, poignet, en mm
   const E = 0.21, OX = 250, OY = 262;
   const deg = x => x * Math.PI / 180, rad = x => x * 180 / Math.PI;
-  const QA = [135, -95, -25];         // le point de départ, p10
-  const QB = [34, -42, -12];          // le point d'arrivée, p20
+  const QA = [135, -95, -25];         // la configuration qui définit p10
+  const QB = [34, -42, -12];          // celle qui définit p20
   const QR = [95, -125, 30];          // le point de repli, en angles d'axes
-  const PAS = 140;                    // points calculés le long du chemin
+  const PAS = 140;
+
+  // l'outil monté sur la bride : une longueur, et un coude
+  const OUTILS = [{nom: 'bride nue', l: 0, a: 0},
+                  {nom: 'torche droite', l: 140, a: 0},
+                  {nom: 'torche coudée', l: 170, a: -40}];
 
   const TEXTE = {
     j: ['MoveJ p20, v1000, z10, tool1;',
@@ -544,8 +564,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         'Un arc, défini par un point de passage (p15) et un point d’arrivée '
         + '(p20). Trois points, un seul cercle.'],
     a: ['MoveAbsJ jpos10, v1000, fine, tool1;',
-        'La cible n’est pas une pose mais une configuration d’axes : aucune '
-        + 'ambiguïté possible. C’est ce qu’on utilise pour un point de repli.']
+        'La cible n’est pas une pose mais une configuration d’axes.']
   };
 
   document.querySelectorAll('[data-mouv]').forEach(function (bloc) {
@@ -553,9 +572,10 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     const lect = bloc.querySelector('.lecture');
     const curseur = bloc.querySelector('input[type=range]');
     const sortie = bloc.querySelector('output');
-    const etat = {mode: 'j', t: 1, anim: 0};
+    const etat = {mode: 'j', outil: 1, t: 1, anim: 0};
 
-    function direct(q) {
+    /* le bras, puis l'outil au bout : p[3] est la bride, tcp la pointe */
+    function direct(q, o) {
       const p = [[0, 0]];
       let a = 0;
       for (let k = 0; k < 3; k++) {
@@ -563,7 +583,10 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         p.push([p[k][0] + L[k] * Math.cos(deg(a)),
                 p[k][1] + L[k] * Math.sin(deg(a))]);
       }
-      return {p: p, tcp: p[3], phi: a};
+      const ao = a + o.a;
+      return {p: p, phi: a, phiOutil: ao,
+              tcp: [p[3][0] + o.l * Math.cos(deg(ao)),
+                    p[3][1] + o.l * Math.sin(deg(ao))]};
     }
 
     function inverse(x, y, phi, coude) {
@@ -577,16 +600,26 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       return [rad(q1), rad(q2), phi - rad(q1) - rad(q2)];
     }
 
-    const A = direct(QA), B = direct(QB);
-    const coudeA = QA[1] < 0 ? 1 : 0;
+    /* une pose est donnée pour le point piloté : à chaque outil ses angles */
+    function versAngles(pose, o, coude) {
+      const bx = pose.x - o.l * Math.cos(deg(pose.phi));
+      const by = pose.y - o.l * Math.sin(deg(pose.phi));
+      return inverse(bx, by, pose.phi - o.a, coude);
+    }
 
-    // le point de passage de MoveC : à côté de la corde, du côté opposé au bras
-    const mil = [(A.tcp[0] + B.tcp[0]) / 2, (A.tcp[1] + B.tcp[1]) / 2];
-    const corde = Math.hypot(B.tcp[0] - A.tcp[0], B.tcp[1] - A.tcp[1]);
-    const nx = (B.tcp[1] - A.tcp[1]) / corde, ny = -(B.tcp[0] - A.tcp[0]) / corde;
-    const V = [mil[0] - nx * corde * 0.3, mil[1] - ny * corde * 0.3];
+    // p10 et p20 : des poses, fixes dans l'espace, posées à la bride nue
+    const nu = OUTILS[0];
+    const dA = direct(QA, nu), dB = direct(QB, nu);
+    const P10 = {x: dA.tcp[0], y: dA.tcp[1], phi: dA.phiOutil};
+    const P20 = {x: dB.tcp[0], y: dB.tcp[1], phi: dB.phiOutil};
+    const coude = QA[1] < 0 ? 1 : 0;
 
-    // le cercle qui passe par les trois points : centre, rayon, angles
+    // le point de passage de MoveC, à côté de la corde
+    const corde = Math.hypot(P20.x - P10.x, P20.y - P10.y);
+    const nx = (P20.y - P10.y) / corde, ny = -(P20.x - P10.x) / corde;
+    const V = [(P10.x + P20.x) / 2 - nx * corde * 0.3,
+               (P10.y + P20.y) / 2 - ny * corde * 0.3];
+
     function cercle(a, v, b) {
       const d = 2 * (a[0] * (v[1] - b[1]) + v[0] * (b[1] - a[1])
                      + b[0] * (a[1] - v[1]));
@@ -596,56 +629,46 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       const uy = ((a[0] * a[0] + a[1] * a[1]) * (b[0] - v[0])
                 + (v[0] * v[0] + v[1] * v[1]) * (a[0] - b[0])
                 + (b[0] * b[0] + b[1] * b[1]) * (v[0] - a[0])) / d;
-      const c = [ux, uy], r = Math.hypot(a[0] - ux, a[1] - uy);
       const an = p => Math.atan2(p[1] - uy, p[0] - ux);
-      let d1 = an(v) - an(a), d2 = an(b) - an(a);
       const norm = x => ((x + Math.PI) % (2 * Math.PI) + 2 * Math.PI)
                         % (2 * Math.PI) - Math.PI;
-      d1 = norm(d1); d2 = norm(d2);
+      let d1 = norm(an(v) - an(a)), d2 = norm(an(b) - an(a));
       if (d1 * d2 < 0 || Math.abs(d1) > Math.abs(d2)) {
-        d2 += (d2 > 0 ? -2 * Math.PI : 2 * Math.PI);   // on passe par v
+        d2 += (d2 > 0 ? -2 * Math.PI : 2 * Math.PI);
       }
-      return {c: c, r: r, a0: an(a), da: d2};
+      return {c: [ux, uy], r: Math.hypot(a[0] - ux, a[1] - uy),
+              a0: an(a), da: d2};
     }
-    const ARC = cercle(A.tcp, V, B.tcp);
+    const ARC = cercle([P10.x, P10.y], V, [P20.x, P20.y]);
 
-    // les quatre chemins, calculés une fois pour toutes
-    function chemin(mode) {
-      const out = [];
+    /* les quatre chemins, recalculés à chaque changement d'outil */
+    function chemins(o) {
+      const qA = versAngles(P10, o, coude), qB = versAngles(P20, o, coude);
+      const out = {j: [], l: [], c: [], a: [], qA: qA, qB: qB};
       for (let k = 0; k <= PAS; k++) {
         const t = k / PAS;
-        let q = null;
-        if (mode === 'j') {
-          q = QA.map((v, i) => v + (QB[i] - v) * t);
-        } else if (mode === 'a') {
-          q = QA.map((v, i) => v + (QR[i] - v) * t);
-        } else {
-          let x, y;
-          if (mode === 'l') {
-            x = A.tcp[0] + (B.tcp[0] - A.tcp[0]) * t;
-            y = A.tcp[1] + (B.tcp[1] - A.tcp[1]) * t;
-          } else {
-            const a = ARC.a0 + ARC.da * t;
-            x = ARC.c[0] + ARC.r * Math.cos(a);
-            y = ARC.c[1] + ARC.r * Math.sin(a);
-          }
-          const phi = A.phi + (B.phi - A.phi) * t;
-          q = inverse(x, y, phi, coudeA);
-        }
-        out.push(q);
+        out.j.push(qA && qB ? qA.map((v, i) => v + (qB[i] - v) * t) : null);
+        out.a.push(qA ? qA.map((v, i) => v + (QR[i] - v) * t) : null);
+        const phi = P10.phi + (P20.phi - P10.phi) * t;
+        out.l.push(versAngles(
+          {x: P10.x + (P20.x - P10.x) * t, y: P10.y + (P20.y - P10.y) * t,
+           phi: phi}, o, coude));
+        const a = ARC.a0 + ARC.da * t;
+        out.c.push(versAngles(
+          {x: ARC.c[0] + ARC.r * Math.cos(a),
+           y: ARC.c[1] + ARC.r * Math.sin(a), phi: phi}, o, coude));
       }
       return out;
     }
-    const CHEMINS = {j: chemin('j'), l: chemin('l'), c: chemin('c'),
-                     a: chemin('a')};
+    let CH = chemins(OUTILS[etat.outil]);
 
     const SX = p => OX + p[0] * E, SY = p => OY - p[1] * E;
 
-    function trace(ch, jusqu, couleur, epais, pointille) {
+    function trace(ch, jusqu, o, couleur, epais, pointille) {
       const pts = [];
       for (let k = 0; k <= jusqu; k++) {
         if (!ch[k]) continue;
-        const d = direct(ch[k]);
+        const d = direct(ch[k], o);
         pts.push(SX(d.tcp).toFixed(1) + ',' + SY(d.tcp).toFixed(1));
       }
       if (pts.length < 2) return '';
@@ -654,15 +677,22 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         + (pointille ? ' stroke-dasharray="6 6"' : '') + '/>';
     }
 
-    function bras(q, opacite, couleur) {
-      const d = direct(q);
+    function bras(q, o, opacite) {
+      if (!q) return '';
+      const d = direct(q, o);
       let g = '';
       const ep = [15, 11, 7];
       for (let k = 0; k < 3; k++) {
         g += '<line x1="' + SX(d.p[k]) + '" y1="' + SY(d.p[k]) + '" x2="'
-          + SX(d.p[k + 1]) + '" y2="' + SY(d.p[k + 1]) + '" stroke="'
-          + (couleur || 'var(--robot)') + '" stroke-width="' + ep[k]
+          + SX(d.p[k + 1]) + '" y2="' + SY(d.p[k + 1])
+          + '" stroke="var(--robot)" stroke-width="' + ep[k]
           + '" stroke-linecap="round" opacity="' + opacite + '"/>';
+      }
+      if (o.l) {                       // l'outil, de la bride à sa pointe
+        g += '<line x1="' + SX(d.p[3]) + '" y1="' + SY(d.p[3]) + '" x2="'
+          + SX(d.tcp) + '" y2="' + SY(d.tcp) + '" stroke="var(--blue)"'
+          + ' stroke-width="5" stroke-linecap="round" opacity="' + opacite
+          + '"/>';
       }
       if (opacite > 0.6) {
         for (let k = 0; k < 3; k++) {
@@ -670,58 +700,86 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
             + (9 - k * 2) + '" fill="var(--surface)" stroke="var(--dark)"'
             + ' stroke-width="2.2"/>';
         }
+        g += '<circle cx="' + SX(d.p[3]) + '" cy="' + SY(d.p[3])
+          + '" r="4.5" fill="var(--blue)"/>';     // la bride
       }
       return g;
     }
 
-    function pastille(p, nom, couleur) {
-      return '<circle cx="' + SX(p) + '" cy="' + SY(p) + '" r="5.5" fill="none"'
-        + ' stroke="' + couleur + '" stroke-width="2.2"/>'
-        + '<text x="' + (SX(p) + 10) + '" y="' + (SY(p) - 8)
+    function pastille(p, nom, couleur, creux) {
+      return '<circle cx="' + SX(p) + '" cy="' + SY(p) + '" r="5.5" fill="'
+        + (creux ? 'none' : 'none') + '" stroke="' + couleur
+        + '" stroke-width="2.2"' + (creux ? ' stroke-dasharray="3 3"' : '')
+        + '/><text x="' + (SX(p) + 10) + '" y="' + (SY(p) - 8)
         + '" font-size="12" fill="' + couleur + '">' + nom + '</text>';
     }
 
     function dessiner() {
-      const ch = CHEMINS[etat.mode];
+      const o = OUTILS[etat.outil];
+      const ch = CH[etat.mode];
       const k = Math.round(etat.t * PAS);
       const q = ch[k] || ch[ch.length - 1];
-      const d = direct(q);
+      const d = q ? direct(q, o) : null;
 
       let g = '<line x1="44" y1="' + OY + '" x2="516" y2="' + OY
         + '" stroke="var(--line)" stroke-width="1.6"/>'
         + '<rect x="' + (OX - 36) + '" y="' + OY + '" width="72" height="14"'
         + ' rx="3" fill="var(--dark)"/>';
 
-      // le départ et l'arrivée, en clair
-      g += bras(QA, 0.18);
-      g += bras(etat.mode === 'a' ? QR : QB, 0.18);
+      g += bras(CH.qA, o, 0.18);
+      g += bras(etat.mode === 'a' ? QR : CH.qB, o, 0.18);
 
-      // le chemin de l'autre instruction, pour la comparaison
       if (etat.mode === 'j' || etat.mode === 'l') {
-        g += trace(CHEMINS[etat.mode === 'j' ? 'l' : 'j'], PAS,
+        g += trace(CH[etat.mode === 'j' ? 'l' : 'j'], PAS, o,
                    'var(--muted)', 1.6, true);
       }
-      g += trace(ch, k, 'var(--accent)', 2.6, false);
-      g += bras(q, 1);
+      g += trace(ch, k, o, 'var(--accent)', 2.6, false);
+      g += bras(q, o, 1);
 
-      // les points nommés, et le point piloté bien visible
-      g += pastille(A.tcp, 'p10', 'var(--muted)');
+      g += pastille([P10.x, P10.y], 'p10', 'var(--muted)');
       if (etat.mode === 'c') { g += pastille(V, 'p15', 'var(--muted)'); }
-      if (etat.mode !== 'a') { g += pastille(B.tcp, 'p20', 'var(--muted)'); }
-      g += '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
-        + '" r="11" fill="none" stroke="var(--accent)" stroke-width="1.6"'
-        + ' opacity=".55"/>'
-        + '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
-        + '" r="6" fill="var(--accent)"/>'
-        + '<text x="' + (SX(d.tcp) + 15) + '" y="' + (SY(d.tcp) + 16)
-        + '" font-size="12" fill="var(--accent)" font-weight="600">'
-        + 'point piloté</text>';
+      if (etat.mode !== 'a') {
+        g += pastille([P20.x, P20.y], 'p20', 'var(--muted)');
+      } else {
+        // en absolu, chaque outil pose sa pointe ailleurs : on montre les autres
+        OUTILS.forEach(function (autre, i) {
+          if (i === etat.outil) return;
+          const t = direct(QR, autre).tcp;
+          g += '<circle cx="' + SX(t) + '" cy="' + SY(t) + '" r="5" '
+            + 'fill="none" stroke="var(--muted)" stroke-width="1.8" '
+            + 'stroke-dasharray="3 3"/>';
+        });
+      }
+
+      if (d) {
+        g += '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
+          + '" r="11" fill="none" stroke="var(--accent)" stroke-width="1.6"'
+          + ' opacity=".55"/>'
+          + '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
+          + '" r="6" fill="var(--accent)"/>'
+          + '<text x="' + (SX(d.tcp) + 15) + '" y="' + (SY(d.tcp) + 16)
+          + '" font-size="12" fill="var(--accent)" font-weight="600">'
+          + 'point piloté</text>';
+      }
 
       svg.innerHTML = g;
+
       const t = TEXTE[etat.mode];
-      lect.innerHTML = '<code>' + t[0] + '</code><br>' + t[1]
-        + (etat.mode === 'a'
-           ? '<br>Cible : <b>q = [' + QR.join(', ') + ']°</b>' : '');
+      const arr = CH[etat.mode][PAS];
+      const ang = arr ? '[' + arr.map(v => Math.round(v)).join(', ') + ']°' : '—';
+      let plus;
+      if (etat.mode === 'a') {
+        const tc = direct(QR, o).tcp;
+        plus = 'Angles imposés : <b>q = [' + QR.join(', ') + ']°</b> — les '
+          + 'mêmes pour tous les outils. Le point piloté, lui, arrive en <b>('
+          + Math.round(tc[0]) + ', ' + Math.round(tc[1]) + ') mm</b> : changez '
+          + 'd’outil, il change de place (les autres sont en pointillés).';
+      } else {
+        plus = 'Cible : la <b>pose</b> p20. Le point piloté y arrive quel que '
+          + 'soit l’outil — ce sont les angles qui s’adaptent : <b>q = '
+          + ang + '</b>.';
+      }
+      lect.innerHTML = '<code>' + t[0] + '</code><br>' + t[1] + '<br>' + plus;
       curseur.value = Math.round(etat.t * 100);
       sortie.textContent = Math.round(etat.t * 100) + ' %';
     }
@@ -740,6 +798,16 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       b.addEventListener('click', function () {
         etat.mode = b.dataset.mode;
         bloc.querySelectorAll('.modes button').forEach(function (o) {
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        jouer();
+      });
+    });
+    bloc.querySelectorAll('.outils button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        etat.outil = +b.dataset.outil;
+        CH = chemins(OUTILS[etat.outil]);
+        bloc.querySelectorAll('.outils button').forEach(function (o) {
           o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
         });
         jouer();
