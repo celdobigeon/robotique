@@ -99,7 +99,7 @@
     // Les flèches filaires de Three.js se réduisent à un trait d'un pixel :
     // au vidéoprojecteur, elles s'effacent. Celle-ci a un corps et une pointe.
     var mat = new THREE.MeshBasicMaterial({ color: couleur });
-    var r = taille * 0.04;
+    var r = taille * 0.028;
     var d = dir.clone().normalize();
     var q = new THREE.Quaternion().setFromUnitVectors(
       new THREE.Vector3(0, 1, 0), d);
@@ -109,7 +109,7 @@
     corps.position.copy(origine).addScaledVector(d, taille * 0.37);
     scene.add(corps);
     var pointe = new THREE.Mesh(
-      new THREE.ConeGeometry(r * 2.8, taille * 0.26, 18), mat);
+      new THREE.ConeGeometry(r * 3.0, taille * 0.22, 18), mat);
     pointe.quaternion.copy(q);
     pointe.position.copy(origine).addScaledVector(d, taille * 0.87);
     scene.add(pointe);
@@ -122,7 +122,7 @@
                couleur);
     });
     scene.add(new THREE.Mesh(
-      new THREE.SphereGeometry(taille * 0.075, 14, 10),
+      new THREE.SphereGeometry(taille * 0.05, 14, 10),
       new THREE.MeshBasicMaterial({ color: couleur })));
     scene.children[scene.children.length - 1].position.copy(origine);
   }
@@ -201,6 +201,30 @@
       return new THREE.Vector3(a.p[0], a.p[1], a.p[2]);
     });
 
+    // Sur la planche des repères, le bras s'articule : chaque axe porte les
+    // suivants, et ce qui est monté sur la bride bouge avec elle. Ailleurs —
+    // les fiches de TP — tout reste posé d'un bloc dans la scène.
+    var scenario = fig.getAttribute('data-scene');
+    var G = null;
+    if (scenario === 'reperes') {
+      G = [];
+      for (var n = 0; n < P.length; n++) {
+        var g = new THREE.Group();
+        g.position.copy(n ? P[n].clone().sub(P[n - 1]) : P[0]);
+        (n ? G[n - 1] : scene).add(g);
+        G.push(g);
+      }
+    }
+
+    /* Pose dans le repère de l'axe k un objet déjà placé en coordonnées
+       monde : au repos la chaîne est droite, une soustraction suffit. */
+    function poser3d(k, m) {
+      if (!G) { scene.add(m); return m; }
+      m.position.sub(P[k]);
+      G[k].add(m);
+      return m;
+    }
+
     // socle : caisson boulonné au sol pour les ABB, galette pour les UR
     if (B.socle.type === 'boite') {
       var so = new THREE.Mesh(new THREE.BoxGeometry(B.socle.l, B.socle.h, B.socle.p),
@@ -217,11 +241,11 @@
 
     // segments, puis articulations par-dessus
     for (var i = 0; i < P.length - 1; i++) {
-      scene.add(tube(P[i], P[i + 1], B.tubes[i], matRobot));
+      poser3d(i, tube(P[i], P[i + 1], B.tubes[i], matRobot));
     }
     B.art.forEach(function (a, k) {
       var axe = new THREE.Vector3(a.axe[0], a.axe[1], a.axe[2]);
-      scene.add(tonneau(P[k], axe, a.r, a.l, matCarter));
+      poser3d(k, tonneau(P[k], axe, a.r, a.l, matCarter));
     });
 
     // le contrepoids du 6620, derrière l'axe 2
@@ -231,8 +255,8 @@
       var cp = B.contrepoids;
       var arriere = new THREE.Vector3(P[1].x + cp.d, P[1].y + 0.02, P[1].z);
       var horiz = new THREE.Vector3(1, 0, 0);
-      scene.add(tube(P[1], arriere, cp.r * 0.5, matRobot));
-      scene.add(tonneau(arriere, horiz, cp.r, cp.l, matCarter));
+      poser3d(1, tube(P[1], arriere, cp.r * 0.5, matRobot));
+      poser3d(1, tonneau(arriere, horiz, cp.r, cp.l, matCarter));
     }
 
     // bride, au bout du poignet
@@ -242,7 +266,7 @@
       new THREE.MeshStandardMaterial({ color: 0x2F7BD4, roughness: 0.45 }));
     bride.position.copy(P[5]).addScaledVector(axeBride, B.art[5].l / 2 + 0.012);
     bride.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), axeBride);
-    scene.add(bride);
+    poser3d(5, bride);
 
     // sol discret, pour que la perspective se lise
     var etendue = Math.max(2.4, B.cadre);
@@ -254,39 +278,51 @@
     var pointeOutil = P[5].clone().addScaledVector(axeBride, B.art[5].l / 2 + 0.025);
 
     // la planche des repères du cours : un poste de soudage autour du bras
-    var scenario = fig.getAttribute('data-scene');
     var REP = null;
     if (scenario === 'reperes') {
       var COUL = { base: 0x2E5F82, bride: 0x6E5A8E, outil: 0xB04A4A,
                    objet: 0x2E9E5B };
-      var matTole = new THREE.MeshStandardMaterial({
-        color: 0x9AA4AE, roughness: 0.55, metalness: 0.35 });
+      // sur cette planche, le bras s'éclaircit lui aussi : l'ensemble doit
+      // se lire d'un coup, pas pièce par pièce
+      matCarter.color.setHex(0x6B7681);
+      matRobot.color.setHex(0xA7B0B9);
+      var matPiece = new THREE.MeshStandardMaterial({
+        color: 0xC6CDD4, roughness: 0.5, metalness: 0.3 });
       var matMontage = new THREE.MeshStandardMaterial({
-        color: B.carter, roughness: 0.7, metalness: 0.1 });
+        color: 0x8793A1, roughness: 0.6, metalness: 0.2 });
 
       // la torche, dans l'axe de la bride, et sa pointe : le repère outil
       var depart = P[5].clone().addScaledVector(axeBride, B.art[5].l / 2);
       var pointe = depart.clone().addScaledVector(axeBride, 0.17);
-      scene.add(tube(depart, pointe.clone().addScaledVector(axeBride, -0.03),
-                     0.016, matMontage));
-      var buse = new THREE.Mesh(new THREE.ConeGeometry(0.016, 0.05, 20),
-                                matTole);
+      poser3d(5, tube(depart, pointe.clone().addScaledVector(axeBride, -0.03),
+                      0.013, matMontage));
+      var buse = new THREE.Mesh(new THREE.ConeGeometry(0.014, 0.05, 20),
+                                matPiece);
       buse.position.copy(pointe).addScaledVector(axeBride, -0.025);
       buse.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0),
                                          axeBride);
-      scene.add(buse);
+      poser3d(5, buse);
 
-      // la tôle bridée sur son montage, juste devant la torche
-      var xTole = pointe.x + 0.05, hTole = 0.34, lTole = 0.46;
+      // le porte-pièce : une semelle, une colonne, une équerre — et la
+      // pièce tenue debout devant la torche
+      var xTole = pointe.x + 0.05, hTole = 0.26, lTole = 0.30;
       var basTole = pointe.y - hTole / 2;
+      var semelle = new THREE.Mesh(
+        new THREE.BoxGeometry(0.18, 0.018, 0.24), matMontage);
+      semelle.position.set(xTole + 0.07, 0.009, 0);
+      scene.add(semelle);
+      var colonne = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.021, 0.021, basTole, 18), matMontage);
+      colonne.position.set(xTole + 0.07, basTole / 2, 0);
+      scene.add(colonne);
+      var equerre = new THREE.Mesh(
+        new THREE.BoxGeometry(0.08, 0.014, 0.05), matMontage);
+      equerre.position.set(xTole + 0.03, basTole + 0.007, 0);
+      scene.add(equerre);
       var tole = new THREE.Mesh(
-        new THREE.BoxGeometry(0.016, hTole, lTole), matTole);
+        new THREE.BoxGeometry(0.012, hTole, lTole), matPiece);
       tole.position.set(xTole, basTole + hTole / 2, 0);
       scene.add(tole);
-      var pied = new THREE.Mesh(
-        new THREE.BoxGeometry(0.13, basTole, lTole * 0.8), matMontage);
-      pied.position.set(xTole, basTole / 2, 0);
-      scene.add(pied);
 
       // la cible, sur la tôle, là où la torche pointe
       var cibleP = new THREE.Vector3(xTole - 0.01, pointe.y, pointe.z);
@@ -297,10 +333,13 @@
 
       // le coin de la tôle : c'est lui qui porte le repère objet
       var coin = new THREE.Vector3(xTole - 0.012, basTole, lTole / 2);
-      var t = B.cadre * 0.115;
-      triedreEpais(scene, new THREE.Vector3(0, 0, 0), t * 1.9, COUL.base);
-      triedreEpais(scene, bride.position.clone(), t, COUL.bride);
-      triedreEpais(scene, pointe.clone(), t, COUL.outil);
+      var t = B.cadre * 0.085;
+      triedreEpais(scene, new THREE.Vector3(0, 0, 0), t * 1.7, COUL.base);
+      // la bride et l'outil sont montés sur l'axe 6 : leurs repères aussi
+      triedreEpais(G ? G[5] : scene, bride.position.clone(), t, COUL.bride);
+      triedreEpais(G ? G[5] : scene,
+                   G ? pointe.clone().sub(P[5]) : pointe.clone(),
+                   t, COUL.outil);
       triedreEpais(scene, coin, t, COUL.objet);
       REP = [{ p: new THREE.Vector3(0, 0, 0), t: 'repère de base',
                c: '#2E5F82' },
@@ -334,6 +373,33 @@
       etiq.appendChild(d);
       return d;
     });
+
+    // ---- les six axes, pour bouger le bras -------------------------
+    // Débattements indicatifs : le but est de voir les repères suivre, pas
+    // de reproduire les butées de la machine.
+    var axes6 = [];
+    if (G) {
+      var LIM = [[-165, 165], [-90, 110], [-60, 60], [-180, 180],
+                 [-115, 115], [-180, 180]];
+      var cmd = document.createElement('div');
+      cmd.className = 'axes3d';
+      B.art.forEach(function (a, k) {
+        var axe = new THREE.Vector3(a.axe[0], a.axe[1], a.axe[2]).normalize();
+        var l = document.createElement('label');
+        l.innerHTML = '<b>axe ' + (k + 1) + '</b><input type="range" min="'
+          + LIM[k][0] + '" max="' + LIM[k][1] + '" step="1" value="0"'
+          + ' aria-label="Axe ' + (k + 1) + '"><output>0°</output>';
+        var e = l.querySelector('input'), o = l.querySelector('output');
+        e.addEventListener('input', function () {
+          G[k].quaternion.setFromAxisAngle(axe, +e.value * Math.PI / 180);
+          o.textContent = e.value + '°';
+          dessiner();
+        });
+        axes6.push({ e: e, o: o, g: G[k], a: axe });
+        cmd.appendChild(l);
+      });
+      vue.appendChild(cmd);
+    }
 
     // ---- rotation du point de vue ----------------------------------
     // sur la scène des repères, on se place là où la tôle ne masque pas
@@ -445,7 +511,14 @@
       else return;
       e.preventDefault();
     });
-    function raz() { orbite.az = DEPART.az; orbite.el = DEPART.el; dessiner(); }
+    function raz() {
+      orbite.az = DEPART.az; orbite.el = DEPART.el;
+      axes6.forEach(function (x) {
+        x.e.value = 0; x.o.textContent = '0°';
+        x.g.quaternion.setFromAxisAngle(x.a, 0);
+      });
+      dessiner();
+    }
     aide.querySelector('.raz').addEventListener('click', raz);
     canvas.addEventListener('dblclick', raz);
 
