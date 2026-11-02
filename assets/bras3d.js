@@ -179,9 +179,9 @@
     var camera = new THREE.PerspectiveCamera(32, 16 / 9, 0.05, 60);
     var cible = new THREE.Vector3(B.cible[0], B.cible[1], B.cible[2]);
     if (fig.getAttribute('data-scene') === 'reperes') {
-      cible.set(B.cible[0] + 0.14, B.cible[1] + 0.06, 0);
+      cible.set(B.cible[0] + 0.12, B.cible[1] + 0.05, 0);
       B = Object.create(B);              // sans toucher au gabarit partagé
-      B.cadre = 2.75;
+      B.cadre = 2.05;                    // on s'approche : le bras remplit la vue
     }
 
     scene.add(new THREE.HemisphereLight(0xffffff, 0xdfe6ec, 1.5));
