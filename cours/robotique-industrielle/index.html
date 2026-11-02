@@ -350,9 +350,9 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
   <div class="lecture" aria-live="polite"></div>
   <div class="regl">
     <label><b>axe — azimut</b><input type="range" min="0" max="360" step="5"
-           value="20" data-r="az" aria-label="Azimut de l'axe"><output></output></label>
+           value="35" data-r="az" aria-label="Azimut de l'axe"><output></output></label>
     <label><b>axe — élévation</b><input type="range" min="-90" max="90" step="5"
-           value="70" data-r="el" aria-label="Élévation de l'axe"><output></output></label>
+           value="30" data-r="el" aria-label="Élévation de l'axe"><output></output></label>
     <label><b>angle θ</b><input type="range" min="0" max="180" step="5"
            value="60" data-r="th" aria-label="Angle de rotation"><output></output></label>
     <button type="button" class="jouer">Tourner</button>
@@ -1295,7 +1295,7 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     var axe = new THREE.Group();
     scene.add(axe);
 
-    var etats = {az: 20, el: 70, th: 60, joue: 0, part: 1};
+    var etats = {az: 35, el: 30, th: 60, joue: 0, part: 1};
 
     function vecteurAxe() {
       var a = etats.az * RAD, e = etats.el * RAD;
@@ -1396,6 +1396,8 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         etats.part = 1;
         dessiner();
       });
+      // au relâchement, on rejoue la rotation : le changement se voit
+      i.addEventListener('change', jouer);
     });
     bloc.querySelector('.jouer').addEventListener('click', jouer);
 
