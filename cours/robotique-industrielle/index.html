@@ -211,7 +211,25 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 .anim .autre:hover{border-color:var(--accent);color:var(--accent)}
 @media print{
   .anim .modes,.anim .regl{display:none}
-  .anim svg{max-height:92mm}
+  /* sur le papier, la page porte aussi les deux captures : le dessin se
+     contente de la place qui reste */
+  .anim svg{max-height:62mm}
+}
+</style>
+<style>
+/* ---------- les quatre mouvements ---------- */
+.anim-mouv .regl{grid-template-columns:auto minmax(260px,1fr)}
+.anim-mouv svg{max-height:40vh}
+.anim-mouv .jouer{font:inherit;font-size:13.5px;background:var(--surface);
+  color:var(--muted);border:1px solid var(--line);border-radius:9px;
+  padding:6px 14px;cursor:pointer;justify-self:start}
+.anim-mouv .jouer:hover{border-color:var(--accent);color:var(--accent)}
+.anim-mouv .lecture code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  color:var(--accent)}
+.impr{display:none}
+@media print{
+  .anim-mouv{display:none}
+  .impr{display:block}
 }
 </style>
 </head>
@@ -241,7 +259,27 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 <section class="dia" data-section="Programmer" aria-label="Diapositive 20 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>La programmation</h2><ul><li><b>Par apprentissage</b> — on déplace le robot aux positions voulues et on les enregistre. Direct, mais la production s'arrête.</li><li><b>Par guidage</b> — on prend le bras à la main pour lui montrer le geste. Rapide, accessible, typique des cobots.</li><li><b>Hors ligne</b> — on écrit et on simule sur une maquette numérique, on télécharge ensuite. La cellule continue de produire pendant ce temps.</li></ul><p class="note">Les trois se combinent : on écrit hors ligne, puis on recale les points sur la machine réelle.</p></div></section>
 <section class="dia" data-section="Programmer" aria-label="Diapositive 21 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Chaîne numérique pour la robotique</h2><div class="galerie"><figure><img src="img/cao.png" alt="Le modèle de la pièce, issu de la CAO." loading="lazy"></figure><figure><img src="img/fao.png" alt="La pièce bridée et les trajectoires d&#x27;usinage calculées en FAO." loading="lazy"></figure><figure><img src="img/simulation.png" alt="La cellule complète simulée dans RobotStudio : robot, table, broche et protecteurs." loading="lazy"></figure><figure><img src="img/controleur.png" alt="L&#x27;armoire IRC5 et son boîtier d&#x27;apprentissage FlexPendant, où arrive le code RAPID." loading="lazy"></figure></div><figure><svg viewBox="0 0 1200 304" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="La chaîne numérique : CAO, FAO, post-processeur et contrôleur IRC5, avec la simulation RobotStudio qui vérifie avant le téléchargement."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><rect x="40.0" y="40.0" width="220.0" height="82.0" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-width="1.4"/><text x="150.0" y="76.0" font-size="14" fill="var(--ink)" text-anchor="middle" font-weight="600">CAO</text><text x="150.0" y="95.0" font-size="12" fill="var(--muted)" text-anchor="middle">TopSolid, Catia…</text><rect x="340.0" y="40.0" width="220.0" height="82.0" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-width="1.4"/><text x="450.0" y="76.0" font-size="14" fill="var(--ink)" text-anchor="middle" font-weight="600">FAO</text><text x="450.0" y="95.0" font-size="12" fill="var(--muted)" text-anchor="middle">parcours d'outil</text><rect x="640.0" y="40.0" width="220.0" height="82.0" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-width="1.4"/><text x="750.0" y="76.0" font-size="14" fill="var(--ink)" text-anchor="middle" font-weight="600">Post-processeur</text><text x="750.0" y="95.0" font-size="12" fill="var(--muted)" text-anchor="middle">IRBCAM, RoboDK</text><rect x="940.0" y="40.0" width="220.0" height="82.0" rx="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/><text x="1050.0" y="76.0" font-size="14" fill="var(--ink)" text-anchor="middle" font-weight="600">IRC5</text><text x="1050.0" y="95.0" font-size="12" fill="var(--muted)" text-anchor="middle">le contrôleur du robot</text><line x1="260.0" y1="81.0" x2="338.0" y2="81.0" stroke="var(--accent)" stroke-width="2" marker-end="url(#fl)"/><line x1="560.0" y1="81.0" x2="638.0" y2="81.0" stroke="var(--accent)" stroke-width="2" marker-end="url(#fl)"/><text x="599.0" y="70.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">code apt</text><line x1="860.0" y1="81.0" x2="938.0" y2="81.0" stroke="var(--accent)" stroke-width="2" marker-end="url(#fl)"/><text x="899.0" y="70.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">code RAPID</text><rect x="380.0" y="186.0" width="440.0" height="76.0" rx="9" fill="var(--surface)" stroke="var(--line)" stroke-width="1.4"/><text x="600.0" y="219.0" font-size="14" fill="var(--ink)" text-anchor="middle" font-weight="600">Simulation / vérification</text><text x="600.0" y="238.0" font-size="12" fill="var(--muted)" text-anchor="middle">RobotStudio — atteignabilité, collisions, temps de cycle</text><path d="M750 186 L750 122" fill="none" stroke="var(--line)" stroke-width="1.6" stroke-dasharray="6 5"/><path d="M820 224 L1050 224 L1050 122" fill="none" stroke="var(--line)" stroke-width="1.6" stroke-dasharray="6 5"/><text x="600.0" y="288.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Le modèle ne remplace pas la machine : il prépare, la machine tranche.</text></svg></figure><p class="note">Le post-processeur traduit le parcours dans le langage du constructeur — RAPID chez ABB. Le recalage sur la machine corrige ensuite l'écart entre le modèle et le réel.</p></div></section>
 <section class="dia" data-section="Programmer" aria-label="Diapositive 22 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Les repères de programmation</h2><figure class="schema" data-bras="irb140" data-scene="reperes"><svg viewBox="0 100 1200 316" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Le robot, sa table et sa pièce, avec quatre repères à trois axes : le repère de base au pied du robot, le repère bride à la sortie du poignet, le repère outil à la pointe de l'outil et le repère objet au coin du montage. La cible est mémorisée dans le repère objet."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><line x1="130" y1="362" x2="1170" y2="362" stroke="var(--line)" stroke-width="2"/><rect x="820" y="306" width="360" height="14" rx="3" fill="var(--dark)"/><rect x="848" y="320" width="14" height="42" fill="var(--dark)" opacity=".5"/><rect x="1150" y="320" width="14" height="42" fill="var(--dark)" opacity=".5"/><rect x="880" y="252" width="270" height="54" rx="5" fill="var(--dark)" fill-opacity=".16" stroke="var(--dark)" stroke-width="1.8"/><text x="1065.0" y="340.0" font-size="12.5" fill="var(--muted)" text-anchor="middle">montage et pièce</text><polygon points="210,354 334,354 314,320 230,320" fill="var(--dark)"/><rect x="202" y="350" width="140" height="12" rx="3" fill="var(--dark)"/><polygon points="302.0,324.0 298.0,278.0 246.0,278.0 242.0,324.0" fill="var(--robot)"/><circle cx="272.0" cy="324.0" r="30.0" fill="var(--robot)"/><circle cx="272.0" cy="278.0" r="26.0" fill="var(--robot)"/><polygon points="286.1,297.4 465.0,158.8 445.0,131.2 257.9,258.6" fill="var(--robot)"/><circle cx="272.0" cy="278.0" r="24.0" fill="var(--robot)"/><circle cx="455.0" cy="145.0" r="17.0" fill="var(--robot)"/><polygon points="452.9,161.9 698.4,188.9 701.6,163.1 457.1,128.1" fill="var(--robot)"/><circle cx="455.0" cy="145.0" r="17.0" fill="var(--robot)"/><circle cx="700.0" cy="176.0" r="13.0" fill="var(--robot)"/><polygon points="696.2,188.4 827.1,225.6 832.9,206.4 703.8,163.6" fill="var(--robot)"/><circle cx="700.0" cy="176.0" r="13.0" fill="var(--robot)"/><circle cx="830.0" cy="216.0" r="10.0" fill="var(--robot)"/><circle cx="272.0" cy="278.0" r="13.0" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/><circle cx="272.0" cy="278.0" r="3.9" fill="var(--dark)"/><circle cx="455.0" cy="145.0" r="10.0" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/><circle cx="455.0" cy="145.0" r="3.0" fill="var(--dark)"/><circle cx="700.0" cy="176.0" r="8.0" fill="var(--surface)" stroke="var(--dark)" stroke-width="2.2"/><circle cx="700.0" cy="176.0" r="2.4" fill="var(--dark)"/><polygon points="827.4,224.6 949.0,255.4 951.0,248.6 832.6,207.4" fill="var(--dark)"/><circle cx="830.0" cy="216.0" r="9.0" fill="var(--dark)"/><circle cx="950.0" cy="252.0" r="3.5" fill="var(--dark)"/><path d="M880 306 L950 252" stroke="var(--accent)" stroke-width="1.8" stroke-dasharray="6 5"/><circle cx="950" cy="252" r="6" fill="var(--accent)"/><text x="936.0" y="286.0" font-size="12.5" fill="var(--accent)" text-anchor="middle">cible</text><line x1="272.0" y1="354.0" x2="245.0" y2="369.5" stroke="var(--blue)" stroke-width="2.4"/><polygon points="237.2,374.0 242.8,365.7 247.2,373.3" fill="var(--blue)"/><text x="227.6" y="383.5" font-size="12" fill="var(--blue)" text-anchor="middle">x</text><line x1="272.0" y1="354.0" x2="299.0" y2="369.5" stroke="var(--blue)" stroke-width="2.4"/><polygon points="306.8,374.0 296.8,373.3 301.2,365.7" fill="var(--blue)"/><text x="316.4" y="383.5" font-size="12" fill="var(--blue)" text-anchor="middle">y</text><line x1="272.0" y1="354.0" x2="272.0" y2="323.0" stroke="var(--blue)" stroke-width="2.4"/><polygon points="272.0,314.0 276.4,323.0 267.6,323.0" fill="var(--blue)"/><text x="272.0" y="307.0" font-size="12" fill="var(--blue)" text-anchor="middle">z</text><circle cx="272.0" cy="354.0" r="3.6" fill="var(--blue)"/><text x="272.0" y="398.0" font-size="12.5" fill="var(--blue)" text-anchor="middle" font-weight="600">repère de base</text><line x1="830.0" y1="216.0" x2="808.2" y2="228.5" stroke="var(--violet)" stroke-width="2.4"/><polygon points="800.4,233.0 806.0,224.7 810.5,232.3" fill="var(--violet)"/><text x="790.9" y="242.5" font-size="12" fill="var(--violet)" text-anchor="middle">x</text><line x1="830.0" y1="216.0" x2="851.8" y2="228.5" stroke="var(--violet)" stroke-width="2.4"/><polygon points="859.6,233.0 849.5,232.3 854.0,224.7" fill="var(--violet)"/><text x="869.1" y="242.5" font-size="12" fill="var(--violet)" text-anchor="middle">y</text><line x1="830.0" y1="216.0" x2="830.0" y2="191.0" stroke="var(--violet)" stroke-width="2.4"/><polygon points="830.0,182.0 834.4,191.0 825.6,191.0" fill="var(--violet)"/><text x="830.0" y="175.0" font-size="12" fill="var(--violet)" text-anchor="middle">z</text><circle cx="830.0" cy="216.0" r="3.6" fill="var(--violet)"/><text x="830.0" y="158.0" font-size="12.5" fill="var(--violet)" text-anchor="middle" font-weight="600">repère bride</text><line x1="950.0" y1="240.0" x2="928.2" y2="252.5" stroke="var(--red)" stroke-width="2.4"/><polygon points="920.4,257.0 926.0,248.7 930.5,256.3" fill="var(--red)"/><text x="910.9" y="266.5" font-size="12" fill="var(--red)" text-anchor="middle">x</text><line x1="950.0" y1="240.0" x2="971.8" y2="252.5" stroke="var(--red)" stroke-width="2.4"/><polygon points="979.6,257.0 969.5,256.3 974.0,248.7" fill="var(--red)"/><text x="989.1" y="266.5" font-size="12" fill="var(--red)" text-anchor="middle">y</text><line x1="950.0" y1="240.0" x2="950.0" y2="215.0" stroke="var(--red)" stroke-width="2.4"/><polygon points="950.0,206.0 954.4,215.0 945.6,215.0" fill="var(--red)"/><text x="950.0" y="199.0" font-size="12" fill="var(--red)" text-anchor="middle">z</text><circle cx="950.0" cy="240.0" r="3.6" fill="var(--red)"/><text x="1028.0" y="200.0" font-size="12.5" fill="var(--red)" text-anchor="middle" font-weight="600">repère outil</text><line x1="880.0" y1="306.0" x2="858.2" y2="318.5" stroke="var(--green)" stroke-width="2.4"/><polygon points="850.4,323.0 856.0,314.7 860.5,322.3" fill="var(--green)"/><text x="840.9" y="332.5" font-size="12" fill="var(--green)" text-anchor="middle">x</text><line x1="880.0" y1="306.0" x2="901.8" y2="318.5" stroke="var(--green)" stroke-width="2.4"/><polygon points="909.6,323.0 899.5,322.3 904.0,314.7" fill="var(--green)"/><text x="919.1" y="332.5" font-size="12" fill="var(--green)" text-anchor="middle">y</text><line x1="880.0" y1="306.0" x2="880.0" y2="281.0" stroke="var(--green)" stroke-width="2.4"/><polygon points="880.0,272.0 884.4,281.0 875.6,281.0" fill="var(--green)"/><text x="880.0" y="265.0" font-size="12" fill="var(--green)" text-anchor="middle">z</text><circle cx="880.0" cy="306.0" r="3.6" fill="var(--green)"/><text x="782.0" y="312.0" font-size="12.5" fill="var(--green)" text-anchor="middle" font-weight="600">repère objet</text></svg></figure><ul><li><b>Repère de base</b> <i>(world)</i> — lié au pied du robot, référence par défaut de toutes les positions.</li><li><b>Repère bride</b> <i>(flange)</i> — à la sortie du poignet, fixé par le constructeur. C'est de lui que part le repère outil.</li><li><b>Repère outil</b> <i>(tool)</i> — la bride déplacée jusqu'à la pointe réelle de l'outil. C'est lui qu'on pilote.</li><li><b>Repère objet</b> <i>(wobj)</i> — lié au montage ou à la pièce. Déplacer le montage, c'est redéfinir ce seul repère.</li><li>Une cible est toujours mémorisée <i>relativement</i> à un repère — jamais dans l'absolu.</li></ul></div></section>
-<section class="dia" data-section="Programmer" aria-label="Diapositive 23 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Programmation des robots industriels</h2><figure><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li><b>Articulaire</b> — chaque axe va de son angle de départ à son angle d'arrivée. Rapide, insensible aux singularités, mais la trajectoire de l'outil est imprévisible.</li><li><b>Linéaire</b> — l'outil suit une droite. Le contrôleur inverse la géométrie à chaque pas : coûteux, et sensible aux singularités.</li><li><b>Circulaire</b> — un arc défini par un point de passage et un point d'arrivée.</li><li><b>Absolu articulaire</b> — la cible est donnée en angles d'axes. Idéal pour un point de repli sans ambiguïté.</li></ul></div></section>
+<section class="dia" data-section="Programmer" aria-label="Diapositive 23 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Programmation des robots industriels</h2><p class="chapo">Quatre instructions, le même départ et la même arrivée — mais le point piloté ne suit pas le même chemin.</p>
+<div class="anim anim-mouv" data-mouv>
+  <div class="modes" role="group" aria-label="Instruction de mouvement">
+    <button type="button" data-mode="j" aria-pressed="true">MoveJ</button>
+    <button type="button" data-mode="l" aria-pressed="false">MoveL</button>
+    <button type="button" data-mode="c" aria-pressed="false">MoveC</button>
+    <button type="button" data-mode="a" aria-pressed="false">MoveAbsJ</button>
+  </div>
+  <div class="scene">
+    <svg viewBox="150 70 380 252" role="img"
+         aria-label="Un bras plan à trois axes joue les quatre instructions de
+                     mouvement ; le chemin du point piloté est tracé."></svg>
+    <div class="lecture" aria-live="polite"></div>
+  </div>
+  <div class="regl">
+    <button type="button" class="jouer">Rejouer</button>
+    <label><b>avance</b><input type="range" min="0" max="100" step="1"
+           value="100" aria-label="Avancement du mouvement"><output></output></label>
+  </div>
+</div>
+<figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point, et c'est tout ce qui les sépare qui compte en production.</li></ul></div></section>
 <section class="dia" data-section="Programmer" aria-label="Diapositive 24 sur 28"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Précision et lissage</h2><figure><svg viewBox="0 0 1200 320" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Deux trajectoires en angle : à gauche le robot s'arrête au point et l'angle est net ; à droite il coupe le coin dans un rayon de zone et ne passe pas par la cible."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="300.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Arrêt au point</text><path d="M110 230 L300 230 L300 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="300" cy="230" r="7" fill="var(--accent)"/><text x="314.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">le robot s'arrête ici</text><text x="900.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Lissage</text><path d="M710 230 L838 230 Q900 230 900 168 L900 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="900" cy="230" r="7" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/><line x1="900" y1="230" x2="838" y2="230" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5"/><text x="869.0" y="252.0" font-size="12" fill="var(--accent)" text-anchor="middle">rayon de zone</text><text x="914.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">la cible n'est pas atteinte</text><text x="600.0" y="300.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Position exacte et cycle long, ou mouvement continu et coin coupé.</text></svg></figure><ul><li><b>Arrêt au point</b> — le robot atteint la cible et s'immobilise. Position exacte, mouvement saccadé, cycle long.</li><li><b>Lissage</b> — il coupe le coin dans un rayon donné sans s'arrêter. Mouvement continu, cycle court, position approchée.</li><li>Le réglage n'est jamais global : arrêt net là où la position compte — prise, dépose, contour — et lissage large sur les trajets de transfert.</li></ul></div></section>
 <section class="dia" data-section="Modèles" aria-label="Diapositive 25 sur 28"><div class="dedans"><p class="eyebrow">Modèles</p><h2>Les modèles géométriques</h2>
 <div class="anim" data-anim>
@@ -480,6 +518,240 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
     });
 
     curseurs();
+    dessiner();
+  });
+})();
+
+/* ---- les quatre instructions de mouvement ---- */
+(function () {
+  const L = [400, 350, 150];
+  const E = 0.21, OX = 250, OY = 262;
+  const deg = x => x * Math.PI / 180, rad = x => x * 180 / Math.PI;
+  const QA = [135, -95, -25];         // le point de départ, p10
+  const QB = [34, -42, -12];          // le point d'arrivée, p20
+  const QR = [95, -125, 30];          // le point de repli, en angles d'axes
+  const PAS = 140;                    // points calculés le long du chemin
+
+  const TEXTE = {
+    j: ['MoveJ p20, v1000, z10, tool1;',
+        'Chaque axe va de son angle de départ à son angle d’arrivée. Le point '
+        + 'piloté décrit une courbe que personne n’a choisie — mais le '
+        + 'mouvement est rapide et ne craint pas les singularités.'],
+    l: ['MoveL p20, v200, z10, tool1;',
+        'Le point piloté suit la droite. Le contrôleur inverse la géométrie à '
+        + 'chaque pas : c’est plus coûteux, et sensible aux singularités.'],
+    c: ['MoveC p15, p20, v200, z10, tool1;',
+        'Un arc, défini par un point de passage (p15) et un point d’arrivée '
+        + '(p20). Trois points, un seul cercle.'],
+    a: ['MoveAbsJ jpos10, v1000, fine, tool1;',
+        'La cible n’est pas une pose mais une configuration d’axes : aucune '
+        + 'ambiguïté possible. C’est ce qu’on utilise pour un point de repli.']
+  };
+
+  document.querySelectorAll('[data-mouv]').forEach(function (bloc) {
+    const svg = bloc.querySelector('svg');
+    const lect = bloc.querySelector('.lecture');
+    const curseur = bloc.querySelector('input[type=range]');
+    const sortie = bloc.querySelector('output');
+    const etat = {mode: 'j', t: 1, anim: 0};
+
+    function direct(q) {
+      const p = [[0, 0]];
+      let a = 0;
+      for (let k = 0; k < 3; k++) {
+        a += q[k];
+        p.push([p[k][0] + L[k] * Math.cos(deg(a)),
+                p[k][1] + L[k] * Math.sin(deg(a))]);
+      }
+      return {p: p, tcp: p[3], phi: a};
+    }
+
+    function inverse(x, y, phi, coude) {
+      const wx = x - L[2] * Math.cos(deg(phi)), wy = y - L[2] * Math.sin(deg(phi));
+      const c2 = (wx * wx + wy * wy - L[0] * L[0] - L[1] * L[1])
+               / (2 * L[0] * L[1]);
+      if (c2 < -1 || c2 > 1) return null;
+      const q2 = (coude ? -1 : 1) * Math.acos(Math.min(1, Math.max(-1, c2)));
+      const q1 = Math.atan2(wy, wx)
+               - Math.atan2(L[1] * Math.sin(q2), L[0] + L[1] * Math.cos(q2));
+      return [rad(q1), rad(q2), phi - rad(q1) - rad(q2)];
+    }
+
+    const A = direct(QA), B = direct(QB);
+    const coudeA = QA[1] < 0 ? 1 : 0;
+
+    // le point de passage de MoveC : à côté de la corde, du côté opposé au bras
+    const mil = [(A.tcp[0] + B.tcp[0]) / 2, (A.tcp[1] + B.tcp[1]) / 2];
+    const corde = Math.hypot(B.tcp[0] - A.tcp[0], B.tcp[1] - A.tcp[1]);
+    const nx = (B.tcp[1] - A.tcp[1]) / corde, ny = -(B.tcp[0] - A.tcp[0]) / corde;
+    const V = [mil[0] - nx * corde * 0.3, mil[1] - ny * corde * 0.3];
+
+    // le cercle qui passe par les trois points : centre, rayon, angles
+    function cercle(a, v, b) {
+      const d = 2 * (a[0] * (v[1] - b[1]) + v[0] * (b[1] - a[1])
+                     + b[0] * (a[1] - v[1]));
+      const ux = ((a[0] * a[0] + a[1] * a[1]) * (v[1] - b[1])
+                + (v[0] * v[0] + v[1] * v[1]) * (b[1] - a[1])
+                + (b[0] * b[0] + b[1] * b[1]) * (a[1] - v[1])) / d;
+      const uy = ((a[0] * a[0] + a[1] * a[1]) * (b[0] - v[0])
+                + (v[0] * v[0] + v[1] * v[1]) * (a[0] - b[0])
+                + (b[0] * b[0] + b[1] * b[1]) * (v[0] - a[0])) / d;
+      const c = [ux, uy], r = Math.hypot(a[0] - ux, a[1] - uy);
+      const an = p => Math.atan2(p[1] - uy, p[0] - ux);
+      let d1 = an(v) - an(a), d2 = an(b) - an(a);
+      const norm = x => ((x + Math.PI) % (2 * Math.PI) + 2 * Math.PI)
+                        % (2 * Math.PI) - Math.PI;
+      d1 = norm(d1); d2 = norm(d2);
+      if (d1 * d2 < 0 || Math.abs(d1) > Math.abs(d2)) {
+        d2 += (d2 > 0 ? -2 * Math.PI : 2 * Math.PI);   // on passe par v
+      }
+      return {c: c, r: r, a0: an(a), da: d2};
+    }
+    const ARC = cercle(A.tcp, V, B.tcp);
+
+    // les quatre chemins, calculés une fois pour toutes
+    function chemin(mode) {
+      const out = [];
+      for (let k = 0; k <= PAS; k++) {
+        const t = k / PAS;
+        let q = null;
+        if (mode === 'j') {
+          q = QA.map((v, i) => v + (QB[i] - v) * t);
+        } else if (mode === 'a') {
+          q = QA.map((v, i) => v + (QR[i] - v) * t);
+        } else {
+          let x, y;
+          if (mode === 'l') {
+            x = A.tcp[0] + (B.tcp[0] - A.tcp[0]) * t;
+            y = A.tcp[1] + (B.tcp[1] - A.tcp[1]) * t;
+          } else {
+            const a = ARC.a0 + ARC.da * t;
+            x = ARC.c[0] + ARC.r * Math.cos(a);
+            y = ARC.c[1] + ARC.r * Math.sin(a);
+          }
+          const phi = A.phi + (B.phi - A.phi) * t;
+          q = inverse(x, y, phi, coudeA);
+        }
+        out.push(q);
+      }
+      return out;
+    }
+    const CHEMINS = {j: chemin('j'), l: chemin('l'), c: chemin('c'),
+                     a: chemin('a')};
+
+    const SX = p => OX + p[0] * E, SY = p => OY - p[1] * E;
+
+    function trace(ch, jusqu, couleur, epais, pointille) {
+      const pts = [];
+      for (let k = 0; k <= jusqu; k++) {
+        if (!ch[k]) continue;
+        const d = direct(ch[k]);
+        pts.push(SX(d.tcp).toFixed(1) + ',' + SY(d.tcp).toFixed(1));
+      }
+      if (pts.length < 2) return '';
+      return '<polyline points="' + pts.join(' ') + '" fill="none" stroke="'
+        + couleur + '" stroke-width="' + epais + '" stroke-linecap="round"'
+        + (pointille ? ' stroke-dasharray="6 6"' : '') + '/>';
+    }
+
+    function bras(q, opacite, couleur) {
+      const d = direct(q);
+      let g = '';
+      const ep = [15, 11, 7];
+      for (let k = 0; k < 3; k++) {
+        g += '<line x1="' + SX(d.p[k]) + '" y1="' + SY(d.p[k]) + '" x2="'
+          + SX(d.p[k + 1]) + '" y2="' + SY(d.p[k + 1]) + '" stroke="'
+          + (couleur || 'var(--robot)') + '" stroke-width="' + ep[k]
+          + '" stroke-linecap="round" opacity="' + opacite + '"/>';
+      }
+      if (opacite > 0.6) {
+        for (let k = 0; k < 3; k++) {
+          g += '<circle cx="' + SX(d.p[k]) + '" cy="' + SY(d.p[k]) + '" r="'
+            + (9 - k * 2) + '" fill="var(--surface)" stroke="var(--dark)"'
+            + ' stroke-width="2.2"/>';
+        }
+      }
+      return g;
+    }
+
+    function pastille(p, nom, couleur) {
+      return '<circle cx="' + SX(p) + '" cy="' + SY(p) + '" r="5.5" fill="none"'
+        + ' stroke="' + couleur + '" stroke-width="2.2"/>'
+        + '<text x="' + (SX(p) + 10) + '" y="' + (SY(p) - 8)
+        + '" font-size="12" fill="' + couleur + '">' + nom + '</text>';
+    }
+
+    function dessiner() {
+      const ch = CHEMINS[etat.mode];
+      const k = Math.round(etat.t * PAS);
+      const q = ch[k] || ch[ch.length - 1];
+      const d = direct(q);
+
+      let g = '<line x1="44" y1="' + OY + '" x2="516" y2="' + OY
+        + '" stroke="var(--line)" stroke-width="1.6"/>'
+        + '<rect x="' + (OX - 36) + '" y="' + OY + '" width="72" height="14"'
+        + ' rx="3" fill="var(--dark)"/>';
+
+      // le départ et l'arrivée, en clair
+      g += bras(QA, 0.18);
+      g += bras(etat.mode === 'a' ? QR : QB, 0.18);
+
+      // le chemin de l'autre instruction, pour la comparaison
+      if (etat.mode === 'j' || etat.mode === 'l') {
+        g += trace(CHEMINS[etat.mode === 'j' ? 'l' : 'j'], PAS,
+                   'var(--muted)', 1.6, true);
+      }
+      g += trace(ch, k, 'var(--accent)', 2.6, false);
+      g += bras(q, 1);
+
+      // les points nommés, et le point piloté bien visible
+      g += pastille(A.tcp, 'p10', 'var(--muted)');
+      if (etat.mode === 'c') { g += pastille(V, 'p15', 'var(--muted)'); }
+      if (etat.mode !== 'a') { g += pastille(B.tcp, 'p20', 'var(--muted)'); }
+      g += '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
+        + '" r="11" fill="none" stroke="var(--accent)" stroke-width="1.6"'
+        + ' opacity=".55"/>'
+        + '<circle cx="' + SX(d.tcp) + '" cy="' + SY(d.tcp)
+        + '" r="6" fill="var(--accent)"/>'
+        + '<text x="' + (SX(d.tcp) + 15) + '" y="' + (SY(d.tcp) + 16)
+        + '" font-size="12" fill="var(--accent)" font-weight="600">'
+        + 'point piloté</text>';
+
+      svg.innerHTML = g;
+      const t = TEXTE[etat.mode];
+      lect.innerHTML = '<code>' + t[0] + '</code><br>' + t[1]
+        + (etat.mode === 'a'
+           ? '<br>Cible : <b>q = [' + QR.join(', ') + ']°</b>' : '');
+      curseur.value = Math.round(etat.t * 100);
+      sortie.textContent = Math.round(etat.t * 100) + ' %';
+    }
+
+    function jouer() {
+      cancelAnimationFrame(etat.anim);
+      const t0 = performance.now(), duree = 2600;
+      (function pas(h) {
+        etat.t = Math.min(1, (h - t0) / duree);
+        dessiner();
+        if (etat.t < 1) etat.anim = requestAnimationFrame(pas);
+      })(t0);
+    }
+
+    bloc.querySelectorAll('.modes button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        etat.mode = b.dataset.mode;
+        bloc.querySelectorAll('.modes button').forEach(function (o) {
+          o.setAttribute('aria-pressed', o === b ? 'true' : 'false');
+        });
+        jouer();
+      });
+    });
+    bloc.querySelector('.jouer').addEventListener('click', jouer);
+    curseur.addEventListener('input', function () {
+      cancelAnimationFrame(etat.anim);
+      etat.t = curseur.value / 100;
+      dessiner();
+    });
+
     dessiner();
   });
 })();
