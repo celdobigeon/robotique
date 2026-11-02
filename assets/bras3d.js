@@ -316,9 +316,7 @@
     // étiquettes : les six articulations, puis les deux repères
     var ancres;
     if (REP) {
-      ancres = REP.map(function (a) {
-        return { p: a.p, t: a.t, r: true, c: a.c };
-      });
+      ancres = [];        // les noms sont dans la légende, sous la figure
     } else if (vierge) {
       ancres = [];
     } else {
