@@ -203,16 +203,26 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
   color:var(--muted);line-height:1.5}
 .anim .lecture b{color:var(--ink);font-variant-numeric:tabular-nums}
 .anim .lecture .alerte{color:var(--red);font-weight:600}
-/* les deux lectures d'une même pose, côte à côte */
-.anim-mod .valeurs{display:flex;gap:30px;flex-wrap:wrap}
-.anim-mod .col{display:grid;gap:1px}
+/* les deux lectures d'une même pose, côte à côte, sous le dessin */
+/* le cadre se règle sur le dessin : le bras remplit la place */
+.anim-mod .scene{width:100%;max-width:calc(31vh * 1.89);justify-self:center}
+.anim-mod .valeurs{display:grid;gap:10px 34px;
+  grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.anim-mod .col{display:grid;gap:6px}
 .anim-mod .col b{font-family:"IBM Plex Mono",ui-monospace,monospace;
   font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
-  color:var(--muted);font-weight:500;margin-bottom:3px}
-.anim-mod .col span{font-variant-numeric:tabular-nums;color:var(--muted)}
+  color:var(--muted);font-weight:500}
 .anim-mod .col.pilote b{color:var(--accent)}
-.anim-mod .col.pilote span{color:var(--ink);font-weight:600}
-.anim-mod .mot{margin:7px 0 0}
+.anim-mod .val{display:grid;grid-template-columns:28px 1fr 86px;gap:10px;
+  align-items:center;font-size:13.5px}
+.anim-mod .val i{font-style:normal;color:var(--muted)}
+.anim-mod .col.pilote .val i{color:var(--accent);font-weight:600}
+.anim-mod .val output,.anim-mod .val span{font-variant-numeric:tabular-nums;
+  color:var(--ink);text-align:right}
+.anim-mod .col:not(.pilote) .val span{color:var(--muted)}
+.anim-mod .val input[type=range]{width:100%;accent-color:var(--accent)}
+.anim-mod .autre{grid-column:1 / -1;justify-self:start}
+.anim-mod .lecture{position:static;margin:2px 0 0}
 .anim .regl{display:grid;gap:10px 22px;
   grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 .anim .regl label{display:grid;grid-template-columns:auto 1fr auto;gap:10px;
@@ -416,9 +426,9 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
     <svg viewBox="30 55 500 265" role="img"
          aria-label="Un bras plan à trois axes, piloté soit par ses angles,
                      soit par la pose de son outil."></svg>
-    <div class="lecture" aria-live="polite"></div>
   </div>
-  <div class="regl"></div>
+  <div class="valeurs"></div>
+  <div class="lecture" aria-live="polite"></div>
 </div>
 <ul><li>Le <b>direct</b> a toujours une réponse, et une seule. L'<b>inverse</b> en a deux ici, huit sur un six axes, parfois aucune — d'où la configuration de bras à déclarer, et le robot qui refuse un point pourtant « à portée ».</li></ul></div></section>
 <section class="dia" data-section="Modèles" aria-label="Diapositive 28 sur 30"><div class="dedans"><p class="eyebrow">Modèles</p><h2>Les singularités</h2><p class="chapo">Là où le modèle inverse perd pied.</p><div class="sings"><figure><h3>Singularité du poignet</h3><svg viewBox="0 0 380 340" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Bras six axes dont l'avant-bras et l'outil sont alignés : les axes 4 et 6 tournent autour de la même droite, l'axe 5 est à zéro."><defs><marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--red)"/></marker><marker id="py" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--green)"/></marker><marker id="pz" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--blue)"/></marker></defs><defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><line x1="24" y1="318" x2="356" y2="318" stroke="var(--line)" stroke-width="2"/><rect x="102" y="308" width="96" height="10" rx="2" fill="var(--dark)"/><path d="M110 308 L120 246 L180 246 L190 308 Z" fill="var(--robot)"/><line x1="150.0" y1="240.0" x2="187.6" y2="136.6" stroke="var(--robot)" stroke-width="26" stroke-linecap="round"/><line x1="187.6" y1="136.6" x2="282.3" y2="144.9" stroke="var(--robot)" stroke-width="21" stroke-linecap="round"/><line x1="282.3" y1="144.9" x2="324.1" y2="148.6" stroke="var(--metal)" stroke-width="15" stroke-linecap="round"/><circle cx="150.0" cy="240.0" r="16" fill="var(--dark)"/><circle cx="187.6" cy="136.6" r="13" fill="var(--dark)"/><circle cx="282.3" cy="144.9" r="11" fill="var(--dark)"/><circle cx="324.1" cy="148.6" r="6" fill="var(--blue)"/><line x1="171.6" y1="138.0" x2="358.0" y2="151.5" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"/><path d="M206.9 113.7 A 30 30 0 1 1 161.6 151.6" fill="none" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#fa)" opacity=".9"/><path d="M339.5 130.2 A 24 24 0 1 0 303.3 160.6" fill="none" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#fa)" opacity=".9"/><text x="181.6" y="102.6" font-size="12.5" fill="var(--accent)" text-anchor="middle" font-weight="600">axe 4</text><text x="338.1" y="178.6" font-size="12.5" fill="var(--accent)" text-anchor="start" font-weight="600">axe 6</text><text x="286.3" y="176.9" font-size="12.5" fill="var(--muted)" text-anchor="middle">axe 5 = 0°</text></svg><p>Les axes 4 et 6 s&#x27;alignent — l&#x27;axe 5 passe par 0°. Les deux tournent alors autour de la même droite : le contrôleur ne sait plus répartir la rotation entre eux, et peut lancer l&#x27;axe 4 à pleine vitesse pour un déplacement infime de l&#x27;outil. C&#x27;est celle que l&#x27;on rencontre le plus souvent en TP.</p></figure><figure><h3>Singularité de l&#x27;épaule</h3><svg viewBox="0 0 380 340" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Bras six axes replié au-dessus de son embase : le centre du poignet se trouve exactement sur l'axe vertical de rotation de la base."><defs><marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--red)"/></marker><marker id="py" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--green)"/></marker><marker id="pz" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--blue)"/></marker></defs><defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><line x1="24" y1="318" x2="356" y2="318" stroke="var(--line)" stroke-width="2"/><rect x="102" y="308" width="96" height="10" rx="2" fill="var(--dark)"/><path d="M110 308 L120 246 L180 246 L190 308 Z" fill="var(--robot)"/><line x1="150.0" y1="240.0" x2="205.0" y2="144.7" stroke="var(--robot)" stroke-width="26" stroke-linecap="round"/><line x1="205.0" y1="144.7" x2="150.0" y2="67.3" stroke="var(--robot)" stroke-width="21" stroke-linecap="round"/><line x1="150.0" y1="67.3" x2="130.3" y2="104.4" stroke="var(--metal)" stroke-width="15" stroke-linecap="round"/><circle cx="150.0" cy="240.0" r="16" fill="var(--dark)"/><circle cx="205.0" cy="144.7" r="13" fill="var(--dark)"/><circle cx="150.0" cy="67.3" r="11" fill="var(--dark)"/><circle cx="130.3" cy="104.4" r="6" fill="var(--blue)"/><line x1="150.0" y1="312.0" x2="150.0" y2="37.3" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="7 6" stroke-linecap="round"/><text x="164.0" y="37.3" font-size="12.5" fill="var(--accent)" text-anchor="start" font-weight="600">centre du poignet</text><text x="164.0" y="53.3" font-size="12.5" fill="var(--accent)" text-anchor="start">à l'aplomb de l'axe 1</text><text x="96.0" y="296.0" font-size="12.5" fill="var(--accent)" text-anchor="end" font-weight="600">axe 1</text></svg><p>Le centre du poignet passe à l&#x27;aplomb de l&#x27;axe 1. Pour poursuivre une ligne droite qui traverse cet aplomb, l&#x27;axe 1 devrait pivoter d&#x27;un demi-tour instantanément.</p></figure><figure><h3>Singularité du coude</h3><svg viewBox="0 0 380 340" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Bras six axes en extension maximale : le bras et l'avant-bras sont alignés, l'outil atteint le bord de l'enveloppe de travail."><defs><marker id="fl" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="px" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--red)"/></marker><marker id="py" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--green)"/></marker><marker id="pz" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--blue)"/></marker></defs><defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><line x1="24" y1="318" x2="356" y2="318" stroke="var(--line)" stroke-width="2"/><rect x="102" y="308" width="96" height="10" rx="2" fill="var(--dark)"/><path d="M110 308 L120 246 L180 246 L190 308 Z" fill="var(--robot)"/><path d="M350.5 197.4 A 205 205 0 0 1 142.8 35.1" fill="none" stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="4 6" opacity=".8"/><line x1="150.0" y1="240.0" x2="213.1" y2="149.9" stroke="var(--robot)" stroke-width="26" stroke-linecap="round"/><line x1="213.1" y1="149.9" x2="267.6" y2="72.1" stroke="var(--robot)" stroke-width="21" stroke-linecap="round"/><line x1="267.6" y1="72.1" x2="291.7" y2="37.7" stroke="var(--metal)" stroke-width="15" stroke-linecap="round"/><circle cx="150.0" cy="240.0" r="16" fill="var(--dark)"/><circle cx="213.1" cy="149.9" r="13" fill="var(--dark)"/><circle cx="267.6" cy="72.1" r="11" fill="var(--dark)"/><circle cx="291.7" cy="37.7" r="6" fill="var(--blue)"/><line x1="150.0" y1="240.0" x2="306.6" y2="16.4" stroke="var(--ink)" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"/><path d="M231.1 128.4 A 28 28 0 1 1 188.8 163.9" fill="none" stroke="var(--accent)" stroke-width="1.8" marker-end="url(#fa)" opacity=".9"/><text x="243.1" y="155.9" font-size="12.5" fill="var(--accent)" text-anchor="start" font-weight="600">axe 3 tendu</text><text x="344.5" y="219.4" font-size="12.5" fill="var(--muted)" text-anchor="end">bord de l'enveloppe</text></svg><p>Le bras et l&#x27;avant-bras sont alignés : le robot est en extension maximale, au bord de son enveloppe. Il ne peut pas aller plus loin, et le moindre écart demande une correction brutale des axes 2 et 3.</p></figure></div><ul><li>Au voisinage d'une singularité, un déplacement cartésien lent exige des vitesses articulaires très élevées : le robot ralentit, s'emballe ou s'arrête en défaut.</li><li>Trois cas sur un six axes : <b>poignet</b> — axes 4 et 6 alignés ; <b>épaule</b> — poignet à l'aplomb de l'axe 1 ; <b>coude</b> — bras tendu en limite d'enveloppe.</li><li>Le même trajet repris en articulaire passe sans difficulté : le problème n'est pas la position, mais l'exigence de la suivre en ligne droite.</li></ul></div></section>
@@ -496,28 +506,48 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
   document.querySelectorAll('[data-anim]').forEach(function (bloc) {
     const svg = bloc.querySelector('svg');
     const lect = bloc.querySelector('.lecture');
-    const regl = bloc.querySelector('.regl');
+    const panneau = bloc.querySelector('.valeurs');
     const etat = {mode: 'mgd', v: {}, coude: 0};
     REGL.mgd.concat(REGL.mgi).forEach(r => { etat.v[r[0]] = r[3]; });
 
     const NOMS = {q1: 'θ₁', q2: 'θ₂', q3: 'θ₃', x: 'x', y: 'y', phi: 'φ'};
+    const COLS = {art: {titre: 'Articulaire', cle: 'mgd'},
+                  car: {titre: 'Cartésien', cle: 'mgi'}};
+    let champs = {art: [], car: []};
 
+    /* Le panneau ne se reconstruit qu'au changement de mode : on ne remplace
+       pas un curseur sous le doigt de celui qui le déplace. */
     function curseurs() {
-      regl.innerHTML = '';
-      REGL[etat.mode].forEach(function (r) {
-        const [nom, min, max, , unite] = r;
-        const l = document.createElement('label');
-        l.innerHTML = '<b>' + NOMS[nom] + '</b>'
-          + '<input type="range" min="' + min + '" max="' + max + '" step="1">'
-          + '<output></output>';
-        const i = l.querySelector('input'), o = l.querySelector('output');
-        i.value = etat.v[nom];
-        i.setAttribute('aria-label', NOMS[nom]);
-        i.addEventListener('input', function () {
-          etat.v[nom] = +i.value; dessiner();
+      panneau.innerHTML = '';
+      champs = {art: [], car: []};
+      ['art', 'car'].forEach(function (c) {
+        const info = COLS[c], pilote = etat.mode === info.cle;
+        const col = document.createElement('div');
+        col.className = 'col' + (pilote ? ' pilote' : '');
+        col.innerHTML = '<b>' + info.titre
+          + (pilote ? ' — commandé' : ' — calculé') + '</b>';
+        REGL[info.cle].forEach(function (r) {
+          const nom = r[0], min = r[1], max = r[2], unite = r[4] || '°';
+          const l = document.createElement(pilote ? 'label' : 'div');
+          l.className = 'val';
+          l.innerHTML = '<i>' + NOMS[nom] + '</i>'
+            + (pilote
+               ? '<input type="range" min="' + min + '" max="' + max
+                 + '" step="1" aria-label="' + NOMS[nom] + '"><output></output>'
+               : '<span class="vide"></span><span></span>');
+          if (pilote) {
+            const i = l.querySelector('input');
+            i.value = etat.v[nom];
+            i.addEventListener('input', function () {
+              etat.v[nom] = +i.value; dessiner();
+            });
+          }
+          champs[c].push({
+            sortie: l.querySelector(pilote ? 'output' : 'span:last-child'),
+            unite: unite});
+          col.appendChild(l);
         });
-        l.dataset.nom = nom; l.dataset.unite = unite || '°';
-        regl.appendChild(l);
+        panneau.appendChild(col);
       });
       if (etat.mode === 'mgi') {
         const b = document.createElement('button');
@@ -526,8 +556,20 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         b.addEventListener('click', function () {
           etat.coude = 1 - etat.coude; dessiner();
         });
-        regl.appendChild(b);
+        panneau.appendChild(b);
       }
+    }
+
+    /* Les valeurs, elles, se rafraîchissent à chaque image. */
+    function poserValeurs(ang, car) {
+      const v = {art: ang, car: car};
+      ['art', 'car'].forEach(function (c) {
+        champs[c].forEach(function (ch, k) {
+          const x = v[c] ? v[c][k] : null;
+          ch.sortie.textContent = (x === null || !isFinite(x))
+            ? '—' : Math.round(x) + ' ' + ch.unite;
+        });
+      });
     }
 
     /* géométrie directe : des angles vers la pose */
@@ -589,35 +631,12 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
 
       let q = null, texte = '';
 
-      // les deux lectures d'une même pose : à gauche les axes, à droite
-      // l'espace. Celle qu'on commande est mise en évidence.
-      function colonnes(ang, car, pilote) {
-        const art = ang
-          ? ['θ₁ = ' + Math.round(ang[0]) + '°',
-             'θ₂ = ' + Math.round(ang[1]) + '°',
-             'θ₃ = ' + Math.round(ang[2]) + '°']
-          : ['θ₁ = —', 'θ₂ = —', 'θ₃ = —'];
-        const esp = ['x = ' + Math.round(car[0]) + ' mm',
-                     'y = ' + Math.round(car[1]) + ' mm',
-                     'φ = ' + Math.round(car[2]) + '°'];
-        const col = (titre, lignes, actif) =>
-          '<div class="col' + (actif ? ' pilote' : '') + '"><b>' + titre
-          + '</b>' + lignes.map(l => '<span>' + l + '</span>').join('')
-          + '</div>';
-        return '<div class="valeurs">'
-          + col('Articulaire' + (pilote === 'art' ? ' — commandé' : ' — calculé'),
-                art, pilote === 'art')
-          + col('Cartésien' + (pilote === 'car' ? ' — commandé' : ' — calculé'),
-                esp, pilote === 'car')
-          + '</div>';
-      }
-
       if (etat.mode === 'mgd') {
         q = [etat.v.q1, etat.v.q2, etat.v.q3];
         const d = direct(q);
         g += bras(q, 1);
-        texte = colonnes(q, [d.p[3][0], d.p[3][1], d.phi], 'art')
-          + '<p class="mot">Une configuration d’axes, une seule pose.</p>';
+        poserValeurs(q, [d.p[3][0], d.p[3][1], d.phi]);
+        texte = 'Une configuration d’axes, une seule pose.';
       } else {
         const x = etat.v.x, y = etat.v.y, phi = etat.v.phi;
         const s1 = inverse(x, y, phi, etat.coude);
@@ -631,13 +650,11 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
           + (OY - y * E - 34 * Math.sin(deg(phi)))
           + '" stroke="var(--accent)" stroke-width="2.4"'
           + ' marker-end="url(#animfl)"/></g>';
-        texte = colonnes(s1, [x, y, phi], 'car')
-          + '<p class="mot">'
-          + (s1
-             ? 'Deux configurations donnent cette pose — l’autre est en clair.'
-             : '<span class="alerte">Pose hors d’atteinte</span> — aucun jeu '
-               + 'd’angles ne la réalise.')
-          + '</p>';
+        poserValeurs(s1, [x, y, phi]);
+        texte = s1
+          ? 'Deux configurations donnent cette pose — l’autre est en clair.'
+          : '<span class="alerte">Pose hors d’atteinte</span> — aucun jeu '
+            + 'd’angles ne la réalise.';
       }
 
       svg.innerHTML = '<defs><marker id="animfl" viewBox="0 0 10 10" refX="9"'
@@ -645,10 +662,6 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
         + '<path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs>'
         + g;
       lect.innerHTML = texte;
-      regl.querySelectorAll('label').forEach(function (l) {
-        l.querySelector('output').textContent =
-          etat.v[l.dataset.nom] + ' ' + l.dataset.unite;
-      });
     }
 
     bloc.querySelectorAll('.modes button').forEach(function (b) {
@@ -1038,20 +1051,25 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
       const g = pr.g, fine = !etat.z;
       let d = '<path d="M' + SX(P1) + ' ' + SY(P1) + ' L' + SX(P2) + ' '
         + SY(P2) + ' L' + SX(P3) + ' ' + SY(P3) + '" fill="none" '
-        + 'stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 6"/>';
+        + 'stroke="var(--muted)" stroke-width="1.4" stroke-dasharray="6 6" '
+        + 'opacity=".7"/>';
       if (!fine) {
         d += '<circle cx="' + SX(P2) + '" cy="' + SY(P2) + '" r="'
           + (etat.z * E) + '" fill="var(--accent)" fill-opacity=".10" '
           + 'stroke="var(--accent)" stroke-width="1.4" '
           + 'stroke-dasharray="4 4"/>';
       }
-      let reel = 'M' + SX(P1) + ' ' + SY(P1);
+      let reel = 'M' + SX(P1) + ' ' + SY(P1), fait = reel;
       for (let i = 1; i <= N; i++) {
-        const p = pointA(g, i * pr.ds);
-        reel += ' L' + SX(p).toFixed(1) + ' ' + SY(p).toFixed(1);
+        const s = i * pr.ds, p = pointA(g, s);
+        const bout = ' L' + SX(p).toFixed(1) + ' ' + SY(p).toFixed(1);
+        reel += bout;
+        if (s <= e.s) fait += bout;
       }
       d += '<path d="' + reel + '" fill="none" stroke="var(--accent)" '
-        + 'stroke-width="3.4" stroke-linecap="round" opacity=".45"/>';
+        + 'stroke-width="2.6" stroke-linecap="round" opacity=".35"/>'
+        + '<path d="' + fait + '" fill="none" stroke="var(--accent)" '
+        + 'stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>';
       [[P1, 'p10'], [P2, 'p20'], [P3, 'p30']].forEach(function (q) {
         d += '<circle cx="' + SX(q[0]) + '" cy="' + SY(q[0]) + '" r="5" '
           + 'fill="none" stroke="var(--muted)" stroke-width="2"/>'
