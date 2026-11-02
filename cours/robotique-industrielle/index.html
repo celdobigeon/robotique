@@ -248,13 +248,11 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 }
 </style>
 <style>
-/* ---------- le lissage, et ce qu'il coûte ou rapporte ---------- */
-.anim-liss svg{max-height:28vh}
-/* le cadre se règle sur le dessin, et le commentaire se range dessous */
-.anim-liss .scene{width:100%;max-width:calc(28vh * 1.88);
-  justify-self:center}
+/* ---------- le lissage : le trajet, et le profil de vitesse ---------- */
+.anim-liss .vues{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.anim-liss svg{max-height:27vh}
 .anim-liss .lecture{position:static;margin:2px 0 0;line-height:1.55}
-.anim-liss .regl{grid-template-columns:minmax(220px,1fr) minmax(220px,1fr) auto}
+.anim-liss .regl{grid-template-columns:minmax(200px,1fr) minmax(200px,1fr) auto}
 .anim-liss .jouer{font:inherit;font-size:13.5px;background:var(--surface);
   color:var(--muted);border:1px solid var(--line);border-radius:9px;
   padding:6px 14px;cursor:pointer;justify-self:start}
@@ -262,6 +260,7 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
 .anim-liss .lecture code{font-family:"IBM Plex Mono",monospace;font-size:12.5px;
   color:var(--accent);display:block}
 .anim-liss .lecture .gain{color:var(--green);font-weight:600}
+@media (max-width:820px){.anim-liss .vues{grid-template-columns:1fr}}
 </style>
 <style>
 /* ---------- les quaternions : un axe, un angle ---------- */
@@ -357,12 +356,18 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
   </div>
 </div>
 <figure class="impr"><svg viewBox="0 0 1160 230" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Quatre instructions de mouvement : MoveJ en articulaire, MoveL en ligne droite, MoveC en arc par un point de passage, et MoveAbsJ donné directement en angles d'axes."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="145.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveJ</text><text x="145.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">articulaire</text><path d="M 60 150 C 110 60, 190 60, 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(0 0)" marker-end="url(#fl)"/><circle cx="60" cy="150" r="5.5" fill="var(--dark)"/><text x="60.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="230" cy="150" r="5.5" fill="var(--dark)"/><text x="230.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="145.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil ne suit aucune droite</text><text x="435.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveL</text><text x="435.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">linéaire</text><path d="M 60 150 L 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(290 0)" marker-end="url(#fl)"/><circle cx="350" cy="150" r="5.5" fill="var(--dark)"/><text x="350.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="520" cy="150" r="5.5" fill="var(--dark)"/><text x="520.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><text x="435.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">l'outil va tout droit</text><line x1="286" y1="34" x2="286" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="725.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveC</text><text x="725.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">circulaire</text><path d="M 60 150 A 95 95 0 0 1 230 150" fill="none" stroke="var(--robot)" stroke-width="3.4" transform="translate(580 0)" marker-end="url(#fl)"/><circle cx="640" cy="150" r="5.5" fill="var(--dark)"/><text x="640.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p1</text><circle cx="810" cy="150" r="5.5" fill="var(--dark)"/><text x="810.0" y="174.0" font-size="12" fill="var(--muted)" text-anchor="middle">p2</text><circle cx="725" cy="97" r="5" fill="var(--accent)"/><text x="725.0" y="120.0" font-size="11.5" fill="var(--muted)" text-anchor="middle">point de passage</text><text x="725.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">un arc par un point de passage</text><line x1="576" y1="34" x2="576" y2="196" stroke="var(--line)" stroke-width="1.2"/><text x="1015.0" y="40.0" font-size="15" fill="var(--ink)" text-anchor="middle" font-weight="600">MoveAbsJ</text><text x="1015.0" y="60.0" font-size="12" fill="var(--accent)" text-anchor="middle">absolu articulaire</text><text x="962.0" y="92.0" font-size="12" fill="var(--muted)" text-anchor="end">q1</text><rect x="972" y="84" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="84" width="20" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="109.0" font-size="12" fill="var(--muted)" text-anchor="end">q2</text><rect x="972" y="101" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="101" width="32" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="126.0" font-size="12" fill="var(--muted)" text-anchor="end">q3</text><rect x="972" y="118" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="118" width="44" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="143.0" font-size="12" fill="var(--muted)" text-anchor="end">q4</text><rect x="972" y="135" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="135" width="56" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="160.0" font-size="12" fill="var(--muted)" text-anchor="end">q5</text><rect x="972" y="152" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="152" width="68" height="9" rx="4" fill="var(--robot)"/><text x="962.0" y="177.0" font-size="12" fill="var(--muted)" text-anchor="end">q6</text><rect x="972" y="169" width="92" height="9" rx="4" fill="var(--dark)" opacity=".3"/><rect x="972" y="169" width="80" height="9" rx="4" fill="var(--robot)"/><text x="1015.0" y="212.0" font-size="12" fill="var(--muted)" text-anchor="middle">la cible est donnée en angles d'axes</text><line x1="866" y1="34" x2="866" y2="196" stroke="var(--line)" stroke-width="1.2"/></svg></figure><ul><li>Le trajet de l'autre instruction reste en pointillés : <b>MoveJ</b> et <b>MoveL</b> vont au même point par deux chemins. Et changez d'outil : <b>MoveJ</b> vise une <i>pose</i>, le point piloté arrive sur p20 quel que soit l'outil — ce sont les angles qui s'adaptent ; <b>MoveAbsJ</b> vise des <i>angles</i>, le bras garde la même forme — et c'est la pointe de l'outil qui atterrit ailleurs.</li></ul></div></section>
-<section class="dia" data-section="Programmer" aria-label="Diapositive 26 sur 30"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Précision et lissage</h2><p class="chapo">Réglez la vitesse et la zone : le temps de cycle et l'écart au point se lisent sous la figure.</p>
+<section class="dia" data-section="Programmer" aria-label="Diapositive 26 sur 30"><div class="dedans"><p class="eyebrow">Programmer</p><h2>Précision et lissage</h2><p class="chapo">Réglez la vitesse et la zone. À gauche le trajet, à droite la vitesse du point piloté au cours du temps.</p>
 <div class="anim anim-liss" data-liss>
-  <div class="scene">
-    <svg viewBox="30 45 450 240" role="img"
-         aria-label="Un coin à angle droit parcouru par le point piloté :
-                     arrêt au point, ou coin coupé dans une zone."></svg>
+  <div class="vues">
+    <div class="scene">
+      <svg class="trajet" viewBox="30 45 450 240" role="img"
+           aria-label="Le trajet du point piloté : il passe par le point
+                       programmé, ou coupe le coin dans la zone."></svg>
+    </div>
+    <div class="scene">
+      <svg class="profil" viewBox="0 0 450 240" role="img"
+           aria-label="La vitesse du point piloté au cours du temps."></svg>
+    </div>
   </div>
   <div class="lecture" aria-live="polite"></div>
   <div class="regl">
@@ -373,7 +378,7 @@ figure.schema.a3d > svg{display:none}   /* la 3D a pris le relais */
     <button type="button" class="jouer">Rejouer</button>
   </div>
 </div>
-<figure class="impr"><svg viewBox="0 0 1200 320" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Deux trajectoires en angle : à gauche le robot s'arrête au point et l'angle est net ; à droite il coupe le coin dans un rayon de zone et ne passe pas par la cible."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="300.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Arrêt au point</text><path d="M110 230 L300 230 L300 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="300" cy="230" r="7" fill="var(--accent)"/><text x="314.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">le robot s'arrête ici</text><text x="900.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Lissage</text><path d="M710 230 L838 230 Q900 230 900 168 L900 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="900" cy="230" r="7" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/><line x1="900" y1="230" x2="838" y2="230" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5"/><text x="869.0" y="252.0" font-size="12" fill="var(--accent)" text-anchor="middle">rayon de zone</text><text x="914.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">la cible n'est pas atteinte</text><text x="600.0" y="300.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Position exacte et cycle long, ou mouvement continu et coin coupé.</text></svg></figure><ul><li><b>fine</b> : le point piloté passe exactement sur p20, mais il s'y arrête — et repartir coûte d'autant plus cher que la vitesse est grande. <b>zN</b> : il coupe le coin dans un rayon de N millimètres, sans s'arrêter.</li><li>Petite zone et grande vitesse ne vont pas ensemble : le contrôleur ralentit dans le virage. Arrêt net là où la position compte, lissage large sur les transferts.</li></ul></div></section>
+<figure class="impr"><svg viewBox="0 0 1200 320" role="img" xmlns="http://www.w3.org/2000/svg" aria-label="Deux trajectoires en angle : à gauche le robot s'arrête au point et l'angle est net ; à droite il coupe le coin dans un rayon de zone et ne passe pas par la cible."><defs><marker id="fl2" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M10 0 L0 5 L10 10 z" fill="var(--muted)"/></marker><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker><marker id="flA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--accent)"/></marker></defs><text x="300.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Arrêt au point</text><path d="M110 230 L300 230 L300 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="300" cy="230" r="7" fill="var(--accent)"/><text x="314.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">le robot s'arrête ici</text><text x="900.0" y="40.0" font-size="16" fill="var(--ink)" text-anchor="middle" font-weight="600">Lissage</text><path d="M710 230 L838 230 Q900 230 900 168 L900 70" fill="none" stroke="var(--robot)" stroke-width="4"/><circle cx="900" cy="230" r="7" fill="none" stroke="var(--accent)" stroke-width="2" stroke-dasharray="4 4"/><line x1="900" y1="230" x2="838" y2="230" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="5 5"/><text x="869.0" y="252.0" font-size="12" fill="var(--accent)" text-anchor="middle">rayon de zone</text><text x="914.0" y="256.0" font-size="12.5" fill="var(--muted)" text-anchor="start">la cible n'est pas atteinte</text><text x="600.0" y="300.0" font-size="13.5" fill="var(--muted)" text-anchor="middle">Position exacte et cycle long, ou mouvement continu et coin coupé.</text></svg></figure><ul><li><b>fine</b> : le point piloté passe exactement sur p20, mais il s'y arrête — et repartir coûte d'autant plus cher que la vitesse est grande. <b>zN</b> : il coupe le coin dans un rayon de N millimètres, sans s'arrêter.</li><li><b>Le creux du profil, c'est le coin.</b> En « fine » il descend jusqu'à zéro ; avec une zone il s'arrête à la vitesse que l'accélération latérale autorise. Arrêt net là où la position compte, lissage large sur les transferts.</li></ul></div></section>
 <section class="dia" data-section="Modèles" aria-label="Diapositive 27 sur 30"><div class="dedans"><p class="eyebrow">Modèles</p><h2>Les modèles géométriques</h2>
 <div class="anim" data-anim>
   <div class="modes" role="group" aria-label="Modèle étudié">
@@ -915,155 +920,206 @@ montrer(Math.max(0, (parseInt(location.hash.slice(1), 10) || 1) - 1));
   });
 })();
 
-/* ---- le lissage : la zone, la vitesse, et le temps de cycle ---- */
+/* ---- le lissage : trajet et profil de vitesse, calculés ensemble ---- */
 (function () {
   const P1 = [0, 0], P2 = [800, 0], P3 = [800, -380];   // le trajet, en mm
   const ACC = 2500, ALAT = 2500;        // accélérations, en mm/s² (modèle)
+  const ARRET = 0.08;                   // stabilisation d'un point « fine »
   const ZONES = [0, 1, 5, 10, 20, 50, 100];
-  const E = 0.42, OX = 70, OY = 95;     // mise à l'échelle dans le dessin
+  const N = 420;                        // échantillons le long du trajet
+  const E = 0.42, OX = 70, OY = 95;     // le trajet, dans son cadre
 
   const SX = p => OX + p[0] * E, SY = p => OY - p[1] * E;
 
   document.querySelectorAll('[data-liss]').forEach(function (bloc) {
-    const svg = bloc.querySelector('svg');
+    const trajet = bloc.querySelector('svg.trajet');
+    const profil = bloc.querySelector('svg.profil');
     const lect = bloc.querySelector('.lecture');
     const cv = bloc.querySelector('input[data-r="v"]');
     const cz = bloc.querySelector('input[data-r="z"]');
     const sorties = bloc.querySelectorAll('output');
     const etat = {v: +cv.value, z: ZONES[+cz.value], t: 0, anim: 0};
 
-    /* le trajet réel : deux droites et, au milieu, un arc de rayon z */
-    function construire(v, z) {
-      const u1 = [1, 0], u2 = [0, -1];          // l'angle est droit
-      const L1 = 800, L2 = 380, tour = Math.PI / 2;
-      const d = z * Math.tan(tour / 2);         // recul du début de l'arc
+    /* --- la géométrie : deux droites et, au milieu, un arc de rayon z --- */
+    function geometrie(z) {
+      const tour = Math.PI / 2;                 // l'angle est droit
+      const d = z * Math.tan(tour / 2);
+      const L1 = 800 - d, arc = z * tour, L2 = 380 - d;
+      return {d: d, L1: L1, arc: arc, L2: L2, S: L1 + arc + L2,
+              c: [P2[0] - d, P2[1] - z], r: z, a0: Math.PI / 2, da: -tour};
+    }
+
+    function pointA(g, s) {                     // la position à l'abscisse s
+      if (s <= g.L1) return [P1[0] + s, P1[1]];
+      if (s <= g.L1 + g.arc) {
+        if (!g.r) return P2;
+        const a = g.a0 + g.da * (s - g.L1) / g.arc;
+        return [g.c[0] + g.r * Math.cos(a), g.c[1] + g.r * Math.sin(a)];
+      }
+      return [P2[0], P2[1] - g.d - (s - g.L1 - g.arc)];
+    }
+
+    /* --- le profil de vitesse : les plafonds, puis deux passes --- */
+    function profilDe(v, z) {
+      const g = geometrie(z);
+      const ds = g.S / N;
       const vc = z ? Math.min(v, Math.sqrt(ALAT * z)) : 0;
-      const ph = [];
-      ph.push({type: 'droite', a: P1,
-               b: [P2[0] - d * u1[0], P2[1] - d * u1[1]], v: v});
-      if (z) {
-        ph.push({type: 'arc', c: [P2[0] - d, P2[1] - z], r: z,
-                 a0: Math.PI / 2, da: -tour, v: vc, long: z * tour});
-      } else {
-        ph.push({type: 'pause', duree: 2 * v / ACC + 0.08, p: P2});
-      }
-      ph.push({type: 'droite', a: [P2[0] + d * u2[0], P2[1] + d * u2[1]],
-               b: P3, v: v});
-      let T = v / ACC;                          // on part de l'arrêt
-      ph.forEach(function (s) {
-        if (s.type === 'pause') { s.t = s.duree; }
-        else if (s.type === 'arc') { s.t = s.long / s.v; }
-        else {
-          s.long = Math.hypot(s.b[0] - s.a[0], s.b[1] - s.a[1]);
-          s.t = s.long / s.v;
+      const vm = [], vit = [], tps = [];
+      for (let i = 0; i <= N; i++) {
+        const s = i * ds;
+        var cap = v;
+        if (z) {
+          if (s >= g.L1 && s <= g.L1 + g.arc) cap = vc;
+        } else if (Math.abs(s - g.L1) < ds) {
+          cap = 0;                              // « fine » : arrêt au point
         }
-        s.t0 = T; T += s.t;
-      });
-      if (z && vc < v) { T += 2 * (v - vc) / ACC; }   // ralentir puis reprendre
-      T += v / ACC;                             // et s'arrêter à la fin
-      return {ph: ph, T: T, vc: vc, d: d};
+        vm.push(cap);
+      }
+      vit[0] = 0;
+      for (let i = 1; i <= N; i++) {            // ce que l'accélération permet
+        vit[i] = Math.min(vm[i],
+                          Math.sqrt(vit[i - 1] * vit[i - 1] + 2 * ACC * ds));
+      }
+      vit[N] = 0;
+      for (let i = N - 1; i >= 0; i--) {        // ce que le freinage impose
+        vit[i] = Math.min(vit[i],
+                          Math.sqrt(vit[i + 1] * vit[i + 1] + 2 * ACC * ds));
+      }
+      tps[0] = 0;
+      for (let i = 1; i <= N; i++) {
+        const moy = (vit[i - 1] + vit[i]) / 2;
+        tps[i] = tps[i - 1] + (moy > 1 ? ds / moy : 0.02);
+        if (!z && Math.abs(i * ds - g.L1) < ds) tps[i] += ARRET;
+      }
+      return {g: g, ds: ds, vc: vc, v: vit, t: tps, T: tps[N]};
     }
 
-    function position(tr, t) {
-      for (const s of tr.ph) {
-        if (t > s.t0 + s.t) continue;
-        const u = Math.max(0, (t - s.t0) / s.t);
-        if (s.type === 'pause') return {p: s.p, v: 0};
-        if (s.type === 'arc') {
-          const a = s.a0 + s.da * u;
-          return {p: [s.c[0] + s.r * Math.cos(a), s.c[1] + s.r * Math.sin(a)],
-                  v: s.v};
+    function ou(pr, t) {                        // où en est-on à l'instant t
+      for (let i = 1; i <= N; i++) {
+        if (pr.t[i] >= t) {
+          const u = (t - pr.t[i - 1]) / ((pr.t[i] - pr.t[i - 1]) || 1);
+          return {s: (i - 1 + u) * pr.ds,
+                  v: pr.v[i - 1] + (pr.v[i] - pr.v[i - 1]) * u};
         }
-        return {p: [s.a[0] + (s.b[0] - s.a[0]) * u,
-                    s.a[1] + (s.b[1] - s.a[1]) * u], v: s.v};
       }
-      return {p: P3, v: 0};
+      return {s: pr.g.S, v: 0};
     }
 
-    function cheminReel(tr) {
-      let d = 'M' + SX(P1) + ' ' + SY(P1);
-      const a = tr.ph[0].b;
-      d += ' L' + SX(a) + ' ' + SY(a);
-      if (tr.ph[1].type === 'arc') {
-        const b = tr.ph[2].a;
-        d += ' A' + (tr.ph[1].r * E) + ' ' + (tr.ph[1].r * E)
-          + ' 0 0 0 ' + SX(b) + ' ' + SY(b);
-      }
-      d += ' L' + SX(P3) + ' ' + SY(P3);
-      return d;
-    }
-
-    function dessiner() {
-      const tr = construire(etat.v, etat.z);
-      const e = position(tr, etat.t);
-      const fine = !etat.z;
-
-      let g = '';
-      // le trajet programmé, et la zone autour du point
-      g += '<path d="M' + SX(P1) + ' ' + SY(P1) + ' L' + SX(P2) + ' ' + SY(P2)
-        + ' L' + SX(P3) + ' ' + SY(P3) + '" fill="none" stroke="var(--muted)"'
-        + ' stroke-width="1.6" stroke-dasharray="7 6"/>';
+    /* --- à gauche : le trajet --- */
+    function dessinerTrajet(pr, e) {
+      const g = pr.g, fine = !etat.z;
+      let d = '<path d="M' + SX(P1) + ' ' + SY(P1) + ' L' + SX(P2) + ' '
+        + SY(P2) + ' L' + SX(P3) + ' ' + SY(P3) + '" fill="none" '
+        + 'stroke="var(--muted)" stroke-width="1.6" stroke-dasharray="7 6"/>';
       if (!fine) {
-        g += '<circle cx="' + SX(P2) + '" cy="' + SY(P2) + '" r="'
-          + (etat.z * E) + '" fill="var(--accent)" fill-opacity=".10"'
-          + ' stroke="var(--accent)" stroke-width="1.4"'
-          + ' stroke-dasharray="4 4"/>';
+        d += '<circle cx="' + SX(P2) + '" cy="' + SY(P2) + '" r="'
+          + (etat.z * E) + '" fill="var(--accent)" fill-opacity=".10" '
+          + 'stroke="var(--accent)" stroke-width="1.4" '
+          + 'stroke-dasharray="4 4"/>';
       }
-      g += '<path d="' + cheminReel(tr) + '" fill="none" stroke="var(--accent)"'
-        + ' stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"'
-        + ' opacity=".45"/>';
-
-      // les trois points programmés
+      let reel = 'M' + SX(P1) + ' ' + SY(P1);
+      for (let i = 1; i <= N; i++) {
+        const p = pointA(g, i * pr.ds);
+        reel += ' L' + SX(p).toFixed(1) + ' ' + SY(p).toFixed(1);
+      }
+      d += '<path d="' + reel + '" fill="none" stroke="var(--accent)" '
+        + 'stroke-width="3.4" stroke-linecap="round" opacity=".45"/>';
       [[P1, 'p10'], [P2, 'p20'], [P3, 'p30']].forEach(function (q) {
-        g += '<circle cx="' + SX(q[0]) + '" cy="' + SY(q[0]) + '" r="5" '
+        d += '<circle cx="' + SX(q[0]) + '" cy="' + SY(q[0]) + '" r="5" '
           + 'fill="none" stroke="var(--muted)" stroke-width="2"/>'
           + '<text x="' + (SX(q[0]) + 9) + '" y="' + (SY(q[0]) - 9)
           + '" font-size="12" fill="var(--muted)">' + q[1] + '</text>';
       });
-
-      // le point piloté, et sa vitesse du moment
-      g += '<circle cx="' + SX(e.p) + '" cy="' + SY(e.p) + '" r="11" '
-        + 'fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".55"/>'
-        + '<circle cx="' + SX(e.p) + '" cy="' + SY(e.p) + '" r="6" '
+      const p = pointA(g, e.s);
+      d += '<circle cx="' + SX(p) + '" cy="' + SY(p) + '" r="11" fill="none" '
+        + 'stroke="var(--accent)" stroke-width="1.6" opacity=".55"/>'
+        + '<circle cx="' + SX(p) + '" cy="' + SY(p) + '" r="6" '
         + 'fill="var(--accent)"/>'
-        + '<text x="' + (SX(e.p) - 15) + '" y="' + (SY(e.p) + 17)
-        + '" font-size="12" fill="var(--accent)" font-weight="600"'
-        + ' text-anchor="end">' + Math.round(e.v) + ' mm/s</text>';
-      svg.innerHTML = g;
+        + '<text x="' + (SX(p) - 14) + '" y="' + (SY(p) + 17)
+        + '" font-size="12" fill="var(--accent)" font-weight="600" '
+        + 'text-anchor="end">' + Math.round(e.v) + ' mm/s</text>';
+      trajet.innerHTML = d;
+    }
 
-      // ce que ça coûte, ce que ça rapporte
-      const ref = construire(etat.v, 0).T;
-      const gain = Math.round((1 - tr.T / ref) * 100);
-      const zone = fine ? 'fine' : 'z' + etat.z;
+    /* --- à droite : la vitesse au cours du temps --- */
+    function dessinerProfil(pr, e, t) {
+      const x0 = 62, x1 = 430, y0 = 196, y1 = 34;
+      const vmax = etat.v * 1.12;
+      const PX = s => x0 + (s / pr.T) * (x1 - x0);
+      const PY = v => y0 - (v / vmax) * (y0 - y1);
+      let d = '<text x="' + x0 + '" y="20" font-size="12.5" '
+        + 'fill="var(--muted)">vitesse du point piloté</text>'
+        + '<line x1="' + x0 + '" y1="' + y0 + '" x2="' + x1 + '" y2="' + y0
+        + '" stroke="var(--line)" stroke-width="1.6"/>'
+        + '<line x1="' + x0 + '" y1="' + y0 + '" x2="' + x0 + '" y2="' + y1
+        + '" stroke="var(--line)" stroke-width="1.6"/>'
+        + '<line x1="' + x0 + '" y1="' + PY(etat.v) + '" x2="' + x1 + '" y2="'
+        + PY(etat.v) + '" stroke="var(--muted)" stroke-width="1.2" '
+        + 'stroke-dasharray="5 5"/>'
+        + '<text x="' + (x0 - 8) + '" y="' + (PY(etat.v) + 4)
+        + '" font-size="11.5" fill="var(--muted)" text-anchor="end">v'
+        + etat.v + '</text>'
+        + '<text x="' + (x0 - 8) + '" y="' + (y0 + 4)
+        + '" font-size="11.5" fill="var(--muted)" text-anchor="end">0</text>'
+        + '<text x="' + x1 + '" y="' + (y0 + 20) + '" font-size="11.5" '
+        + 'fill="var(--muted)" text-anchor="end">temps — '
+        + pr.T.toFixed(2) + ' s</text>';
+
+      let tout = '', fait = '';
+      for (let i = 0; i <= N; i++) {
+        const pt = PX(pr.t[i]).toFixed(1) + ',' + PY(pr.v[i]).toFixed(1);
+        tout += pt + ' ';
+        if (pr.t[i] <= t) fait += pt + ' ';
+      }
+      d += '<polyline points="' + tout + '" fill="none" stroke="var(--accent)"'
+        + ' stroke-width="2" opacity=".28"/>';
+      if (fait) {
+        d += '<polyline points="' + fait + '" fill="none" '
+          + 'stroke="var(--accent)" stroke-width="2.8"/>';
+      }
+      d += '<circle cx="' + PX(Math.min(t, pr.T)) + '" cy="' + PY(e.v)
+        + '" r="5.5" fill="var(--accent)"/>';
+      profil.innerHTML = d;
+    }
+
+    function dessiner() {
+      const pr = profilDe(etat.v, etat.z);
+      const t = Math.min(etat.t, pr.T);
+      const e = ou(pr, t);
+      dessinerTrajet(pr, e);
+      dessinerProfil(pr, e, t);
+
+      const ref = profilDe(etat.v, 0).T;
+      const gain = Math.round((1 - pr.T / ref) * 100);
+      const zone = etat.z ? 'z' + etat.z : 'fine';
       lect.innerHTML =
         '<code>MoveL p20, v' + etat.v + ', ' + zone + ', tool1;</code>'
-        + 'Temps de cycle : <b>' + tr.T.toFixed(2) + ' s</b>'
-        + (fine
-           ? ' — le point piloté s’arrête sur p20, et passe exactement dessus.'
-           : ' — <span class="gain">' + gain + ' % de moins</span> qu’en '
-             + '« fine », mais le coin est coupé de <b>' + etat.z + ' mm</b>.')
-        + (!fine && tr.vc < etat.v
-           ? '<br>Dans le virage, la vitesse tombe à <b>' + Math.round(tr.vc)
-             + ' mm/s</b> : le rayon est trop court pour v' + etat.v + '.'
-           : '');
+        + 'Temps de cycle <b>' + pr.T.toFixed(2) + ' s</b>'
+        + (etat.z
+           ? ' — <span class="gain">' + gain + ' % de moins</span> qu’en '
+             + '« fine ». Le coin est coupé de <b>' + etat.z + ' mm</b>, et '
+             + 'la vitesse ne descend qu’à <b>' + Math.round(pr.vc)
+             + ' mm/s</b> dans le virage.'
+           : ' — le point piloté passe exactement sur p20, mais sa vitesse '
+             + 'tombe à <b>zéro</b> : c’est le creux du profil.')
+        + ' <i>Modèle : accélération ' + (ACC / 1000).toFixed(1)
+        + ' m/s², sans jerk.</i>';
       sorties[0].textContent = 'v' + etat.v;
       sorties[1].textContent = zone;
     }
 
     function jouer() {
       cancelAnimationFrame(etat.anim);
-      const tr = construire(etat.v, etat.z);
+      const T = profilDe(etat.v, etat.z).T;
       const t0 = performance.now();
       (function pas(h) {
         etat.t = (h - t0) / 1000;
         dessiner();
-        if (etat.t < tr.T) etat.anim = requestAnimationFrame(pas);
+        if (etat.t < T) etat.anim = requestAnimationFrame(pas);
       })(t0);
     }
 
-    cv.addEventListener('input', function () {
-      etat.v = +cv.value; jouer();
-    });
+    cv.addEventListener('input', function () { etat.v = +cv.value; jouer(); });
     cz.addEventListener('input', function () {
       etat.z = ZONES[+cz.value]; jouer();
     });
