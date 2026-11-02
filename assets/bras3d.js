@@ -95,6 +95,39 @@
     return m;
   }
 
+  function fleche3d(scene, origine, dir, taille, couleur) {
+    // Les flèches filaires de Three.js se réduisent à un trait d'un pixel :
+    // au vidéoprojecteur, elles s'effacent. Celle-ci a un corps et une pointe.
+    var mat = new THREE.MeshBasicMaterial({ color: couleur });
+    var r = taille * 0.04;
+    var d = dir.clone().normalize();
+    var q = new THREE.Quaternion().setFromUnitVectors(
+      new THREE.Vector3(0, 1, 0), d);
+    var corps = new THREE.Mesh(
+      new THREE.CylinderGeometry(r, r, taille * 0.74, 14), mat);
+    corps.quaternion.copy(q);
+    corps.position.copy(origine).addScaledVector(d, taille * 0.37);
+    scene.add(corps);
+    var pointe = new THREE.Mesh(
+      new THREE.ConeGeometry(r * 2.8, taille * 0.26, 18), mat);
+    pointe.quaternion.copy(q);
+    pointe.position.copy(origine).addScaledVector(d, taille * 0.87);
+    scene.add(pointe);
+  }
+
+
+  function triedreEpais(scene, origine, taille, couleur) {
+    [[1, 0, 0], [0, 1, 0], [0, 0, 1]].forEach(function (a) {
+      fleche3d(scene, origine, new THREE.Vector3(a[0], a[1], a[2]), taille,
+               couleur);
+    });
+    scene.add(new THREE.Mesh(
+      new THREE.SphereGeometry(taille * 0.075, 14, 10),
+      new THREE.MeshBasicMaterial({ color: couleur })));
+    scene.children[scene.children.length - 1].position.copy(origine);
+  }
+
+
   function triedre(scene, origine, taille, couleur) {
     // X rouge, Y vert, Z bleu — la convention que rappelle la légende. Sur la
     // planche des repères du cours, chaque repère a au contraire sa propre
@@ -264,11 +297,11 @@
 
       // le coin de la tôle : c'est lui qui porte le repère objet
       var coin = new THREE.Vector3(xTole - 0.012, basTole, lTole / 2);
-      var t = B.cadre * 0.095;
-      triedre(scene, new THREE.Vector3(0, 0, 0), t * 2.1, COUL.base);
-      triedre(scene, bride.position.clone(), t, COUL.bride);
-      triedre(scene, pointe.clone(), t, COUL.outil);
-      triedre(scene, coin, t, COUL.objet);
+      var t = B.cadre * 0.115;
+      triedreEpais(scene, new THREE.Vector3(0, 0, 0), t * 1.9, COUL.base);
+      triedreEpais(scene, bride.position.clone(), t, COUL.bride);
+      triedreEpais(scene, pointe.clone(), t, COUL.outil);
+      triedreEpais(scene, coin, t, COUL.objet);
       REP = [{ p: new THREE.Vector3(0, 0, 0), t: 'repère de base',
                c: '#2E5F82' },
              { p: bride.position.clone(), t: 'repère bride', c: '#6E5A8E' },
